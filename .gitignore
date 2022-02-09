@@ -1,0 +1,3 @@
+src/ctags
+build/Debug/*
+build/Release/*
