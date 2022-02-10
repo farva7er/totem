@@ -32,7 +32,9 @@ add_library(totem STATIC   App.h
                            Math/Mat.cpp
                            Math/Vec.h
                            ResourceManager.h
-                           ResourceManager.cpp)
+                           ResourceManager.cpp
+                           Timer.h
+                           Timer.cpp)
 
 
 target_include_directories(totem PUBLIC ./)
