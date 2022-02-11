@@ -132,8 +132,6 @@ namespace totem
       glUseProgram(m_ShaderProgram);
       glDeleteShader(vShader);
       glDeleteShader(fShader);
-
-      HandleResize(m_Window->GetFBWidth(), m_Window->GetFBHeight());
    }
 
    Renderer::~Renderer()

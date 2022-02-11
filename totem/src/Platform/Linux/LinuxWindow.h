@@ -16,15 +16,19 @@ namespace totem
       virtual ~LinuxWindow() override;
 
       virtual void OnUpdate() override;
-      virtual bool IsClosed() override;
+      virtual bool IsClosed() const override;
 
       void OnEvent(Event& e) const;
       virtual void AddEventListener(EventListener* listener) override;
       virtual void RemoveEventListener(EventListener* listener) override;
       virtual void MakeCurrent() override;
-      virtual void* GetOpenGLLoaderFunc() override;
-      virtual unsigned int GetFBWidth() override;
-      virtual unsigned int GetFBHeight() override;
+      virtual void* GetOpenGLLoaderFunc() const override;
+      virtual void SendInitEvents() const override;
+      virtual unsigned int GetFBWidth() const override;
+      virtual unsigned int GetFBHeight() const override;
+      virtual unsigned int GetWidth() const override;
+      virtual unsigned int GetHeight() const override;
+
    private:
       void CleanEventListeners();
    private:

@@ -17,6 +17,8 @@ App::~App()
 
 void App::Run()
 {
+   m_Window->SendInitEvents();
+
    while(!m_Window->IsClosed())
    {
       OnUpdate();

@@ -12,7 +12,7 @@ namespace totem
       char buff[250];
       // readlink does not append null byte
       int res = readlink("/proc/self/exe", buff, sizeof(buff) - 1);
-      int i = sizeof(buff) - 1;
+      int i = res - 1;
       while(i >= 0)
       {
          if(buff[i] == '/')
@@ -24,7 +24,6 @@ namespace totem
          i--;
       }
       TOTEM_ASSERT(res != -1, "/proc/self/exe readlink failed");
-      buff[res] = 0;
       res = chdir(buff);
       TOTEM_ASSERT(res != -1, "Chdir for %s failed: %s",
                               buff, strerror(errno));

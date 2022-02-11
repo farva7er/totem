@@ -150,7 +150,7 @@ namespace totem
       glfwSwapBuffers(m_glfwWindow);
    }
 
-   bool LinuxWindow::IsClosed()
+   bool LinuxWindow::IsClosed() const
    {
       return glfwWindowShouldClose(m_glfwWindow);
    }
@@ -210,22 +210,44 @@ namespace totem
       }
    }
 
-   void* LinuxWindow::GetOpenGLLoaderFunc()
+   void* LinuxWindow::GetOpenGLLoaderFunc() const
    {
       return reinterpret_cast<void*>(glfwGetProcAddress);
    }
 
-   unsigned int LinuxWindow::GetFBWidth()
+   void LinuxWindow::SendInitEvents() const
+   {
+      FramebufferResizeEvent fe(GetFBWidth(), GetFBHeight());
+      OnEvent(fe);
+      WindowResizeEvent we(GetWidth(), GetHeight());
+      OnEvent(we);
+   }
+
+   unsigned int LinuxWindow::GetFBWidth() const
    {
       int width, height;
       glfwGetFramebufferSize(m_glfwWindow, &width, &height);
       return width;
    }
 
-   unsigned int LinuxWindow::GetFBHeight()
+   unsigned int LinuxWindow::GetFBHeight() const
    {
       int width, height;
       glfwGetFramebufferSize(m_glfwWindow, &width, &height);
+      return height;
+   }
+
+   unsigned int LinuxWindow::GetWidth() const
+   {
+      int width, height;
+      glfwGetWindowSize(m_glfwWindow, &width, &height);
+      return width;
+   }
+
+   unsigned int LinuxWindow::GetHeight() const
+   {
+      int width, height;
+      glfwGetWindowSize(m_glfwWindow, &width, &height);
       return height;
    }
 }
