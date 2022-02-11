@@ -1,3 +1,2 @@
-src/tags
-build/Debug/*
-build/Release/*
+tags
+build/*
