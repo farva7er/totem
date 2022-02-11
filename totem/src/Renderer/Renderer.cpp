@@ -6,8 +6,7 @@
 namespace totem
 {
    bool Renderer::s_OpenGLInitialized = false;
-
-   Renderer::Renderer(Window *window)
+Renderer::Renderer(Window *window)
    {
       m_Window = window;
 
@@ -188,6 +187,18 @@ namespace totem
          texture = rm.LoadResource(new Texture(imagePath));
       texture->Bind();
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+   }
+
+
+   void Renderer::DrawImage(const char* imagePath, math::vec2f pos,
+                           float scale)
+   {
+      ResourceManager& rm = ResourceManager::GetInstance();
+      Texture *texture = rm.GetResource<Texture>(imagePath);
+      if(!texture)
+         texture = rm.LoadResource(new Texture(imagePath));
+      float aspectRatio = texture->GetWidth()/(float)texture->GetHeight();
+      DrawRect(pos, math::vec2f(scale * aspectRatio, scale), imagePath);
    }
 
    void Renderer::SetAspectRatio(float aspectRatio)

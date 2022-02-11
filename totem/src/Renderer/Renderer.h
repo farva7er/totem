@@ -21,6 +21,8 @@ namespace totem
                      const char *imagePath, 
                      math::vec4f tintColor = 
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
+      void DrawImage(const char* imagePath, math::vec2f pos,
+                     float scale = 1.0f);
    private:
       static bool s_OpenGLInitialized;
       

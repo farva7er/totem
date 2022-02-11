@@ -53,9 +53,9 @@ public:
       m_Renderer->DrawRect(totem::math::vec2f(0.0f, 0.0f),
                            totem::math::vec2f(14.0f, 7.0f),
                            "image.jpeg");
-      m_Renderer->DrawRect(totem::math::vec2f(0.5f, 0.5f),
-                           totem::math::vec2f(1.0f, 1.0f),
-                           "image.jpeg");
+      m_Renderer->DrawImage("image.jpeg",
+                           totem::math::vec2f(0.5f, 0.5f),
+                           3);
 
    }
 
