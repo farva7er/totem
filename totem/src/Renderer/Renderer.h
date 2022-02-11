@@ -26,6 +26,7 @@ namespace totem
       
       // also recalculates projection matrix
       void SetAspectRatio(float aspectRatio);
+      void HandleResize(unsigned int width, unsigned int height);
       virtual void OnEvent(Event& e) override;
 
    private:

@@ -214,5 +214,19 @@ namespace totem
    {
       return reinterpret_cast<void*>(glfwGetProcAddress);
    }
+
+   unsigned int LinuxWindow::GetFBWidth()
+   {
+      int width, height;
+      glfwGetFramebufferSize(m_glfwWindow, &width, &height);
+      return width;
+   }
+
+   unsigned int LinuxWindow::GetFBHeight()
+   {
+      int width, height;
+      glfwGetFramebufferSize(m_glfwWindow, &width, &height);
+      return height;
+   }
 }
 

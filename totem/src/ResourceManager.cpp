@@ -139,7 +139,7 @@ namespace totem
       {
          if(0 == strcmp(currNode->data->GetPath(), fullPath))
          {
-            LOG_INFO("Reusing resource: %s", resPath);
+            //LOG_INFO("Reusing resource: %s", resPath);
             delete fullPath;
             return currNode->data;
          }

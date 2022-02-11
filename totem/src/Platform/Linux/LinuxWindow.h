@@ -23,6 +23,8 @@ namespace totem
       virtual void RemoveEventListener(EventListener* listener) override;
       virtual void MakeCurrent() override;
       virtual void* GetOpenGLLoaderFunc() override;
+      virtual unsigned int GetFBWidth() override;
+      virtual unsigned int GetFBHeight() override;
    private:
       void CleanEventListeners();
    private:

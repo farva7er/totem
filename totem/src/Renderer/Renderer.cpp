@@ -44,7 +44,7 @@ namespace totem
 
       glGenBuffers(1, &m_VBO);
       glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), 
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
                      vertices, GL_STATIC_DRAW);
       glGenBuffers(1, &m_EBO);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
@@ -132,6 +132,8 @@ namespace totem
       glUseProgram(m_ShaderProgram);
       glDeleteShader(vShader);
       glDeleteShader(fShader);
+
+      HandleResize(m_Window->GetFBWidth(), m_Window->GetFBHeight());
    }
 
    Renderer::~Renderer()
@@ -145,9 +147,7 @@ namespace totem
       {
          FramebufferResizeEvent& fre = 
             CAST_EVENT(FramebufferResizeEvent, e);
-         glViewport(0, 0, fre.GetWidth(), fre.GetHeight());
-         SetAspectRatio(fre.GetWidth()/(float)fre.GetHeight());
-         LOG_INFO(fre.ToString().c_str());
+         HandleResize(fre.GetWidth(), fre.GetHeight());
       }
    }
  
@@ -197,8 +197,16 @@ namespace totem
       int projMatLoc = glGetUniformLocation(m_ShaderProgram, "vProjMat");
       math::mat4f mat = math::getOrthoProj(10.0f * aspectRatio, 10.0f,
                                        -1.0f, 1.0f);
-      LOG_INFO("aspectRatio: %f", aspectRatio);
+      //LOG_INFO("aspectRatio: %f", aspectRatio);
       glUniformMatrix4fv(projMatLoc, 1, GL_TRUE, mat.ToArray());
       m_AspectRatio = aspectRatio;
+   }
+
+
+   void Renderer::HandleResize(unsigned int width, unsigned int height)
+   {
+      glViewport(0, 0, width, height);
+      SetAspectRatio(width/(float)height);
+      //LOG_INFO("Framebuffer Resized - W: %u H: %u", width, height);
    }
 }
