@@ -20,10 +20,18 @@ add_library(totem STATIC   src/App.h
                            src/Math/Mat.cpp
                            src/Math/Vec.h
                            src/Math/
+$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Linux>:
                            src/Platform/Linux/LinuxWindow.h
                            src/Platform/Linux/LinuxWindow.cpp
                            src/Platform/Linux/Filesystem/LinuxUtils.h
                            src/Platform/Linux/Filesystem/LinuxUtils.cpp
+>
+$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
+                           src/Platform/Linux/LinuxWindow.h # Temporary
+                           src/Platform/Linux/LinuxWindow.cpp # Temporary
+                           src/Platform/Windows/Filesystem/WindowsUtils.h
+                           src/Platform/Windows/Filesystem/WindowsUtils.cpp
+>
                            src/Renderer/Renderer.h
                            src/Renderer/Renderer.cpp
                            src/Renderer/Texture.h
