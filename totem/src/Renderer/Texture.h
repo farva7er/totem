@@ -3,31 +3,33 @@
 
 #include "ResourceManager.h"
 
-class Texture : public Resource
+namespace totem
 {
-public:
-   Texture(const char* imagePath)
-      : Resource(imagePath) {}
-   virtual ~Texture() override;
+   class Texture : public Resource
+   {
+      public:
+         Texture(const char* imagePath)
+            : Resource(imagePath) {}
+         virtual ~Texture() override;
 
-   virtual ResourceType GetType() const override 
-   { return ResourceType::Image; }
+         virtual ResourceType GetType() const override 
+         { return ResourceType::Image; }
 
-   static ResourceType GetStaticType()
-   { return ResourceType::Image; }
-   void Bind() const;
+         static ResourceType GetStaticType()
+         { return ResourceType::Image; }
+         void Bind() const;
 
-   int GetWidth() const { return m_Width; }
-   int GetHeight() const { return m_Height; }
-   int GetChannelCount() const { return m_ChannelCount; }
+         int GetWidth() const { return m_Width; }
+         int GetHeight() const { return m_Height; }
+         int GetChannelCount() const { return m_ChannelCount; }
 
-private:
-   virtual void Load() override;
+      private:
+         virtual void Load() override;
 
-private:
-   unsigned int m_RendererId;
-   int m_Width, m_Height;
-   int m_ChannelCount;
-};
-
+      private:
+         unsigned int m_RendererId;
+         int m_Width, m_Height;
+         int m_ChannelCount;
+   };
+}
 #endif

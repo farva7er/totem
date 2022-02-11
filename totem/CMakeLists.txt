@@ -22,10 +22,15 @@ add_library(totem STATIC   src/App.h
                            src/Math/
                            src/Platform/Linux/LinuxWindow.h
                            src/Platform/Linux/LinuxWindow.cpp
+                           src/Platform/Linux/Filesystem/LinuxUtils.h
+                           src/Platform/Linux/Filesystem/LinuxUtils.cpp
                            src/Renderer/Renderer.h
                            src/Renderer/Renderer.cpp
                            src/Renderer/Texture.h
-                           src/Renderer/Texture.cpp)
+                           src/Renderer/Texture.cpp
+                           src/Filesystem/Utils.h
+                           src/Filesystem/Utils.cpp
+                           )
 
 
 target_include_directories(totem PUBLIC src)
