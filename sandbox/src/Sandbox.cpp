@@ -15,21 +15,28 @@ class Sandbox : public App
 public:
    Sandbox() : m_CurrPos(0)
    {
-      m_Animator = new totem::Animator();
-      m_Animator->PlayAnim(
-         new totem::LinearAnim(m_ImageColor,
-                              totem::math::vec4f(0, 0, 0, 0),
-                              totem::math::vec4f(1, 1, 1, 1),
-                              5)
-                           );
-      m_Animator->PlayAnim(
-            new totem::LinearAnim(
+      totem::Animation* alphaAnim = new totem::LinearInterpAnim(m_ImageColor,
+                                    totem::math::vec4f(0, 0, 0, 0),
+                                    totem::math::vec4f(1, 1, 1, 1),
+                                    5);
+      totem::Animation* moveToLeftBottomAnim =                          
+            new totem::CubicModifAnim(
                   m_ImagePos,
-                  totem::math::vec2f(-0.7, -0.7),
-                  totem::math::vec2f(0.8, 0.8),
-                  10
-               )        
-      );
+                  totem::math::vec2f(-0.75f, -0.75f),
+                  2
+            );
+      totem::Animation* moveToRightUpAnim =                          
+            new totem::LinearModifAnim(
+                  m_ImagePos,
+                  totem::math::vec2f(0.8f, 0.8f),
+                  2
+            );
+           
+      m_Animator.PlayAnim(alphaAnim);
+      m_Animator.PlayAnim(moveToLeftBottomAnim, 0.0f, alphaAnim);
+      m_Animator.PlayAnim(moveToRightUpAnim, 2.0f, moveToLeftBottomAnim);
+      m_Animator.PlayAnim(moveToLeftBottomAnim->Clone(), 0, moveToRightUpAnim);
+      
    }
 
    virtual void OnEvent(totem::Event& e) override
@@ -58,7 +65,7 @@ public:
 
    virtual void OnUpdate(float deltaTime) override
    {
-      m_Animator->OnUpdate(deltaTime);
+      m_Animator.OnUpdate(deltaTime);
       //m_Renderer->Clear(0.2f, 0.3f, 0.2f);
       m_Renderer->DrawBackground("image.jpeg");
       //m_Renderer->DrawRect(totem::math::vec2f(-5, 1), 
@@ -86,7 +93,7 @@ private:
    totem::math::vec2f m_Positions[sq_count];
    int m_CurrPos;
    float m_ScreenWidth, m_ScreenHeight;
-   totem::Animator* m_Animator;
+   totem::Animator m_Animator;
    totem::math::vec4f m_ImageColor;
    totem::math::vec2f m_ImagePos;
 };
