@@ -23,6 +23,8 @@ namespace totem
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
       void DrawImage(const char* imagePath, math::vec2f pos,
                      float scale = 1.0f);
+      void DrawBackground(const char* imagePath);
+
    private:
       static bool s_OpenGLInitialized;
       
@@ -36,6 +38,7 @@ namespace totem
       unsigned int m_VBO, m_VAO, m_EBO, m_ShaderProgram;
       unsigned int m_WhiteTexture;
       math::mat4f m_ProjMat;
+      float m_SceneSize;
       float m_AspectRatio;
    };
 }

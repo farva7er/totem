@@ -7,6 +7,7 @@ namespace totem
 {
    bool Renderer::s_OpenGLInitialized = false;
 Renderer::Renderer(Window *window)
+      : m_SceneSize(10.0f)
    {
       m_Window = window;
 
@@ -29,10 +30,10 @@ Renderer::Renderer(Window *window)
 
       static float vertices[] =
       {
-         -0.5f, -0.5f, 0.0f,     0.0f, 0.0f,
-          0.5f, -0.5f, 0.0f,     1.0f, 0.0f,
-          0.5f,  0.5f, 0.0f,     1.0f, 1.0f,
-         -0.5f,  0.5f, 0.0f,     0.0f, 1.0f
+         -1.0f, -1.0f, 0.0f,     0.0f, 0.0f,
+          1.0f, -1.0f, 0.0f,     1.0f, 0.0f,
+          1.0f,  1.0f, 0.0f,     1.0f, 1.0f,
+         -1.0f,  1.0f, 0.0f,     0.0f, 1.0f
       };
 
       static unsigned int indices[] = 
@@ -131,6 +132,9 @@ Renderer::Renderer(Window *window)
       glUseProgram(m_ShaderProgram);
       glDeleteShader(vShader);
       glDeleteShader(fShader);
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    }
 
    Renderer::~Renderer()
@@ -201,11 +205,19 @@ Renderer::Renderer(Window *window)
       DrawRect(pos, math::vec2f(scale * aspectRatio, scale), imagePath);
    }
 
+
+   void Renderer::DrawBackground(const char* imagePath)
+   {
+      DrawRect(math::vec2f(0, 0),
+               math::vec2f(m_SceneSize * m_AspectRatio, m_SceneSize),
+               imagePath);
+   }
+
    void Renderer::SetAspectRatio(float aspectRatio)
    {
       int projMatLoc = glGetUniformLocation(m_ShaderProgram, "vProjMat");
-      math::mat4f mat = math::getOrthoProj(10.0f * aspectRatio, 10.0f,
-                                       -1.0f, 1.0f);
+      math::mat4f mat = math::getOrthoProj(m_SceneSize * aspectRatio, 
+                                           m_SceneSize, -1.0f, 1.0f);
       //LOG_INFO("aspectRatio: %f", aspectRatio);
       glUniformMatrix4fv(projMatLoc, 1, GL_TRUE, mat.ToArray());
       m_AspectRatio = aspectRatio;

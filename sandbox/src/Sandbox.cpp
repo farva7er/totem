@@ -39,24 +39,26 @@ public:
 
    virtual void OnUpdate() override
    {
-      m_Renderer->Clear(0.2f, 0.3f, 0.2f);
+      //m_Renderer->Clear(0.2f, 0.3f, 0.2f);
+      m_Renderer->DrawBackground("image.jpeg");
       //m_Renderer->DrawRect(totem::math::vec2f(-5, 1), 
       //                     totem::math::vec2f(5, 5));
       for(int i = 0; i < m_CurrPos; i++)
       {
          m_Renderer->DrawRect(m_Positions[i], 
                               totem::math::vec2f(0.7f, 0.7f),
-                              totem::math::vec4f(0.4f, 0.6f, 0.3f, 1.0f));
+                              totem::math::vec4f(0.4f, 0.6f, 0.3f, 0.1f));
 
       }
-
+/*
       m_Renderer->DrawRect(totem::math::vec2f(0.0f, 0.0f),
                            totem::math::vec2f(14.0f, 7.0f),
-                           "image.jpeg");
-      m_Renderer->DrawImage("image.jpeg",
+                           "image.jpeg",
+                           totem::math::vec4f(1, 1, 1, 0.5f));
+*/
+      m_Renderer->DrawImage("transp_image.png",
                            totem::math::vec2f(0.5f, 0.5f),
                            3);
-
    }
 
 private:
