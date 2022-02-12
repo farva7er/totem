@@ -16,6 +16,9 @@ add_library(totem STATIC   src/App.h
                            src/Totem.cpp
                            src/Window.h
                            src/Window.cpp
+                           src/Animations/Animator.h
+                           src/Animations/Animator.cpp
+                           src/Animations/BasicAnimations.h
                            src/Math/Mat.h
                            src/Math/Mat.cpp
                            src/Math/Vec.h

@@ -22,7 +22,9 @@ namespace totem
                      math::vec4f tintColor = 
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
       void DrawImage(const char* imagePath, math::vec2f pos,
-                     float scale = 1.0f);
+                     float scale = 1.0f,
+                     math::vec4f tintColor =
+                     math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
       void DrawBackground(const char* imagePath);
 
    private:

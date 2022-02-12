@@ -15,7 +15,7 @@ public:
    static App* CreateApp();
 
    void Run();
-   virtual void OnUpdate() {}
+   virtual void OnUpdate(float deltaTime) {}
    virtual void OnEvent(totem::Event& e) override {}
 
 private:

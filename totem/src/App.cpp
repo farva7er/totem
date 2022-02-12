@@ -1,6 +1,7 @@
 #include "App.h"
 #include "Window.h"
 #include "Renderer/Renderer.h"
+#include "Timer.h"
 
 App::App()
 {
@@ -17,11 +18,15 @@ App::~App()
 
 void App::Run()
 {
+   float frameTime = totem::Timer::GetTimeSec(), 
+         prevFrameTime = totem::Timer::GetTimeSec();
    m_Window->SendInitEvents();
-
    while(!m_Window->IsClosed())
    {
-      OnUpdate();
+      OnUpdate(frameTime - prevFrameTime);
       m_Window->OnUpdate();
+
+      prevFrameTime = frameTime;
+      frameTime = totem::Timer::GetTimeSec();
    }
 }

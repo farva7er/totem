@@ -6,7 +6,7 @@
 namespace totem
 {
    bool Renderer::s_OpenGLInitialized = false;
-Renderer::Renderer(Window *window)
+   Renderer::Renderer(Window *window)
       : m_SceneSize(10.0f)
    {
       m_Window = window;
@@ -195,14 +195,15 @@ Renderer::Renderer(Window *window)
 
 
    void Renderer::DrawImage(const char* imagePath, math::vec2f pos,
-                           float scale)
+                           float scale, math::vec4f tintColor)
    {
       ResourceManager& rm = ResourceManager::GetInstance();
       Texture *texture = rm.GetResource<Texture>(imagePath);
       if(!texture)
          texture = rm.LoadResource(new Texture(imagePath));
       float aspectRatio = texture->GetWidth()/(float)texture->GetHeight();
-      DrawRect(pos, math::vec2f(scale * aspectRatio, scale), imagePath);
+      DrawRect(pos, math::vec2f(scale * aspectRatio, scale), imagePath,
+               tintColor);
    }
 
 
