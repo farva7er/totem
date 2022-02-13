@@ -47,7 +47,7 @@ public:
       if(e.GetType() == totem::EventType::MouseMove)
       {
          //LOG_INFO(e.ToString().c_str());
-         totem::MouseMoveEvent& me = CAST_EVENT(totem::MouseMoveEvent,e);
+         totem::MouseMoveEvent& me = e.Cast<totem::MouseMoveEvent>();
          m_Positions[m_CurrPos] = 2 * 
                         totem::math::vec2f(me.GetX()/m_ScreenWidth - 0.5f,
                                           -me.GetY()/m_ScreenHeight + 0.5f);
@@ -58,7 +58,7 @@ public:
       }
       if(e.GetType() == totem::EventType::WindowResize)
       {
-         totem::WindowResizeEvent& me = CAST_EVENT(totem::WindowResizeEvent,e);
+         totem::WindowResizeEvent& me = e.Cast<totem::WindowResizeEvent>();
          m_ScreenWidth = me.GetWidth();
          m_ScreenHeight = me.GetHeight();
       }

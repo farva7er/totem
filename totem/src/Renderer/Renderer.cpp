@@ -146,8 +146,7 @@ namespace totem
    {
       if(e.GetType() == EventType::FramebufferResize)
       {
-         FramebufferResizeEvent& fre = 
-            CAST_EVENT(FramebufferResizeEvent, e);
+         FramebufferResizeEvent& fre = e.Cast<FramebufferResizeEvent>();
          HandleResize(fre.GetWidth(), fre.GetHeight());
       }
    }

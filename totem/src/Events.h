@@ -5,8 +5,6 @@
 #include <string>
 #include <sstream>
 
-#define CAST_EVENT(EVENT_TYPE, EVENT) *static_cast<EVENT_TYPE*>(&EVENT)
-
 namespace totem
 {
 
@@ -43,6 +41,9 @@ namespace totem
       bool IsHandled() const { return m_IsHandled; }
       void SetHandled() { m_IsHandled = true; }
       virtual std::string ToString() const = 0;
+      template <typename T>
+      T& Cast()
+      { return *static_cast<T*>(this); }
    private:
       bool m_IsHandled;
    };
