@@ -7,7 +7,7 @@ namespace totem
    {
       friend class Animator;
 
-      enum class State { Start, Play, Pause, Finish };
+      enum class State { Play, Pause, Delay };
    public:
       Animation(bool isLooping, float animDuration);
       Animation(const Animation& other);
@@ -15,11 +15,10 @@ namespace totem
       virtual ~Animation() {}
       void Play();
       void Pause();
-      void Release();
+      void Delay();
       void Reset();
-      void Finish();
-      bool IsAtStart() const;
-      bool IsFinished() const;
+      bool IsDelayed() const;
+      int GetFinishCount() const;
       bool IsPlaying() const;
       bool IsPaused() const;
       bool IsLooping() const;
@@ -37,6 +36,7 @@ namespace totem
       bool m_IsLooping;
       float m_Duration;
       float m_CurrTime;
+      int m_FinishCount;
    };
 
    class Animator
@@ -45,25 +45,24 @@ namespace totem
       Animator(): m_Animations(nullptr){}
       ~Animator();
       void OnUpdate(float deltaTime);
+      void AddAnim(Animation* anim);
       void PlayAnim( Animation* anim, 
                      float delay = 0.0f, Animation* refAnim = nullptr);
    private:
       struct AnimationNode
       {
          Animation* anim;
-         AnimationNode* refNode;
-         int refCount;
+         Animation* refAnim;
          float delay;
          AnimationNode* next;
-         AnimationNode(Animation* anim, AnimationNode* refNode,
+         AnimationNode(Animation* anim, Animation* refAnim,
                         float delay, AnimationNode* next = nullptr)
-            : anim(anim), refNode(refNode), refCount(0),
+            : anim(anim), refAnim(refAnim),
             delay(delay), next(next) {}
-         ~AnimationNode()
-         { delete anim; }
+         ~AnimationNode() { delete anim; }
       };
 
-      void Insert(Animation* anim, float delay, AnimationNode* refNode);
+      void Insert(Animation* anim, float delay, Animation* refAnim);
       AnimationNode* SearchNode(Animation* anim) const;
    private:
       AnimationNode* m_Animations;

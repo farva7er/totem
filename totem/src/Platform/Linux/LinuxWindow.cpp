@@ -136,6 +136,8 @@ namespace totem
       glfwSetCursorPosCallback(m_glfwWindow, cursor_position_callback);
       glfwSetMouseButtonCallback(m_glfwWindow, mouse_button_callback);
       glfwSetScrollCallback(m_glfwWindow, scroll_callback);
+
+      glfwSwapInterval(1);
    }
 
    LinuxWindow::~LinuxWindow()

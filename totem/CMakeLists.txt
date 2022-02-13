@@ -50,6 +50,7 @@ target_compile_definitions(
    totem
    PRIVATE
    PROJECT_NAME=totem
+   PUBLIC
    # If the debug configuration pass the DEBUG define to the compiler 
    $<$<CONFIG:Debug>:TOTEM_DEBUG>
    #$<$<STREQUAL:${CMAKE_SYSTEM_NAME}, Linux>:TOTEM_PLATFORM_LINUX>

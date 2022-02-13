@@ -4,15 +4,16 @@
 namespace totem
 {
    Animation::Animation(bool isLooping, float animDuration)
-      : m_State(State::Start), m_IsLooping(isLooping),
-      m_Duration(animDuration), m_CurrTime(0) {}
+      : m_State(State::Pause), m_IsLooping(isLooping),
+      m_Duration(animDuration), m_CurrTime(0), m_FinishCount(0) {}
 
    Animation::Animation(const Animation& other)
    {
-      m_State = State::Start;
+      m_State = State::Pause;
       m_IsLooping = other.m_IsLooping;
       m_Duration = other.m_Duration;
       m_CurrTime = 0.0f;
+      m_FinishCount = 0;
    }
 
    void Animation::Play()
@@ -25,29 +26,24 @@ namespace totem
       m_State = State::Pause;
    }
 
-   void Animation::Release()
+   void Animation::Delay()
    {
-      m_State = State::Play;
-   }
-
-   void Animation::Finish()
-   {
-      m_State = State::Finish;
+      m_State = State::Delay;
    }
 
    void Animation::Reset()
    {
       m_CurrTime = 0.0f;
    }
- 
-   bool Animation::IsAtStart() const
+
+   bool Animation::IsDelayed() const
    {
-      return m_State == State::Start;
+      return m_State == State::Delay;
    }
 
-   bool Animation::IsFinished() const
+   int Animation::GetFinishCount() const
    {
-      return m_State == State::Finish;
+      return m_FinishCount;
    }
 
    bool Animation::IsPlaying() const
@@ -71,10 +67,11 @@ namespace totem
       {
          if(m_CurrTime >= m_Duration)
          {
+            m_FinishCount++;
             if(IsLooping())
                Reset();
             else
-               Finish();
+               Pause();
             return;
          }
          m_CurrTime += deltaTime;
@@ -105,33 +102,24 @@ namespace totem
       while(*currNode)
       {
          Animation* currAnim = (*currNode)->anim;
-         if(currAnim->IsFinished() && (*currNode)->refCount <= 0)
+          
+         if(currAnim->IsDelayed())
          {
-            AnimationNode* savedNode = (*currNode);
-            (*currNode) = (*currNode)->next;
-            delete savedNode;
-            LOG_INFO("Anim Deleted");
-            continue;
-         }
-         
-         if(currAnim->IsAtStart())
-         {
-            AnimationNode* refNode = (*currNode)->refNode;
-            if(refNode && refNode->anim->IsFinished() &&
+            Animation* refAnim = (*currNode)->refAnim;
+            if(refAnim && refAnim->GetFinishCount() > 0 &&
                         (*currNode)->delay <= 0.0f)
             {
                currAnim->Play();
-               refNode->refCount--; 
             }
-            if(!refNode && (*currNode)->delay <= 0.0f)
+            if(!refAnim && (*currNode)->delay <= 0.0f)
             {
                currAnim->Play();
             }
-            if(refNode && refNode->anim->IsFinished())
+            if(refAnim && refAnim->GetFinishCount() > 0)
             {
                (*currNode)->delay-=deltaTime;
             }
-            if(!refNode)
+            if(!refAnim)
             { 
                (*currNode)->delay-=deltaTime;
             }
@@ -142,21 +130,32 @@ namespace totem
       }
    }
 
-   void Animator::PlayAnim(Animation* anim, float delay, Animation* refAnim)
+   void Animator::AddAnim(Animation* anim)
    {
-      AnimationNode* refNode = nullptr;
-      if(refAnim)
-         refNode = SearchNode(refAnim);
-      Insert(anim, delay, refNode);
+      Insert(anim, 0.0f, nullptr);
    }
 
-   void Animator::Insert(Animation* anim, float delay, AnimationNode *refNode)
+   void Animator::PlayAnim(Animation* anim, float delay, Animation* refAnim)
+   {
+      AnimationNode* animNode = SearchNode(anim);
+      if(!animNode)
+      {
+         Insert(anim, delay, refAnim);
+      }
+      else
+      {
+         animNode->delay = delay;
+         animNode->refAnim = refAnim;
+      }
+
+      anim->Delay(); 
+   }
+
+   void Animator::Insert(Animation* anim, float delay, Animation* refAnim)
    {
       AnimationNode* node = 
-         new AnimationNode(anim, refNode, delay, m_Animations);
-      m_Animations = node;
-      if(refNode)
-         refNode->refCount++; 
+         new AnimationNode(anim, refAnim, delay, m_Animations);
+      m_Animations = node; 
    }
 
    Animator::AnimationNode* Animator::SearchNode(Animation* anim) const
