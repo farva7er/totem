@@ -1,19 +1,20 @@
 #include "Animator.h"
 #include "Log.h"
-
 namespace totem
 {
    Animation::Animation(bool isLooping, float animDuration)
-      : m_State(State::Pause), m_IsLooping(isLooping),
-      m_Duration(animDuration), m_CurrTime(0), m_FinishCount(0) {}
+      : m_State(State::PauseFromPlay), m_IsLooping(isLooping),
+      m_Duration(animDuration), m_CurrTime(0), m_FinishCount(0),
+      m_StartFlag(true) {}
 
    Animation::Animation(const Animation& other)
    {
-      m_State = State::Pause;
+      m_State = State::PauseFromPlay;
       m_IsLooping = other.m_IsLooping;
       m_Duration = other.m_Duration;
       m_CurrTime = 0.0f;
       m_FinishCount = 0;
+      m_StartFlag = true;
    }
 
    void Animation::Play()
@@ -23,9 +24,11 @@ namespace totem
 
    void Animation::Pause()
    {
-      m_State = State::Pause;
+      if(m_State == State::Play)
+         m_State = State::PauseFromPlay;
+      else if(m_State == State::Delay)
+         m_State = State::PauseFromDelay;
    }
-
    void Animation::Delay()
    {
       m_State = State::Delay;
@@ -34,16 +37,23 @@ namespace totem
    void Animation::Reset()
    {
       m_CurrTime = 0.0f;
+      m_StartFlag = true;
+      m_FinishCount = 0;
    }
 
    bool Animation::IsDelayed() const
    {
-      return m_State == State::Delay;
+      return m_State == State::Delay || m_State == State::PauseFromDelay;
    }
 
    int Animation::GetFinishCount() const
    {
       return m_FinishCount;
+   }
+
+   bool Animation::HasFinished() const
+   {
+      return m_FinishCount > 0;
    }
 
    bool Animation::IsPlaying() const
@@ -53,12 +63,18 @@ namespace totem
 
    bool Animation::IsPaused() const
    {
-      return m_State == State::Pause;
+      return m_State == State::PauseFromPlay ||
+            m_State == State::PauseFromDelay;
    }
    
    bool Animation::IsLooping() const
    {
       return m_IsLooping;
+   }
+
+   bool Animation::IsAtStart() const
+   {
+      return m_StartFlag;
    }
 
    void Animation::Update(float deltaTime)
@@ -77,9 +93,18 @@ namespace totem
          m_CurrTime += deltaTime;
          OnUpdate();
          //LOG_INFO("Anim Update %f", deltaTime);
+         m_StartFlag = false;
       } 
    }
 
+   AnimationGroup::AnimationGroup()
+      :  m_Animations(nullptr)
+   {}
+
+   void AnimationGroup::Add(Animation* anim)
+   {
+      m_Animations = new AnimationNode(anim, m_Animations); 
+   }
 
 /////////////////////////////////////////////////
 // Animator /////////////////////////////////////
@@ -103,7 +128,7 @@ namespace totem
       {
          Animation* currAnim = (*currNode)->anim;
           
-         if(currAnim->IsDelayed())
+         if(currAnim->IsDelayed() && !currAnim->IsPaused())
          {
             Animation* refAnim = (*currNode)->refAnim;
             if(refAnim && refAnim->GetFinishCount() > 0 &&
@@ -130,12 +155,12 @@ namespace totem
       }
    }
 
-   void Animator::AddAnim(Animation* anim)
+   void Animator::Add(Animation* anim)
    {
       Insert(anim, 0.0f, nullptr);
    }
 
-   void Animator::PlayAnim(Animation* anim, float delay, Animation* refAnim)
+   void Animator::Play(Animation* anim, float delay, Animation* refAnim)
    {
       AnimationNode* animNode = SearchNode(anim);
       if(!animNode)
@@ -148,14 +173,13 @@ namespace totem
          animNode->refAnim = refAnim;
       }
 
+      anim->Reset();
       anim->Delay(); 
    }
 
    void Animator::Insert(Animation* anim, float delay, Animation* refAnim)
    {
-      AnimationNode* node = 
-         new AnimationNode(anim, refAnim, delay, m_Animations);
-      m_Animations = node; 
+      m_Animations = new AnimationNode(anim, refAnim, delay, m_Animations);
    }
 
    Animator::AnimationNode* Animator::SearchNode(Animation* anim) const
@@ -169,6 +193,63 @@ namespace totem
       }
       return nullptr;
    }
-};
-   
 
+   void Animator::Pause(Animation* anim)
+   {
+      anim->Pause();
+   }
+
+   void Animator::Release(Animation* anim)
+   {
+      if(!anim->IsDelayed() && anim->IsPaused())
+      {
+         if(anim->IsLooping() || !anim->HasFinished())
+            anim->Play();
+      }
+      else if(anim->IsDelayed() && anim->IsPaused())
+      {
+         anim->Delay();
+      }
+   }
+
+   void Animator::Add(AnimationGroup animGroup)
+   {
+      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
+      while(curr)
+      {
+         Add(curr->anim);
+         curr = curr->next;
+      }
+   }
+
+   void Animator::Play( AnimationGroup animGroup, float delay,
+                        Animation* refAnim)
+   {
+      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
+      while(curr)
+      {
+         Play(curr->anim, delay, refAnim);
+         curr = curr->next;
+      }
+   }
+
+   void Animator::Pause(AnimationGroup animGroup)
+   {
+      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
+      while(curr)
+      {
+         Pause(curr->anim);
+         curr = curr->next;
+      }
+   }
+
+   void Animator::Release(AnimationGroup animGroup)
+   {
+      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
+      while(curr)
+      {
+         Release(curr->anim);
+         curr = curr->next;
+      }
+   }
+};

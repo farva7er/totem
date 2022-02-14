@@ -20,24 +20,28 @@ public:
                                     totem::math::vec4f(0, 0, 0, 0),
                                     totem::math::vec4f(1, 1, 1, 1),
                                     1);
-      totem::Animation* lbAnim =                          
-            new totem::CubicModifAnim(
+      m_LbAnim =                          
+            new totem::HermiteModifAnim(
                   m_ImagePos,
                   totem::math::vec2f(-0.75f, -0.75f),
                   2
             );
-      totem::Animation* rtAnim =                          
+      m_RtAnim =                          
             new totem::LinearModifAnim(
                   m_ImagePos,
                   totem::math::vec2f(0.8f, 0.8f),
                   2
             );
-           
-      //m_Animator.PlayAnim(colorAnim);
-      m_Animator.AddAnim(m_ColorAnim);
-      m_Animator.PlayAnim(lbAnim, 0.0f);
-      m_Animator.PlayAnim(rtAnim, 2.0f, lbAnim);
-      m_Animator.PlayAnim(lbAnim->Clone(), 0, rtAnim);
+
+      m_LbAnim2 = m_LbAnim->Clone();
+
+      m_PartialAnimGroup.Add(m_ColorAnim);
+      m_PartialAnimGroup.Add(m_LbAnim);
+
+      m_FullAnimGroup.Add(m_ColorAnim);
+      m_FullAnimGroup.Add(m_LbAnim);
+      m_FullAnimGroup.Add(m_RtAnim);
+      m_FullAnimGroup.Add(m_LbAnim2);
       
    }
 
@@ -65,10 +69,18 @@ public:
 
       if(e.GetType() == totem::EventType::MousePressed)
       {
-         m_ColorAnim->Reset();
-         m_ColorAnim->Play();
+         totem::MousePressedEvent& mp = e.Cast<totem::MousePressedEvent>();
+         if(mp.GetButton() == 0)
+         { 
+            m_Animator.Play(m_PartialAnimGroup);
+            m_Animator.Play(m_RtAnim, 2.0f, m_LbAnim);
+            m_Animator.Play(m_LbAnim2, 1.0f, m_RtAnim);
+         }
+         else
+         {
+            m_Animator.Pause(m_FullAnimGroup);
+         }
       }
-
    }
 
    virtual void OnUpdate(float deltaTime) override
@@ -107,6 +119,11 @@ private:
    totem::math::vec4f m_ImageColor;
    totem::math::vec2f m_ImagePos;
    totem::Animation* m_ColorAnim;
+   totem::Animation* m_LbAnim;
+   totem::Animation* m_LbAnim2;
+   totem::Animation* m_RtAnim;
+   totem::AnimationGroup m_FullAnimGroup;
+   totem::AnimationGroup m_PartialAnimGroup;
 };
 
 App* App::CreateApp()
