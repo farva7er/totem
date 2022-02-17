@@ -8,6 +8,7 @@ namespace totem
    class Texture : public Resource
    {
       public:
+         // set m_ResourceId to imagePath
          Texture(const char* imagePath)
             : Resource(imagePath) {}
          virtual ~Texture() override;

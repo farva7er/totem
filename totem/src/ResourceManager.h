@@ -7,21 +7,18 @@ namespace totem
    // Resources //////////////////////////////////
    ///////////////////////////////////////////////
 
-
-   const char ResourceDir[] = "resources/";
-
    enum class ResourceType { Image, Audio, Font, Other };
 
    class Resource
    {
       public:
-         Resource(const char* resPath);
+         Resource(const char* resId);
          virtual ~Resource() = 0;
          virtual void Load() = 0;
          virtual ResourceType GetType() const;
-         const char* GetPath() const { return m_Path; }
+         const char* GetId() const { return m_ResourceId; }
       protected:
-         char* m_Path;
+         char* m_ResourceId;
    };
 
 
@@ -48,22 +45,22 @@ namespace totem
 
          // returns nullptr if resource could not be found
          template <typename T>
-            T* GetResource(const char* resPath) const;
+            T* GetResource(const char* resId) const;
 
          template <typename T>
             T* LoadResource(T* res);
 
          //Remove this resource from RM table
          //Caller gets ownership of this resource
-         void Untrack(const char* resPath);
+         void Untrack(const char* resId);
 
          // Remove resource and free all of its occupied memory
-         void Unload(const char* resPath);
+         void Unload(const char* resId);
       private:
          ResourceManager();
          ~ResourceManager();
 
-         Resource* GetResourceInternal(const char* resPath) const;
+         Resource* GetResourceInternal(const char* resId) const;
          void LoadResourceInternal(Resource* res);
 
          // Also checks load factor and extends table if needed
@@ -93,9 +90,9 @@ namespace totem
    };
 
    template <typename T>
-      T* ResourceManager::GetResource(const char* resPath) const
+      T* ResourceManager::GetResource(const char* resId) const
       {
-         Resource* res = GetResourceInternal(resPath);
+         Resource* res = GetResourceInternal(resId);
          TOTEM_ASSERT(!res || T::GetStaticType() == res->GetType(), 
                "Resource Types does not match for %s");
          return reinterpret_cast<T*>(res);

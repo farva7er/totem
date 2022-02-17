@@ -6,16 +6,15 @@
 
 namespace totem
 {
-   Resource::Resource(const char* resPath)
+   Resource::Resource(const char* resId)
    {
-      m_Path = new char[sizeof(ResourceDir) + strlen(resPath)];
-      strcpy(m_Path, ResourceDir);
-      strcat(m_Path, resPath);
+      m_ResourceId = new char[strlen(resId) + 1];
+      strcpy(m_ResourceId, resId);
    }
 
    Resource::~Resource()
    {
-      delete m_Path;
+      delete m_ResourceId;
    }
 
    ResourceType Resource::GetType() const
@@ -103,20 +102,20 @@ namespace totem
       if(m_ResourceCount >= GetSize()/2)
          ExtendTable();
 
-      unsigned int hashIndex = HashString(res->GetPath());
+      unsigned int hashIndex = HashString(res->GetId());
       InsertNode(hashIndex, res);
       m_ResourceCount++;
    }
 
-   void ResourceManager::Unload(const char* resPath)
+   void ResourceManager::Unload(const char* resId)
    {
-      unsigned int hashIndex = HashString(resPath);
+      unsigned int hashIndex = HashString(resId);
       for(  ResourceNode** currNode = &m_Table[hashIndex];
             *currNode;
             currNode = &((*currNode)->next)
          )
       {
-         if(0 == strcmp((*currNode)->data->GetPath(), resPath))
+         if(0 == strcmp((*currNode)->data->GetId(), resId))
          {
             ResourceNode* savedNode = *currNode;
             *currNode = (*currNode)->next;
@@ -127,32 +126,25 @@ namespace totem
       }
    }
 
-   Resource* ResourceManager::GetResourceInternal(const char* resPath) const
+   Resource* ResourceManager::GetResourceInternal(const char* resId) const
    {
-      char* fullPath = new char[sizeof(ResourceDir) + strlen(resPath)];
-      strcpy(fullPath, ResourceDir);
-      strcat(fullPath, resPath);
-
-      unsigned int hashIndex = HashString(fullPath);
+      unsigned int hashIndex = HashString(resId);
       ResourceNode *currNode = m_Table[hashIndex];
       while(currNode)
       {
-         if(0 == strcmp(currNode->data->GetPath(), fullPath))
+         if(0 == strcmp(currNode->data->GetId(), resId))
          {
-            //LOG_INFO("Reusing resource: %s", resPath);
-            delete fullPath;
+            //LOG_INFO("Reusing resource: %s", resId);
             return currNode->data;
          }
-
          currNode = currNode->next;
       }
-      delete fullPath;
       return nullptr;
    }
 
    void ResourceManager::LoadResourceInternal(Resource* res)
    {
-      LOG_INFO("Loading resource: %s", res->GetPath());
+      LOG_INFO("Loading resource: %s", res->GetId());
       res->Load();
       Insert(res);
    }

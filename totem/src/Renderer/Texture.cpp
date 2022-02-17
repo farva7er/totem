@@ -14,12 +14,14 @@ namespace totem
    void Texture::Load()
    {
       stbi_set_flip_vertically_on_load(true);
+
+      // m_ResourceId contains path to the image
       unsigned char* data = 
-         stbi_load(m_Path, &m_Width, &m_Height, &m_ChannelCount, 0);
+         stbi_load(m_ResourceId, &m_Width, &m_Height, &m_ChannelCount, 0);
 
       if(!data)
       {
-         LOG_ERROR("Couldn't load texture: %s", m_Path);
+         LOG_ERROR("Couldn't load texture: %s", m_ResourceId);
          return;
       }
 
