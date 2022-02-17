@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <string>
 
 #include "Renderer.h"
 #include "Assert.h"
@@ -6,6 +7,36 @@
 namespace totem
 {
    bool Renderer::s_OpenGLInitialized = false;
+
+   //From learnopengl.com/In-Practice/Debugging
+   GLenum glCheckError_(const char *file, int line)
+   {
+      GLenum errorCode;
+      while ((errorCode = glGetError()) != GL_NO_ERROR)
+      {
+         std::string error;
+         switch (errorCode)
+         {
+            case GL_INVALID_ENUM:
+               error = "INVALID_ENUM"; break;
+            case GL_INVALID_VALUE:
+               error = "INVALID_VALUE"; break;
+            case GL_INVALID_OPERATION:
+               error = "INVALID_OPERATION"; break;
+            case GL_OUT_OF_MEMORY:
+               error = "OUT_OF_MEMORY"; break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION:
+               error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+
+         }
+         std::cout << error << " | " << file << 
+               " (" << line << ")" << std::endl;
+      }
+      return errorCode;
+   }
+
+   #define glCheckError() glCheckError_(__FILE__, __LINE__) 
+
    Renderer::Renderer(Window *window)
       : m_SceneSize(10.0f)
    {
@@ -15,7 +46,8 @@ namespace totem
       m_Window->MakeCurrent();
       if(!s_OpenGLInitialized)
       { 
-         if (!gladLoadGLLoader((GLADloadproc) m_Window->GetOpenGLLoaderFunc()))
+         if (!gladLoadGLLoader((GLADloadproc)
+                  m_Window->GetOpenGLLoaderFunc()))
          {
             TOTEM_ASSERT(false, "Glad Failed to initialize!");
             return;
@@ -65,73 +97,12 @@ namespace totem
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 
          1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &whiteTexData);
 
-
-
-      const char* vShaderSrc = 
-         "#version 330 core\n"
-         "layout (location = 0) in vec3 vPos; "
-         "layout (location = 1) in vec2 vTexCoords; "
-         "out vec2 TexCoords; "
-         "uniform mat4 vModelMat; "
-         "uniform mat4 vProjMat; "
-         "void main() "
-         "{ "
-         "  gl_Position = vProjMat * vModelMat * vec4(vPos, 1.0f); "
-         "  TexCoords = vTexCoords; "
-         "} "
-      ;
-
-      const char* fShaderSrc =
-         "#version 330 core\n"
-         "in vec2 TexCoords; "
-         "out vec4 FragColor; "
-         "uniform vec4 fColor;"
-         "uniform sampler2D texSampler; "
-         "void main() "
-         "{ "
-         "  FragColor = fColor * texture(texSampler, TexCoords); " 
-         "} "
-      ;
-
-      unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
-      unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
-      int success;
-      char infoLog[512];
-      glShaderSource(vShader, 1, &vShaderSrc, nullptr);
-      glShaderSource(fShader, 1, &fShaderSrc, nullptr);
-      glCompileShader(vShader);
-      glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
-      if(!success)
-      {
-         glGetShaderInfoLog(vShader, 512, nullptr, infoLog);
-         LOG_FATAL("Vertex Shader compilation failed: %s", infoLog);
-         return;
-      }
-      glCompileShader(fShader);
-      glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
-      if(!success)
-      {
-         glGetShaderInfoLog(fShader, 512, nullptr, infoLog);
-         LOG_FATAL("Fragment Shader compilation failed: %s", infoLog);
-         return;
-      }
-
-      m_ShaderProgram = glCreateProgram();
-      glAttachShader(m_ShaderProgram, vShader);
-      glAttachShader(m_ShaderProgram, fShader);
-      glLinkProgram(m_ShaderProgram);
-
-      glGetProgramiv(m_ShaderProgram, GL_LINK_STATUS, &success);
-      if(!success)
-      {
-         glGetProgramInfoLog(m_ShaderProgram, 512, NULL, infoLog);
-         LOG_FATAL("Shader Program linking failed: %s", infoLog);
-         return;
-      }
-
-      glUseProgram(m_ShaderProgram);
-      glDeleteShader(vShader);
-      glDeleteShader(fShader);
+      m_TextureShaderId = "textureShader";
+      ResourceManager& rm = ResourceManager::GetInstance();
+      rm.AddResource(new Shader(
+               m_TextureShaderId,
+               "resources/shaders/Vtexture.glsl",
+               "resources/shaders/Ftexture.glsl"));
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -151,6 +122,14 @@ namespace totem
       }
    }
  
+   Shader* Renderer::GetShader(const char* shaderId) const
+   {
+      ResourceManager& rm = ResourceManager::GetInstance();
+      Shader* shader = rm.GetResource<Shader>(shaderId);
+      TOTEM_ASSERT(shader, "Shader is not loaded %s", shaderId);
+      return shader;
+   }
+
    void Renderer::Clear(float r, float g, float b, float a)
    {
       glClearColor(r, g, b, a);
@@ -159,14 +138,14 @@ namespace totem
 
    void Renderer::DrawRect(math::vec2f pos, math::vec2f scale,
                            math::vec4f color)
-   { 
-      int modelMatLoc = glGetUniformLocation(m_ShaderProgram, "vModelMat");
+   {
+      Shader* shader = GetShader(m_TextureShaderId);
+      shader->Use();
       math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
                                           pos.y * 10.0f)
                      *  math::getScale(scale.x, scale.y);
-      glUniformMatrix4fv(modelMatLoc, 1, GL_TRUE, mat.ToArray());
-      int colorLoc = glGetUniformLocation(m_ShaderProgram, "fColor");
-      glUniform4f(colorLoc, color.x, color.y, color.z, color.w);
+      shader->SetUniformMatrix4fv("vModelMat", mat);
+      shader->SetUniform4f("fColor", color);
       glBindTexture(GL_TEXTURE_2D, m_WhiteTexture);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
    }
@@ -175,14 +154,13 @@ namespace totem
                            const char *imagePath, 
                            math::vec4f tintColor)
    {
-      int modelMatLoc = glGetUniformLocation(m_ShaderProgram, "vModelMat");
+      Shader* shader = GetShader(m_TextureShaderId);
+      shader->Use();
       math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
                                           pos.y * 10.0f)
                      *  math::getScale(scale.x, scale.y);
-      glUniformMatrix4fv(modelMatLoc, 1, GL_TRUE, mat.ToArray());
-      int colorLoc = glGetUniformLocation(m_ShaderProgram, "fColor");
-      glUniform4f(colorLoc, 
-            tintColor.x, tintColor.y, tintColor.z, tintColor.w);
+      shader->SetUniformMatrix4fv("vModelMat", mat);
+      shader->SetUniform4f("fColor", tintColor);
 
       ResourceManager& rm = ResourceManager::GetInstance();
       Texture *texture = rm.GetResource<Texture>(imagePath);
@@ -215,16 +193,14 @@ namespace totem
 
    void Renderer::SetAspectRatio(float aspectRatio)
    {
-      int projMatLoc = glGetUniformLocation(m_ShaderProgram, "vProjMat");
+      Shader* shader = GetShader(m_TextureShaderId);
+      shader->Use();
       math::mat4f mat = math::getOrthoProj(m_SceneSize * aspectRatio, 
                                            m_SceneSize, -1.0f, 1.0f);
+      shader->SetUniformMatrix4fv("vProjMat", mat);
       //LOG_INFO("aspectRatio: %f", aspectRatio);
-      glUniformMatrix4fv(projMatLoc, 1, GL_TRUE, mat.ToArray());
       m_AspectRatio = aspectRatio;
-   }
-
-
-   void Renderer::HandleResize(unsigned int width, unsigned int height)
+   } void Renderer::HandleResize(unsigned int width, unsigned int height)
    {
       glViewport(0, 0, width, height);
       SetAspectRatio(width/(float)height);

@@ -8,7 +8,7 @@ namespace totem
 {
    Texture::~Texture()
    {
-      glDeleteTextures(1, &m_RendererId);
+      glDeleteTextures(1, &m_RenderAPIId);
    }
 
    void Texture::Load()
@@ -39,8 +39,8 @@ namespace totem
 
       }
 
-      glGenTextures(1, &m_RendererId);
-      glBindTexture(GL_TEXTURE_2D, m_RendererId);
+      glGenTextures(1, &m_RenderAPIId);
+      glBindTexture(GL_TEXTURE_2D, m_RenderAPIId);
       glTexImage2D(GL_TEXTURE_2D, 0, resourceFormat, 
             m_Width, m_Height, 0, openGLFormat, GL_UNSIGNED_BYTE, data);
 
@@ -51,11 +51,11 @@ namespace totem
       glTexParameteri(GL_TEXTURE_2D,   GL_TEXTURE_MAG_FILTER, 
             GL_LINEAR);
       stbi_image_free(data);
-
+      m_IsLoaded = true;
    }
 
    void Texture::Bind() const
    {
-      glBindTexture(GL_TEXTURE_2D, m_RendererId);  
+      glBindTexture(GL_TEXTURE_2D, m_RenderAPIId);  
    }
 }

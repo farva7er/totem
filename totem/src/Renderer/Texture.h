@@ -28,7 +28,7 @@ namespace totem
          virtual void Load() override;
 
       private:
-         unsigned int m_RendererId;
+         unsigned int m_RenderAPIId;
          int m_Width, m_Height;
          int m_ChannelCount;
    };

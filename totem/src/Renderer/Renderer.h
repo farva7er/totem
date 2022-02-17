@@ -5,6 +5,7 @@
 #include "Math/Mat.h"
 #include "Math/Vec.h"
 #include "Texture.h"
+#include "Shader.h"
 
 namespace totem
 {
@@ -29,16 +30,19 @@ namespace totem
 
    private:
       static bool s_OpenGLInitialized;
-      
+     
+      Shader* GetShader(const char* shaderId) const;
+
       // also recalculates projection matrix
       void SetAspectRatio(float aspectRatio);
       void HandleResize(unsigned int width, unsigned int height);
       virtual void OnEvent(Event& e) override;
 
    private:
-      Window *m_Window;
-      unsigned int m_VBO, m_VAO, m_EBO, m_ShaderProgram;
+      Window* m_Window;
+      unsigned int m_VBO, m_VAO, m_EBO;
       unsigned int m_WhiteTexture;
+      const char* m_TextureShaderId;
       math::mat4f m_ProjMat;
       float m_SceneSize;
       float m_AspectRatio;

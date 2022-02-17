@@ -7,18 +7,20 @@ namespace totem
    // Resources //////////////////////////////////
    ///////////////////////////////////////////////
 
-   enum class ResourceType { Image, Audio, Font, Other };
+   enum class ResourceType { Image, Audio, Font, Shader, Other };
 
    class Resource
    {
       public:
          Resource(const char* resId);
-         virtual ~Resource() = 0;
+         virtual ~Resource();
          virtual void Load() = 0;
          virtual ResourceType GetType() const;
          const char* GetId() const { return m_ResourceId; }
+         bool IsLoaded() const { return m_IsLoaded; }
       protected:
          char* m_ResourceId;
+         bool m_IsLoaded;
    };
 
 
@@ -45,14 +47,13 @@ namespace totem
 
          // returns nullptr if resource could not be found
          template <typename T>
-            T* GetResource(const char* resId) const;
+         T* GetResource(const char* resId) const;
 
          template <typename T>
-            T* LoadResource(T* res);
+         T* LoadResource(T* res);
 
-         //Remove this resource from RM table
-         //Caller gets ownership of this resource
-         void Untrack(const char* resId);
+         template <typename T>
+         T* AddResource(T* res);
 
          // Remove resource and free all of its occupied memory
          void Unload(const char* resId);
@@ -62,6 +63,7 @@ namespace totem
 
          Resource* GetResourceInternal(const char* resId) const;
          void LoadResourceInternal(Resource* res);
+         void AddResourceInternal(Resource* res);
 
          // Also checks load factor and extends table if needed
          void Insert(Resource *res);
@@ -90,21 +92,26 @@ namespace totem
    };
 
    template <typename T>
-      T* ResourceManager::GetResource(const char* resId) const
-      {
-         Resource* res = GetResourceInternal(resId);
-         TOTEM_ASSERT(!res || T::GetStaticType() == res->GetType(), 
-               "Resource Types does not match for %s");
-         return reinterpret_cast<T*>(res);
-      }
+   T* ResourceManager::GetResource(const char* resId) const
+   {
+      Resource* res = GetResourceInternal(resId);
+      TOTEM_ASSERT(!res || T::GetStaticType() == res->GetType(), 
+            "Resource Types does not match for %s");
+      return reinterpret_cast<T*>(res);
+   }
 
    template <typename T>
-      T* ResourceManager::LoadResource(T* res)
-      {
-         LoadResourceInternal(res);
-         TOTEM_ASSERT(T::GetStaticType() == res->GetType(),
-               "Resource Types does not match for %s");
-         return res;
-      }
+   T* ResourceManager::LoadResource(T* res)
+   {
+      LoadResourceInternal(res);
+      return res;
+   }
+
+   template <typename T>
+   T* ResourceManager::AddResource(T* res)
+   {
+      AddResourceInternal(res);
+      return res;
+   }
 }
 #endif

@@ -7,6 +7,7 @@
 namespace totem
 {
    Resource::Resource(const char* resId)
+      : m_IsLoaded(false)
    {
       m_ResourceId = new char[strlen(resId) + 1];
       strcpy(m_ResourceId, resId);
@@ -69,9 +70,7 @@ namespace totem
    }
 
    ResourceManager::ResourceNode::~ResourceNode()
-   {
-      delete data; 
-   }
+   { delete data; }
 
    ResourceManager& ResourceManager::GetInstance()
    {
@@ -97,7 +96,7 @@ namespace totem
       m_Table[index] = resNode;
    }
 
-   void ResourceManager::Insert(Resource* res)
+   void ResourceManager::AddResourceInternal(Resource* res)
    {
       if(m_ResourceCount >= GetSize()/2)
          ExtendTable();
@@ -135,6 +134,12 @@ namespace totem
          if(0 == strcmp(currNode->data->GetId(), resId))
          {
             //LOG_INFO("Reusing resource: %s", resId);
+            Resource* res = currNode->data;
+            if(!res->IsLoaded())
+            {
+               res->Load();
+               LOG_INFO("Loading resource: %s", res->GetId());
+            }
             return currNode->data;
          }
          currNode = currNode->next;
@@ -146,7 +151,7 @@ namespace totem
    {
       LOG_INFO("Loading resource: %s", res->GetId());
       res->Load();
-      Insert(res);
+      AddResourceInternal(res);
    }
 
    unsigned int ResourceManager::HashString(const char* str) const
@@ -176,7 +181,7 @@ namespace totem
          ResourceNode *curr = oldTable[i];
          while(curr)
          {
-            Insert(curr->data);
+            AddResourceInternal(curr->data);
             curr = curr->next;
          }
       }

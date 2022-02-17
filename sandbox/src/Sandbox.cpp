@@ -90,8 +90,9 @@ public:
       m_Animator.OnUpdate(deltaTime);
       //m_Renderer->Clear(0.2f, 0.3f, 0.2f);
       m_Renderer->DrawBackground("resources/image.jpeg");
-      //m_Renderer->DrawRect(totem::math::vec2f(-5, 1), 
-      //                     totem::math::vec2f(5, 5));
+      m_Renderer->DrawRect(totem::math::vec2f(-5, 1), 
+                           totem::math::vec2f(5, 5),
+                           totem::math::vec4f(0.5, 1, 1, 1));
       for(int i = 0; i < m_CurrPos; i++)
       {
          m_Renderer->DrawRect(m_Positions[i], 
