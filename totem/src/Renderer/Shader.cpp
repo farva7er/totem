@@ -15,8 +15,8 @@ namespace totem
    }
 
    Shader::~Shader() {
-      delete m_VShaderPath;
-      delete m_FShaderPath;
+      delete [] m_VShaderPath;
+      delete [] m_FShaderPath;
    }
 
    void Shader::Load()
@@ -27,8 +27,8 @@ namespace totem
       vShaderSrc = GetShaderSrc(m_VShaderPath);
       fShaderSrc = GetShaderSrc(m_FShaderPath);
       Compile(vShaderSrc, fShaderSrc);
-      delete vShaderSrc;
-      delete fShaderSrc;
+      delete [] vShaderSrc;
+      delete [] fShaderSrc;
       m_IsLoaded = true;
    }
 
@@ -60,6 +60,7 @@ namespace totem
          return nullptr;
       }
    }
+
    void Shader::Compile(const char* vShaderSrc, const char* fShaderSrc)
    {
       unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);

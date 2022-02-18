@@ -2,11 +2,13 @@
 #include <string>
 
 #include "Renderer.h"
+#include "FontRenderer.h"
 #include "Assert.h"
 
 namespace totem
 {
    bool Renderer::s_OpenGLInitialized = false;
+   const char* Renderer::s_TextureShaderId = "textureShader";
 
    //From learnopengl.com/In-Practice/Debugging
    GLenum glCheckError_(const char *file, int line)
@@ -18,8 +20,7 @@ namespace totem
          switch (errorCode)
          {
             case GL_INVALID_ENUM:
-               error = "INVALID_ENUM"; break;
-            case GL_INVALID_VALUE:
+               error = "INVALID_ENUM"; break; case GL_INVALID_VALUE:
                error = "INVALID_VALUE"; break;
             case GL_INVALID_OPERATION:
                error = "INVALID_OPERATION"; break;
@@ -37,8 +38,7 @@ namespace totem
 
    #define glCheckError() glCheckError_(__FILE__, __LINE__) 
 
-   Renderer::Renderer(Window *window)
-      : m_SceneSize(10.0f)
+   Renderer::Renderer(Window *window) : m_SceneSize(10.0f), m_FontRenderer(this)
    {
       m_Window = window;
 
@@ -54,8 +54,7 @@ namespace totem
          }
       }
       s_OpenGLInitialized = true;
-      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-      m_Window->AddEventListener(this);
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f); m_Window->AddEventListener(this);
       
       glGenVertexArrays(1, &m_VAO);
       glBindVertexArray(m_VAO);
@@ -97,15 +96,16 @@ namespace totem
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 
          1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &whiteTexData);
 
-      m_TextureShaderId = "textureShader";
       ResourceManager& rm = ResourceManager::GetInstance();
       rm.AddResource(new Shader(
-               m_TextureShaderId,
+               s_TextureShaderId,
                "resources/shaders/Vtexture.glsl",
                "resources/shaders/Ftexture.glsl"));
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+      m_FontRenderer.SetFont("resources/fonts/Roboto-Light.ttf");
    }
 
    Renderer::~Renderer()
@@ -139,7 +139,7 @@ namespace totem
    void Renderer::DrawRect(math::vec2f pos, math::vec2f scale,
                            math::vec4f color)
    {
-      Shader* shader = GetShader(m_TextureShaderId);
+      Shader* shader = GetShader(s_TextureShaderId);
       shader->Use();
       math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
                                           pos.y * 10.0f)
@@ -154,7 +154,20 @@ namespace totem
                            const char *imagePath, 
                            math::vec4f tintColor)
    {
-      Shader* shader = GetShader(m_TextureShaderId);
+      ResourceManager& rm = ResourceManager::GetInstance();
+      Texture *texture = rm.GetResource<Texture>(imagePath);
+      if(!texture)
+         texture = rm.LoadResource(new Texture(imagePath));
+      DrawRect(pos, scale, texture, tintColor);
+   }
+
+   void Renderer::DrawRect(math::vec2f pos, math::vec2f scale,
+                           Texture* texture, 
+                           math::vec4f tintColor,
+                           const char* shaderId)
+   {
+      Shader* shader = GetShader(shaderId);
+
       shader->Use();
       math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
                                           pos.y * 10.0f)
@@ -162,14 +175,10 @@ namespace totem
       shader->SetUniformMatrix4fv("vModelMat", mat);
       shader->SetUniform4f("fColor", tintColor);
 
-      ResourceManager& rm = ResourceManager::GetInstance();
-      Texture *texture = rm.GetResource<Texture>(imagePath);
-      if(!texture)
-         texture = rm.LoadResource(new Texture(imagePath));
       texture->Bind();
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      glCheckError();
    }
-
 
    void Renderer::DrawImage(const char* imagePath, math::vec2f pos,
                            float scale, math::vec4f tintColor)
@@ -191,19 +200,59 @@ namespace totem
                imagePath);
    }
 
+   void Renderer::DrawChar(char c)
+   {
+      m_FontRenderer.DrawChar(
+            (unsigned int)c, 0.3f, 0.3f, 1.2f, math::vec4f(1, 0, 0, 1));
+   }
+
    void Renderer::SetAspectRatio(float aspectRatio)
    {
-      Shader* shader = GetShader(m_TextureShaderId);
+      Shader* shader = GetShader(s_TextureShaderId);
       shader->Use();
       math::mat4f mat = math::getOrthoProj(m_SceneSize * aspectRatio, 
                                            m_SceneSize, -1.0f, 1.0f);
       shader->SetUniformMatrix4fv("vProjMat", mat);
       //LOG_INFO("aspectRatio: %f", aspectRatio);
       m_AspectRatio = aspectRatio;
-   } void Renderer::HandleResize(unsigned int width, unsigned int height)
+
+      m_FontRenderer.SetAspectRatio(aspectRatio);
+   }
+
+   void Renderer::HandleResize(unsigned int width, unsigned int height)
    {
       glViewport(0, 0, width, height);
       SetAspectRatio(width/(float)height);
       //LOG_INFO("Framebuffer Resized - W: %u H: %u", width, height);
+   }
+
+   float Renderer::PixelUnitXToCam(int px) const
+   {
+      float res = (px / (float)m_Window->GetWidth()) * 2 * m_SceneSize *
+                                                      m_AspectRatio;
+      return res;
+   }
+
+   float Renderer::PixelUnitYToCam(int py) const
+   {
+      float res = (py / (float)m_Window->GetHeight()) * 2 * m_SceneSize;
+      return res;
+   }
+
+   float Renderer::PixelUnitXToNormal(int px) const
+   {
+      float res = (px / (float)m_Window->GetWidth()) * 2;
+      return res;
+   }
+
+   float Renderer::PixelUnitYToNormal(int py) const
+   {
+      float res = (py / (float)m_Window->GetHeight()) * 2;
+      return res;
+   }
+
+   float Renderer::GetSceneSize() const
+   {
+      return m_SceneSize;
    }
 }

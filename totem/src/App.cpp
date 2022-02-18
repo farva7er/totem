@@ -12,7 +12,6 @@ App::App()
 
 App::~App()
 {
-   delete m_Renderer;
    delete m_Window;
 }
 

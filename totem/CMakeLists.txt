@@ -35,6 +35,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Platform/Windows/Filesystem/WindowsUtils.h
                            src/Platform/Windows/Filesystem/WindowsUtils.cpp
 >
+                           src/Renderer/FontRenderer.h
+                           src/Renderer/FontRenderer.cpp
                            src/Renderer/Renderer.h
                            src/Renderer/Renderer.cpp
                            src/Renderer/Shader.h
@@ -79,24 +81,13 @@ add_subdirectory(Dependencies/glfw-3.3.6)
 
 add_subdirectory(Dependencies/stb)
 
+add_subdirectory(Dependencies/freetype-2.11.1)
+
 target_link_libraries(totem PRIVATE glad)
 target_link_libraries(totem PRIVATE glfw)
 target_link_libraries(totem PRIVATE stb)
+target_link_Libraries(totem PRIVATE freetype)
 
-target_compile_options(
-   glad
-   PRIVATE
-   $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:/w>
-)
-target_compile_options(
-   glfw
-   PRIVATE
-   $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:/w>
-)
-target_compile_options(
-   stb
-   PRIVATE
-   $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:/w>
-)
+
 #################################################
 #################################################

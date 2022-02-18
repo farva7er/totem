@@ -9,13 +9,17 @@ namespace totem
    Resource::Resource(const char* resId)
       : m_IsLoaded(false)
    {
-      m_ResourceId = new char[strlen(resId) + 1];
-      strcpy(m_ResourceId, resId);
+      if(resId)
+      {
+         m_ResourceId = new char[strlen(resId) + 1];
+         strcpy(m_ResourceId, resId);
+      }
    }
 
    Resource::~Resource()
    {
-      delete m_ResourceId;
+      if(m_ResourceId)
+         delete m_ResourceId;
    }
 
    ResourceType Resource::GetType() const
