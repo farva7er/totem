@@ -252,5 +252,19 @@ namespace totem
       glfwGetWindowSize(m_glfwWindow, &width, &height);
       return height;
    }
+
+   float LinuxWindow::GetContentScaleX() const
+   {
+      float xscale, yscale;
+      glfwGetWindowContentScale(m_glfwWindow, &xscale, &yscale);
+      return xscale;
+   }
+
+   float LinuxWindow::GetContentScaleY() const
+   {
+      float xscale, yscale;
+      glfwGetWindowContentScale(m_glfwWindow, &xscale, &yscale);
+      return yscale;
+   }
 }
 

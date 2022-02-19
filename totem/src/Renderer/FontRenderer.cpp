@@ -1,5 +1,6 @@
 #include <ft2build.h>
 #include <freetype/freetype.h>
+#include <freetype/ftmodapi.h>
 
 #include "Renderer.h"
 
@@ -15,10 +16,10 @@ namespace totem
       delete texture;
    }
 
-   Font::Font(const char* fontPath)
-      : Resource(fontPath)
+   Font::Font(const char* fontPath, totem::math::vec2f dpiScale)
+      : Resource(fontPath), m_DpiScale(dpiScale)
    {
-      for(int i = 0; i < Max_Codepoint; i++)
+      for(int i = 0; i < MaxCodepoint; i++)
       {
          m_Characters[i] = nullptr;
       }
@@ -26,7 +27,7 @@ namespace totem
 
    Font::~Font()
    { 
-      for(int i = 0; i < Max_Codepoint; i++)
+      for(int i = 0; i < MaxCodepoint; i++)
          if(m_Characters[i])
             delete m_Characters[i];
    }
@@ -54,7 +55,9 @@ namespace totem
          return;
       }
 
-      error = FT_Set_Char_Size(face, 0, 32*64, 140, 140);
+
+      error = FT_Set_Char_Size(face, 0, 24*64,
+                              120 * m_DpiScale.x, 120 * m_DpiScale.y);
       if(error)
       {
          LOG_ERROR("Couldn't set char size for font %s", m_ResourceId);
@@ -63,16 +66,28 @@ namespace totem
          return;
       }
       FT_ULong  charcode;
-      FT_UInt   gindex;
+      FT_UInt   glyph_index;
 
 
-      charcode = FT_Get_First_Char(face, &gindex);
-      while (gindex != 0 && charcode < Max_Codepoint)
+      charcode = FT_Get_First_Char(face, &glyph_index);
+      while (glyph_index != 0 && charcode < MaxCodepoint)
       {
-         error = FT_Load_Char(face, charcode, FT_LOAD_RENDER);
-         if(error)
+
+         /* load glyph image into the slot (erase previous one) */
+         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+         if (error)
          {
             LOG_ERROR("Couldn't load glyph for font %s", m_ResourceId);
+            FT_Done_Face(face);
+            FT_Done_FreeType(ft);
+            return;
+         } 
+
+         error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+         if (error)
+         {
+            LOG_ERROR("Couldn't render for font %s Error code: %d",
+                        m_ResourceId, error);
             FT_Done_Face(face);
             FT_Done_FreeType(ft);
             return;
@@ -92,7 +107,7 @@ namespace totem
                               face->glyph->bitmap.rows,
                               1)
             );
-         charcode = FT_Get_Next_Char(face, charcode, &gindex);
+         charcode = FT_Get_Next_Char(face, charcode, &glyph_index);
       }
 
       FT_Done_Face(face);
@@ -116,14 +131,16 @@ namespace totem
       Font* font = rm.GetResource<Font>(fontPath);
       if(!font)
       {
-         font = rm.LoadResource<Font>(new Font(fontPath));
+         font = rm.LoadResource<Font>(
+               new Font(fontPath,
+                     m_Master->GetContentScale()));
       }
 
       m_CurrentFont = font;
    }
 
-   void FontRenderer::DrawChar(unsigned int codepoint, float x, float y,
-                              float scale, math::vec4f color)
+   void FontRenderer::DrawChar(unsigned int codepoint, math::vec2f pos,
+                  float scale, math::vec4f color, float& advance)
    {
       if(!m_CurrentFont)
       {
@@ -134,28 +151,31 @@ namespace totem
       Font::Character* ch = m_CurrentFont->m_Characters[codepoint];
       if(!ch)
       {
-         LOG_ERROR("Unhandled codepoin in font %s", m_CurrentFont->GetId());
+         //LOG_ERROR("Unhandled codepoin in font %s", m_CurrentFont->GetId());
          return;
       }
-      
+      float dpiScaleX = m_CurrentFont->GetDpiScale().x;
+      float dpiScaleY = m_CurrentFont->GetDpiScale().y;
 
-      float xpos = x + (m_Master->PixelUnitXToNormal(ch->bearing.x) +
-                        m_Master->PixelUnitXToNormal(ch->size.x)/2) * scale;
+      float xpos = pos.x + (2 * m_Master->PixelUnitXToNormal(ch->bearing.x) +
+                        m_Master->PixelUnitXToNormal(ch->size.x)) * scale
+                        / dpiScaleX;
 
-      float dy = (m_Master->PixelUnitYToNormal(ch->size.y)/2 -
-                  m_Master->PixelUnitYToNormal(ch->size.y - ch->bearing.y))
-                  * scale;
-      float ypos = y - dy;
+      float dy = (m_Master->PixelUnitYToNormal(ch->size.y) -
+                  2 * m_Master->PixelUnitYToNormal(ch->size.y - ch->bearing.y))
+                  * scale / dpiScaleY;
+      float ypos = pos.y + dy;
 
-      float w = m_Master->PixelUnitXToCam(ch->size.x) * scale;
-      float h = m_Master->PixelUnitYToCam(ch->size.y) * scale;
-      LOG_INFO("h: %f, dy: %f",h, dy);
+      float w = m_Master->PixelUnitXToCam(ch->size.x) * scale / dpiScaleX;
+      float h = m_Master->PixelUnitYToCam(ch->size.y) * scale / dpiScaleY;
 
       m_Master->DrawRect(math::vec2f(xpos, ypos),
                         math::vec2f(w, h),
                         ch->texture,
                         color,
                         m_FontShaderId);
+      advance = 2 * m_Master->PixelUnitXToNormal(ch->advance >> 6) 
+                  * scale / dpiScaleX;
    }
 
    void FontRenderer::SetAspectRatio(float aspectRatio)

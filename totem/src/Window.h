@@ -24,7 +24,8 @@ namespace totem
       virtual unsigned int GetFBHeight() const = 0;
       virtual unsigned int GetWidth() const = 0;
       virtual unsigned int GetHeight() const = 0;
-
+      virtual float GetContentScaleX() const = 0;
+      virtual float GetContentScaleY() const = 0;
    private:
       unsigned int m_Width, m_Height;
       const char *m_Title;

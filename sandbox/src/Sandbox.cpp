@@ -107,11 +107,26 @@ public:
                            m_ImagePos,
                            3,
                            m_ImageColor);
-      m_Renderer->DrawRect(totem::math::vec2f(0, 0), 
-                           totem::math::vec2f(0.2f, 0.2f),
-                           totem::math::vec4f(0.5, 1, 1, 1));
 
-      m_Renderer->DrawChar('g');
+      m_Renderer->DrawRect(totem::math::vec2f(0, 0.55f), 
+                           totem::math::vec2f(12.0f, 4.0f),
+                           totem::math::vec4f(0, 0, 0, 0.5f));
+   
+      m_Renderer->DrawText("Welcome to totem!",
+                           totem::math::vec2f(-0.5f, 0.5f),
+                           2.5f,
+                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f));
+
+      m_Renderer->DrawText("visual novel engine",
+                           totem::math::vec2f(-0.35f, 0.4f),
+                           1.5f,
+                           totem::math::vec4f(0.4f, 0.8f, 0.4f, 0.8f));
+
+      m_Renderer->DrawText("hopefully, in future ;)",
+                           totem::math::vec2f(-0.2f, 0.3f),
+                           1,
+                           totem::math::vec4f(0.4f, 0.8f, 0.4f, 0.8f));
+      //LOG_INFO("deltaTime: %f", deltaTime);
    }
 
 private:

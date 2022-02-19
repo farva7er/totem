@@ -35,8 +35,11 @@ namespace totem
                      math::vec4f tintColor =
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
       void DrawBackground(const char* imagePath);
-      void DrawChar(char c);
-
+      void DrawText(const char* str, math::vec2f pos,
+                     float scale, math::vec4f color =
+                     math::vec4f(1.0f, 1.0f, 1.0f, 1.0f)
+                  );
+ 
       float PixelUnitXToCam(int px) const;
       float PixelUnitYToCam(int py) const;
       float PixelUnitXToNormal(int px) const;
@@ -45,6 +48,7 @@ namespace totem
 
       Shader* GetShader(const char* shaderId) const;
       float GetSceneSize() const;
+      totem::math::vec2f GetContentScale() const;
 
    private:
       static bool s_OpenGLInitialized; 

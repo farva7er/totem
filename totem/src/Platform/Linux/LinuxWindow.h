@@ -28,6 +28,8 @@ namespace totem
       virtual unsigned int GetFBHeight() const override;
       virtual unsigned int GetWidth() const override;
       virtual unsigned int GetHeight() const override;
+      virtual float GetContentScaleX() const override;
+      virtual float GetContentScaleY() const override;
 
    private:
       void CleanEventListeners();

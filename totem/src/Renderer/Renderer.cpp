@@ -105,7 +105,7 @@ namespace totem
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-      m_FontRenderer.SetFont("resources/fonts/Roboto-Light.ttf");
+      m_FontRenderer.SetFont("resources/fonts/OpenSans-Regular.ttf");
    }
 
    Renderer::~Renderer()
@@ -200,10 +200,17 @@ namespace totem
                imagePath);
    }
 
-   void Renderer::DrawChar(char c)
+   void Renderer::DrawText(const char* str, math::vec2f pos,
+                           float scale, math::vec4f color)
    {
-      m_FontRenderer.DrawChar(
-            (unsigned int)c, 0.3f, 0.3f, 1.2f, math::vec4f(1, 0, 0, 1));
+      float advance;
+      const float scaleFactor = 1.0f;
+      for(; *str; str++)
+      {
+         m_FontRenderer.DrawChar(*str, pos, scale * scaleFactor,
+                                 color, advance);
+         pos.x += advance;
+      }
    }
 
    void Renderer::SetAspectRatio(float aspectRatio)
@@ -228,31 +235,37 @@ namespace totem
 
    float Renderer::PixelUnitXToCam(int px) const
    {
-      float res = (px / (float)m_Window->GetWidth()) * 2 * m_SceneSize *
+      float res = (px / (float)m_Window->GetWidth()) * m_SceneSize *
                                                       m_AspectRatio;
       return res;
    }
 
    float Renderer::PixelUnitYToCam(int py) const
    {
-      float res = (py / (float)m_Window->GetHeight()) * 2 * m_SceneSize;
+      float res = (py / (float)m_Window->GetHeight()) * m_SceneSize;
       return res;
    }
 
    float Renderer::PixelUnitXToNormal(int px) const
    {
-      float res = (px / (float)m_Window->GetWidth()) * 2;
+      float res = (px / (float)m_Window->GetWidth());
       return res;
    }
 
    float Renderer::PixelUnitYToNormal(int py) const
    {
-      float res = (py / (float)m_Window->GetHeight()) * 2;
+      float res = (py / (float)m_Window->GetHeight());
       return res;
    }
 
    float Renderer::GetSceneSize() const
    {
       return m_SceneSize;
+   }
+
+   math::vec2f Renderer::GetContentScale() const
+   {
+      return math::vec2f(m_Window->GetContentScaleX(),
+                        m_Window->GetContentScaleY());
    }
 }
