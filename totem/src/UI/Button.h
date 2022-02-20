@@ -7,14 +7,49 @@
 
 namespace totem
 {
+
    enum class ButtonType
    { 
       BoxButton
    };
 
+   // In order to use a button
+   // client should create a class that implements
+   // IClickListener, then using a factory method
+   // in UIManager create a button, passing the IClickListener
+   // as a parameter to factory method
+   //
+   // For instance, in order to create a button using CreateButton method
+   // create a class that implements IClickListener inteface.
+   // This class can hold any data that will be necessary when button
+   // is clicked.
+   //
+   // 
+   // class ExampleButtonListener : public totem::IClickListener
+   // {
+   // public:
+   //    ExampleButtonListener(SomeType* someData)
+   //       : m_SomeData(someData) {}
+   //
+   //    void OnClick()
+   //    {
+   //       Do necessary actions here...
+   //    }
+   // private:
+   //    SomeType* m_SomeData;
+   // };
+   //
+   // After that you can create a button like that
+   //
+   // Button* exampleButton = m_UIManager.CreateButton(
+   //                            totem::ButtonType::BoxButton,
+   //                            new ExampleButtonListener(someData));
+
+   
    class IClickListener
    {
    public:
+      virtual ~IClickListener() {}
       virtual void OnClick() = 0;
    };
 
@@ -27,6 +62,7 @@ namespace totem
             m_State(State::Idle),
             m_Listener(listener)
       {}
+      virtual ~Button();
 
       virtual void OnEvent(Event& e) override;
       

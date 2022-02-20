@@ -7,6 +7,21 @@
 
 namespace totem
 {
+
+   // UIManager
+   // Basic Usage:
+   // Create a UIManager
+   // for example store it as a field in a class like that
+   // class A
+   // {
+   //    UIManager m_UIManager;
+   // }
+   //
+   // Create a UIElement using one of the factory methods
+   // in UIManager.
+   // See Button.h for example on how to create a button
+   
+     
    class UIElement;
 
    class UIManager : public IEventListener

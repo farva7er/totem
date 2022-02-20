@@ -4,6 +4,13 @@
 
 namespace totem
 {
+
+   Button::~Button()
+   {
+      delete m_Listener;
+      delete m_Text;
+   }
+
    void Button::OnEvent(Event& e)
    {
       if(e.GetType() == EventType::MouseMove)
