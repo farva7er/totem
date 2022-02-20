@@ -200,17 +200,66 @@ namespace totem
                imagePath);
    }
 
-   void Renderer::DrawText(const char* str, math::vec2f pos,
-                           float scale, math::vec4f color)
+   void Renderer::DrawText(const char* str, const math::vec2f& pos,
+                           float scale, const math::vec4f& color)
    {
-      float advance;
       const float scaleFactor = 1.0f;
+      math::vec2f currPos = pos;
       for(; *str; str++)
       {
-         m_FontRenderer.DrawChar(*str, pos, scale * scaleFactor,
-                                 color, advance);
-         pos.x += advance;
+         m_FontRenderer.DrawChar(*str, currPos, scale * scaleFactor,
+                                 color);
+         currPos.x += m_FontRenderer.GetAdvanceNormal(*str, scale);
       }
+   }
+
+   void Renderer::DrawControlledText(const char* str, 
+                              const math::vec2f& boxPos,
+                              const math::vec2f& boxScale,
+                              float scale,
+                              const math::vec4f& color,
+                              int alignFlags)
+   {
+      math::vec2f pos;
+      math::vec2f textSize = CalcTextSize(str, scale);
+
+      math::vec2f leftTop(
+         boxPos.x - CamUnitXToNormal(boxScale.x),
+         boxPos.y + CamUnitYToNormal(boxScale.y)
+      );
+
+      math::vec2f rightBottom(
+         boxPos.x + CamUnitXToNormal(boxScale.x),
+         boxPos.y - CamUnitYToNormal(boxScale.y)
+      );
+
+      if(alignFlags & TextAlign::HCenter)
+      {
+         pos.x = (leftTop.x + rightBottom.x) / 2;
+         pos.x -= textSize.x / 2;
+      }
+
+      if(alignFlags & TextAlign::VCenter)
+      {
+         pos.y = (leftTop.y + rightBottom.y) / 2;
+         pos.y -= textSize.y / 2;
+      }
+
+      DrawText(str, pos, scale, color);
+   }
+
+   math::vec2f Renderer::CalcTextSize(const char* str, float scale) const
+   {
+      math::vec2f size;
+
+      for(; *str; str++)
+      {
+         size.x += m_FontRenderer.GetAdvanceNormal(*str, scale);
+         float height = m_FontRenderer.GetHeightNormal(*str, scale);
+         if(height > size.y)
+            size.y = height;
+      }
+      return size;
    }
 
    void Renderer::SetAspectRatio(float aspectRatio)
@@ -235,26 +284,49 @@ namespace totem
 
    float Renderer::PixelUnitXToCam(int px) const
    {
-      float res = (px / (float)m_Window->GetWidth()) * m_SceneSize *
+      float res = (px / (float)m_Window->GetFBWidth()) * m_SceneSize *
                                                       m_AspectRatio;
       return res;
    }
 
    float Renderer::PixelUnitYToCam(int py) const
    {
-      float res = (py / (float)m_Window->GetHeight()) * m_SceneSize;
+      float res = (py / (float)m_Window->GetFBHeight()) * m_SceneSize;
       return res;
    }
 
    float Renderer::PixelUnitXToNormal(int px) const
    {
-      float res = (px / (float)m_Window->GetWidth());
+      float res = (px / (float)m_Window->GetFBWidth());
       return res;
    }
 
    float Renderer::PixelUnitYToNormal(int py) const
    {
-      float res = (py / (float)m_Window->GetHeight());
+      float res = (py / (float)m_Window->GetFBHeight());
+      return res;
+   }
+
+   math::vec2f Renderer::ScreenToNormal(math::vec2i scrCoords) const
+   {
+      float x = scrCoords.x / (float)m_Window->GetWidth();
+      x = 2*x - 1; // map from (0; 1) to (-1; 1)
+   
+      float y = scrCoords.y / (float)m_Window->GetHeight();
+      y = -(2*y - 1); // map from (0; 1) to (-1; 1)
+                   
+      return math::vec2f(x, y);
+   }
+
+   float Renderer::CamUnitXToNormal(float camX) const
+   {
+      float res = camX / (m_SceneSize * m_AspectRatio) ;
+      return res;
+   }
+
+   float Renderer::CamUnitYToNormal(float camY) const
+   {
+      float res = camY / m_SceneSize;
       return res;
    }
 

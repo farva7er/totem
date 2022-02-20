@@ -10,15 +10,23 @@
 
 namespace totem
 {
-   class Renderer : public EventListener
+   enum TextAlign
+   { 
+      HCenter = 0x1,
+      VCenter = 0x2
+   };
+   
+   class Renderer : public IEventListener
    {
    public:
       Renderer(Window *window);
       virtual ~Renderer();
 
       void Clear(float r, float g, float b, float a = 1.0f);
+
       void DrawRect( math::vec2f pos, math::vec2f scale,
                      math::vec4f color);
+
       void DrawRect( math::vec2f pos, math::vec2f scale,
                      const char *imagePath, 
                      math::vec4f tintColor = 
@@ -34,17 +42,32 @@ namespace totem
                      float scale = 1.0f,
                      math::vec4f tintColor =
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
+
       void DrawBackground(const char* imagePath);
-      void DrawText(const char* str, math::vec2f pos,
-                     float scale, math::vec4f color =
-                     math::vec4f(1.0f, 1.0f, 1.0f, 1.0f)
-                  );
+
+      void DrawText(const char* str, const math::vec2f& pos,
+                     float scale = 1.0f, const math::vec4f& color =
+                     math::vec4f(1, 1, 1, 1)
+                     );
+
+      void DrawControlledText(const char* str,
+                              const math::vec2f& boxPos,
+                              const math::vec2f& boxScale,
+                              float scale = 1.0f,
+                              const math::vec4f& color = 
+                              math::vec4f(1, 1, 1, 1),
+                              int alignFlags =
+                              TextAlign::VCenter | TextAlign::HCenter
+                              );
  
       float PixelUnitXToCam(int px) const;
       float PixelUnitYToCam(int py) const;
       float PixelUnitXToNormal(int px) const;
       float PixelUnitYToNormal(int py) const;
 
+      math::vec2f ScreenToNormal(math::vec2i scrCoords) const;
+      float CamUnitXToNormal(float camX) const;
+      float CamUnitYToNormal(float camY) const;
 
       Shader* GetShader(const char* shaderId) const;
       float GetSceneSize() const;
@@ -58,6 +81,9 @@ namespace totem
       void SetAspectRatio(float aspectRatio);
       void HandleResize(unsigned int width, unsigned int height);
       virtual void OnEvent(Event& e) override;
+
+      math::vec2f CalcTextSize(const char* str, float scale) const;
+
 
    private:
       Window* m_Window;

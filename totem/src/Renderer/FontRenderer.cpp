@@ -10,9 +10,7 @@ namespace totem
                         unsigned int advance, Texture* texture)
       : size(size), bearing(bearing), advance(advance), texture(texture)
    {}
-
-   Font::Character::~Character()
-   {
+Font::Character::~Character() {
       delete texture;
    }
 
@@ -139,8 +137,9 @@ namespace totem
       m_CurrentFont = font;
    }
 
-   void FontRenderer::DrawChar(unsigned int codepoint, math::vec2f pos,
-                  float scale, math::vec4f color, float& advance)
+   void FontRenderer::DrawChar(  unsigned int codepoint, 
+                                 const math::vec2f& pos,
+                                 float scale, const math::vec4f& color)
    {
       if(!m_CurrentFont)
       {
@@ -151,9 +150,10 @@ namespace totem
       Font::Character* ch = m_CurrentFont->m_Characters[codepoint];
       if(!ch)
       {
-         //LOG_ERROR("Unhandled codepoin in font %s", m_CurrentFont->GetId());
+         LOG_ERROR("Unhandled codepoint in font %s", m_CurrentFont->GetId());
          return;
       }
+
       float dpiScaleX = m_CurrentFont->GetDpiScale().x;
       float dpiScaleY = m_CurrentFont->GetDpiScale().y;
 
@@ -174,8 +174,51 @@ namespace totem
                         ch->texture,
                         color,
                         m_FontShaderId);
-      advance = 2 * m_Master->PixelUnitXToNormal(ch->advance >> 6) 
+ 
+   }
+
+   float FontRenderer::GetAdvanceNormal(unsigned int codepoint,
+                                       float scale) const
+   {
+      if(!m_CurrentFont)
+      {
+         LOG_ERROR("Font is not set!");
+         return 0;
+      }
+
+      Font::Character* ch = m_CurrentFont->m_Characters[codepoint];
+      if(!ch)
+      {
+         LOG_ERROR("Unhandled codepoint in font %s", m_CurrentFont->GetId());
+         return 0;
+      }
+
+      float dpiScaleX = m_CurrentFont->GetDpiScale().x;
+      float advance = 2 * m_Master->PixelUnitXToNormal(ch->advance >> 6) 
                   * scale / dpiScaleX;
+      return advance;
+   }
+
+   float FontRenderer::GetHeightNormal(unsigned int codepoint,
+                                       float scale) const
+   {
+      if(!m_CurrentFont)
+      {
+         LOG_ERROR("Font is not set!");
+         return 0;
+      }
+
+      Font::Character* ch = m_CurrentFont->m_Characters[codepoint];
+      if(!ch)
+      {
+         LOG_ERROR("Unhandled codepoint in font %s", m_CurrentFont->GetId());
+         return 0;
+      }
+
+      float dpiScaleY = m_CurrentFont->GetDpiScale().y;
+      float h = 2 * m_Master->PixelUnitYToNormal(ch->size.y) 
+                  * scale / dpiScaleY;
+      return h;
    }
 
    void FontRenderer::SetAspectRatio(float aspectRatio)

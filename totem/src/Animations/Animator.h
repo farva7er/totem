@@ -52,6 +52,7 @@ namespace totem
    public:
       AnimationGroup();
       void Add(Animation* anim);
+      void Add(const AnimationGroup& animGroup);
    private:
       struct AnimationNode
       {

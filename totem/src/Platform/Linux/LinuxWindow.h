@@ -19,8 +19,8 @@ namespace totem
       virtual bool IsClosed() const override;
 
       void OnEvent(Event& e) const;
-      virtual void AddEventListener(EventListener* listener) override;
-      virtual void RemoveEventListener(EventListener* listener) override;
+      virtual void AddEventListener(IEventListener* listener) override;
+      virtual void RemoveEventListener(IEventListener* listener) override;
       virtual void MakeCurrent() override;
       virtual void* GetOpenGLLoaderFunc() const override;
       virtual void SendInitEvents() const override;
@@ -38,10 +38,10 @@ namespace totem
    private:
       struct EventListenerNode
       {
-         EventListener* listener;
+         IEventListener* listener;
          EventListenerNode* next;
 
-         EventListenerNode(EventListener* l, EventListenerNode* n = nullptr)
+         EventListenerNode(IEventListener* l, EventListenerNode* n = nullptr)
          {
             listener = l;
             next = n; 

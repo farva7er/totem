@@ -5,7 +5,7 @@
 #include "Window.h"
 #include "Renderer/Renderer.h"
 
-class App : public totem::EventListener {
+class App : public totem::IEventListener {
 
 public:
    App();

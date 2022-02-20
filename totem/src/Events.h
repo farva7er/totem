@@ -53,7 +53,7 @@ namespace totem
       return os << e.ToString();
    }
 
-   class EventListener
+   class IEventListener
    {
    public:
       virtual void OnEvent(Event& e) = 0;

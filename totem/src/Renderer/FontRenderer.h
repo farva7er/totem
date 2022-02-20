@@ -50,8 +50,10 @@ namespace totem
       FontRenderer(Renderer* master);
       void SetFont(const char* fontPath);
 
-      void DrawChar(unsigned int codepoint, math::vec2f pos,
-                  float scale, math::vec4f color, float& advance);
+      void DrawChar(unsigned int codepoint, const math::vec2f& pos,
+                  float scale, const math::vec4f& color);
+      float GetAdvanceNormal(unsigned int codepoint, float scale) const;
+      float GetHeightNormal(unsigned int codepoint, float scale) const;
       void SetAspectRatio(float aspectRatio);
    private:
       Font* m_CurrentFont;

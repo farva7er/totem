@@ -7,13 +7,41 @@
 #include "Animations/Animator.h"
 #include "Animations/BasicAnimations.h"
 
+#include "UI/UIManager.h"
+
 enum { sq_count = 1000 };
+
+class Sandbox;
+
+class StartButtonListener : public totem::IClickListener
+{
+public:
+   StartButtonListener(Sandbox* sandbox)
+      : m_Sandbox(sandbox) {}
+
+   void OnClick();
+
+private:
+   Sandbox* m_Sandbox;
+};
+
+class StopButtonListener : public totem::IClickListener
+{
+public:
+   StopButtonListener(Sandbox* sandbox)
+      : m_Sandbox(sandbox) {}
+
+   void OnClick();
+
+private:
+   Sandbox* m_Sandbox;
+};
 
 class Sandbox : public App
 {
 
 public:
-   Sandbox() : m_CurrPos(0)
+   Sandbox() : m_CurrPos(0), m_UIManager(m_Renderer)
    {
       m_ImageColor = totem::math::vec4f(1, 1, 1, 1);
       m_ColorAnim = new totem::LinearInterpAnim(m_ImageColor,
@@ -42,7 +70,22 @@ public:
       m_FullAnimGroup.Add(m_LbAnim);
       m_FullAnimGroup.Add(m_RtAnim);
       m_FullAnimGroup.Add(m_LbAnim2);
-      
+
+      m_StartButton = m_UIManager.CreateButton(
+                        totem::ButtonType::BoxButton,
+                        new StartButtonListener(this));
+
+      m_StartButton->SetPos(totem::math::vec2f(-0.5f, -0.5f));
+      m_StartButton->SetScale(totem::math::vec2f(2, 1));
+      m_StartButton->SetText("Start Anim");
+ 
+      m_StopButton = m_UIManager.CreateButton(
+                        totem::ButtonType::BoxButton,
+                        new StopButtonListener(this));
+
+      m_StopButton->SetPos(totem::math::vec2f(0.5f, -0.5f));
+      m_StopButton->SetScale(totem::math::vec2f(2, 1));     
+      m_StopButton->SetText("Stop Anim");
    }
 
    virtual void OnEvent(totem::Event& e) override
@@ -66,21 +109,20 @@ public:
          m_ScreenWidth = me.GetWidth();
          m_ScreenHeight = me.GetHeight();
       }
+ 
+      m_UIManager.OnEvent(e);
+   }
 
-      if(e.GetType() == totem::EventType::MousePressed)
-      {
-         totem::MousePressedEvent& mp = e.Cast<totem::MousePressedEvent>();
-         if(mp.GetButton() == 0)
-         { 
-            m_Animator.Play(m_PartialAnimGroup);
-            m_Animator.Play(m_RtAnim, 2.0f, m_LbAnim);
-            m_Animator.Play(m_LbAnim2, 1.0f, m_RtAnim);
-         }
-         else
-         {
-            m_Animator.Pause(m_FullAnimGroup);
-         }
-      }
+   void PlayTriangleAnim()
+   {
+      m_Animator.Play(m_PartialAnimGroup);
+      m_Animator.Play(m_RtAnim, 2.0f, m_LbAnim);
+      m_Animator.Play(m_LbAnim2, 1.0f, m_RtAnim);
+   }
+
+   void PauseTriangleAnim()
+   {
+      m_Animator.Pause(m_FullAnimGroup);
    }
 
    virtual void OnUpdate(float deltaTime) override
@@ -127,6 +169,8 @@ public:
                            1,
                            totem::math::vec4f(0.4f, 0.8f, 0.4f, 0.8f));
       //LOG_INFO("deltaTime: %f", deltaTime);
+
+      m_UIManager.OnUpdate(deltaTime);
    }
 
 private:
@@ -142,7 +186,21 @@ private:
    totem::Animation* m_RtAnim;
    totem::AnimationGroup m_FullAnimGroup;
    totem::AnimationGroup m_PartialAnimGroup;
+   totem::UIManager m_UIManager;
+   totem::Button* m_StartButton;
+   totem::Button* m_StopButton;
 };
+
+
+void StartButtonListener::OnClick()
+{
+   m_Sandbox->PlayTriangleAnim();
+}
+
+void StopButtonListener::OnClick()
+{
+   m_Sandbox->PauseTriangleAnim();
+}
 
 App* App::CreateApp()
 {

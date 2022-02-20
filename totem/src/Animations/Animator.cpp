@@ -106,6 +106,16 @@ namespace totem
       m_Animations = new AnimationNode(anim, m_Animations); 
    }
 
+   void AnimationGroup::Add(const AnimationGroup& animGroup)
+   {
+      AnimationNode* curr = animGroup.m_Animations;
+      while(curr)
+      {
+         Add(curr->anim);
+         curr = curr->next;
+      }
+   }
+
 /////////////////////////////////////////////////
 // Animator /////////////////////////////////////
 /////////////////////////////////////////////////

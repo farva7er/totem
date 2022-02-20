@@ -168,7 +168,7 @@ namespace totem
    }
 
 
-   void LinuxWindow::AddEventListener(EventListener* listener)
+   void LinuxWindow::AddEventListener(IEventListener* listener)
    {
 
       EventListenerNode *newNode = 
@@ -176,7 +176,7 @@ namespace totem
       m_EventListenerListHead = newNode;
    }
 
-   void LinuxWindow::RemoveEventListener(EventListener* listener)
+   void LinuxWindow::RemoveEventListener(IEventListener* listener)
    {
       for(EventListenerNode** curr = &m_EventListenerListHead; 
             *curr;
