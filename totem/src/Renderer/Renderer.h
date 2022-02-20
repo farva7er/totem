@@ -24,23 +24,23 @@ namespace totem
 
       void Clear(float r, float g, float b, float a = 1.0f);
 
-      void DrawRect( math::vec2f pos, math::vec2f scale,
-                     math::vec4f color);
+      void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
+                     const math::vec4f& color);
 
-      void DrawRect( math::vec2f pos, math::vec2f scale,
+      void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
                      const char *imagePath, 
-                     math::vec4f tintColor = 
+                     const math::vec4f& tintColor = 
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
 
-      void DrawRect( math::vec2f pos, math::vec2f scale,
+      void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
                      Texture* texture, 
-                     math::vec4f tintColor = 
+                     const math::vec4f& tintColor = 
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f),
                      const char* shaderId = s_TextureShaderId);
 
-      void DrawImage(const char* imagePath, math::vec2f pos,
+      void DrawImage(const char* imagePath, const math::vec2f& pos,
                      float scale = 1.0f,
-                     math::vec4f tintColor =
+                     const math::vec4f& tintColor =
                      math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
 
       void DrawBackground(const char* imagePath);

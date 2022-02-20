@@ -6,15 +6,17 @@
 
 namespace totem
 {
-   Font::Character::Character(math::vec2i size, math::vec2i bearing,
-                        unsigned int advance, Texture* texture)
+   Font::Character::Character(const math::vec2i& size,
+                              const math::vec2i& bearing,
+                              unsigned int advance, Texture* texture)
       : size(size), bearing(bearing), advance(advance), texture(texture)
    {}
-Font::Character::~Character() {
+
+   Font::Character::~Character() {
       delete texture;
    }
 
-   Font::Font(const char* fontPath, totem::math::vec2f dpiScale)
+   Font::Font(const char* fontPath, const math::vec2f& dpiScale)
       : Resource(fontPath), m_DpiScale(dpiScale)
    {
       for(int i = 0; i < MaxCodepoint; i++)

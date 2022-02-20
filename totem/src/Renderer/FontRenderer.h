@@ -13,7 +13,7 @@ namespace totem
    {
       friend class FontRenderer;
    public:
-      Font(const char* fontPath, math::vec2f dpiScale);
+      Font(const char* fontPath, const math::vec2f& dpiScale);
       ~Font();
 
       virtual void Load() override;
@@ -33,7 +33,7 @@ namespace totem
          math::vec2i bearing;
          unsigned int advance;
          Texture* texture;
-         Character(math::vec2i size, math::vec2i bearing,
+         Character(const math::vec2i& size, const math::vec2i& bearing,
                   unsigned int advance, Texture* texture);
          ~Character();
       };

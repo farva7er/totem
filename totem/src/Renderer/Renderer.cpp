@@ -38,7 +38,8 @@ namespace totem
 
    #define glCheckError() glCheckError_(__FILE__, __LINE__) 
 
-   Renderer::Renderer(Window *window) : m_SceneSize(10.0f), m_FontRenderer(this)
+   Renderer::Renderer(Window *window) 
+      : m_SceneSize(10.0f), m_FontRenderer(this)
    {
       m_Window = window;
 
@@ -136,8 +137,8 @@ namespace totem
       glClear(GL_COLOR_BUFFER_BIT);
    }
 
-   void Renderer::DrawRect(math::vec2f pos, math::vec2f scale,
-                           math::vec4f color)
+   void Renderer::DrawRect(const math::vec2f& pos, const math::vec2f& scale,
+                           const math::vec4f& color)
    {
       Shader* shader = GetShader(s_TextureShaderId);
       shader->Use();
@@ -150,9 +151,9 @@ namespace totem
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
    }
 
-   void Renderer::DrawRect(math::vec2f pos, math::vec2f scale,
+   void Renderer::DrawRect(const math::vec2f& pos, const math::vec2f& scale,
                            const char *imagePath, 
-                           math::vec4f tintColor)
+                           const math::vec4f& tintColor)
    {
       ResourceManager& rm = ResourceManager::GetInstance();
       Texture *texture = rm.GetResource<Texture>(imagePath);
@@ -161,9 +162,9 @@ namespace totem
       DrawRect(pos, scale, texture, tintColor);
    }
 
-   void Renderer::DrawRect(math::vec2f pos, math::vec2f scale,
+   void Renderer::DrawRect(const math::vec2f& pos, const math::vec2f& scale,
                            Texture* texture, 
-                           math::vec4f tintColor,
+                           const math::vec4f& tintColor,
                            const char* shaderId)
    {
       Shader* shader = GetShader(shaderId);
@@ -180,8 +181,8 @@ namespace totem
       glCheckError();
    }
 
-   void Renderer::DrawImage(const char* imagePath, math::vec2f pos,
-                           float scale, math::vec4f tintColor)
+   void Renderer::DrawImage(const char* imagePath, const math::vec2f& pos,
+                           float scale, const math::vec4f& tintColor)
    {
       ResourceManager& rm = ResourceManager::GetInstance();
       Texture *texture = rm.GetResource<Texture>(imagePath);
