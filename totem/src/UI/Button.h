@@ -66,9 +66,9 @@ namespace totem
 
       virtual void OnEvent(Event& e) override;
       
-      void SetPos(const math::vec2f& pos);
-      void SetScale(const math::vec2f& scale);
-      void SetText(const char* str);
+      virtual void SetPos(const math::vec2f& pos);
+      virtual void SetScale(const math::vec2f& scale);
+      virtual void SetText(const char* str);
 
    private:
       virtual bool IsCursorHovered(const math::vec2i& cursorCoords) const;
@@ -100,6 +100,8 @@ namespace totem
 
       virtual void OnUpdate(float deltaTime) override;
       virtual void Draw() override;
+
+      virtual void SetScale(const math::vec2f& scale) override;
    
    private:
       math::vec4f m_Color;
@@ -108,6 +110,9 @@ namespace totem
       AnimationGroup m_HoverAnim;
       Animation* m_PushAnim;
       AnimationGroup m_AnimGroup;
+      math::vec2f m_InitScale;
+      InterpAnim<math::vec2f>* m_HoverScaleAnim;
+      InterpAnim<math::vec2f>* m_IdleScaleAnim;
    };
 }
 

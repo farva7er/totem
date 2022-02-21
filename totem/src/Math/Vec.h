@@ -109,21 +109,23 @@ namespace totem
 
       //sum of two vectors a+b
       template <size_t dim, typename T>
-      vec<dim, T> operator+ (vec<dim, T> a, const vec<dim, T> &b)
+      vec<dim, T> operator+ (const vec<dim, T>& a, const vec<dim, T>& b)
       {
+         vec<dim, T> res = a;
          for(size_t i = 0; i < dim; i++)
-            a[i] += b[i];
-         return a;
+            res[i] += b[i];
+         return res;
       }
 
 
       //difference of two vectors a-b
       template <size_t dim, typename T>
-      vec<dim, T> operator- (vec<dim, T> a, const vec<dim, T> &b)
+      vec<dim, T> operator- (const vec<dim, T>& a, const vec<dim, T>& b)
       {
+         vec<dim, T> res = a;
          for(size_t i = 0; i < dim; i++)
-            a[i] -= b[i];
-         return a;
+            res[i] -= b[i];
+         return res;
       }
 
       //dot product of two vectors a*b
@@ -138,29 +140,32 @@ namespace totem
 
       //unary minus -a
       template <size_t dim, typename T>
-      vec<dim, T> operator- (vec<dim, T> v)
+      vec<dim, T> operator- (const vec<dim, T>& v)
       {
+         vec<dim, T> res = v;
          for(size_t i = 0; i < dim; i++)
-            v[i] = -(v[i]);
-         return v;
+            res[i] = -(res[i]);
+         return res;
       }
 
       //multiply vector by a scalar value
       template <size_t dim, typename T, typename U>
-      vec<dim, T> operator* (vec<dim, T> v, U scalar)
+      vec<dim, T> operator* (const vec<dim, T>& v, U scalar)
       {
+         vec<dim, T> res = v;
          for(size_t i = 0; i < dim; i++)
-            v[i] *= scalar;
-         return v;
+            res[i] *= scalar;
+         return res;
       }
 
       //multiply vector by a scalar value
       template <size_t dim, typename T, typename U>
-      vec<dim, T> operator* (U scalar, vec<dim, T> v)
+      vec<dim, T> operator* (U scalar, const vec<dim, T>& v)
       {
+         vec<dim, T> res = v;
          for(size_t i = 0; i < dim; i++)
-            v[i] *= scalar;
-         return v;
+            res[i] *= scalar;
+         return res;
       }
    }
 }

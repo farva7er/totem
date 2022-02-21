@@ -13,11 +13,16 @@ namespace totem
       InterpAnim(T& var, T init, T fin, float dur)
          : Animation(false, dur), 
          m_AnimVar(var), m_InitVal(init), m_FinVal(fin)
-         {}
+      {}
+
+      void SetFinVal(T fin)
+      {
+         this->m_FinVal = fin;
+      }
    protected:
 
-   virtual void OnUpdate() = 0;
-   virtual Animation* Clone() = 0;
+      virtual void OnUpdate() = 0;
+      virtual Animation* Clone() = 0;
 
       T& m_AnimVar;
       T m_InitVal;

@@ -107,14 +107,14 @@ namespace totem
                               totem::math::vec4f(0, 0, 0, 0.8f),
                               0.2f
                            );
-      Animation* hoverScaleAnim =  new totem::HermiteModifAnim(
+      m_HoverScaleAnim =  new totem::HermiteModifAnim(
                               m_Scale,
-                              totem::math::vec2f(2.2f, 1.2),
+                              1.1f * m_InitScale,
                               0.2f
                            );
 
       m_HoverAnim.Add(hoverColorAnim);
-      m_HoverAnim.Add(hoverScaleAnim);
+      m_HoverAnim.Add(m_HoverScaleAnim);
 
       Animation* idleColorAnim =  new totem::HermiteModifAnim(
                         m_Color,
@@ -122,14 +122,14 @@ namespace totem
                         0.5f
                      );
 
-      Animation* idleScaleAnim =  new totem::HermiteModifAnim(
+      m_IdleScaleAnim =  new totem::HermiteModifAnim(
                         m_Scale,
-                        totem::math::vec2f(2, 1),
+                        m_InitScale,
                         0.2f
                      );
 
       m_IdleAnim.Add(idleColorAnim);
-      m_IdleAnim.Add(idleScaleAnim);
+      m_IdleAnim.Add(m_IdleScaleAnim);
 
       m_PushAnim = new totem::HermiteModifAnim(
                         m_Color,
@@ -173,6 +173,7 @@ namespace totem
    void BoxButton::Draw()
    {
       Renderer* r = GetRenderer();
+      //LOG_INFO("%f %f", m_InitScale.x, m_Scale.x);
       r->DrawRect(m_Pos, m_Scale, m_Color);
       if(m_Text)
       { 
@@ -182,5 +183,14 @@ namespace totem
                      TextAlign::VCenter | TextAlign::HCenter
                      );
       }
+   }
+
+
+   void BoxButton::SetScale(const math::vec2f& scale)
+   {
+      Button::SetScale(scale);
+      m_InitScale = scale;
+      m_HoverScaleAnim->SetFinVal(1.1 * m_InitScale);
+      m_IdleScaleAnim->SetFinVal(m_InitScale);
    }
 }
