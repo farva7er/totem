@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Renderer/Renderer.h"
 #include "Timer.h"
+#include "ResourceManager.h"
 
 App::App()
 {
@@ -12,6 +13,8 @@ App::App()
 
 App::~App()
 {
+   totem::ResourceManager::DeleteInstance();
+   delete m_Renderer;
    delete m_Window;
 }
 

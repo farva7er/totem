@@ -101,6 +101,16 @@ namespace totem
       :  m_Animations(nullptr)
    {}
 
+   AnimationGroup::~AnimationGroup()
+   {
+      while(m_Animations)
+      {
+         AnimationNode* savedNode = m_Animations;
+         m_Animations = m_Animations->next;
+         delete savedNode;
+      }
+   }
+
    void AnimationGroup::Add(Animation* anim)
    {
       m_Animations = new AnimationNode(anim, m_Animations); 
@@ -222,7 +232,7 @@ namespace totem
       }
    }
 
-   void Animator::Add(AnimationGroup animGroup)
+   void Animator::Add(const AnimationGroup& animGroup)
    {
       AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
       while(curr)
@@ -232,7 +242,7 @@ namespace totem
       }
    }
 
-   void Animator::Play( AnimationGroup animGroup, float delay,
+   void Animator::Play( const AnimationGroup& animGroup, float delay,
                         Animation* refAnim)
    {
       AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
@@ -243,7 +253,7 @@ namespace totem
       }
    }
 
-   void Animator::Pause(AnimationGroup animGroup)
+   void Animator::Pause(const AnimationGroup& animGroup)
    {
       AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
       while(curr)
@@ -253,7 +263,7 @@ namespace totem
       }
    }
 
-   void Animator::Release(AnimationGroup animGroup)
+   void Animator::Release(const AnimationGroup& animGroup)
    {
       AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
       while(curr)

@@ -51,6 +51,7 @@ namespace totem
 
    public:
       AnimationGroup();
+      ~AnimationGroup();
       void Add(Animation* anim);
       void Add(const AnimationGroup& animGroup);
    private:
@@ -77,11 +78,11 @@ namespace totem
       void Pause(Animation* anim);
       void Release(Animation *anim);
 
-      void Add(AnimationGroup animGroup);
-      void Play(AnimationGroup animGroup, 
+      void Add(const AnimationGroup& animGroup);
+      void Play(const AnimationGroup& animGroup, 
                      float delay = 0.0f, Animation* refAnim = nullptr);
-      void Pause(AnimationGroup animGroup);
-      void Release(AnimationGroup animGroup);
+      void Pause(const AnimationGroup& animGroup);
+      void Release(const AnimationGroup& animGroup);
    private:
       struct AnimationNode
       {

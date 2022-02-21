@@ -14,15 +14,14 @@ namespace totem
 
    UIManager::~UIManager()
    {
-      UIElementNode* curr = m_Elements;
-      while(curr)
+      while(m_Elements)
       {
-         UIElementNode* savedNode = curr;
-         UIElement* savedElement = curr->element;
+         UIElementNode* savedNode = m_Elements;
+         UIElement* savedElement = m_Elements->element;
          savedNode->element = nullptr;
+         m_Elements = m_Elements->next;
          delete savedElement;
          delete savedNode;
-         curr = curr->next;
       }
    }
 

@@ -14,12 +14,16 @@ namespace totem
          m_ResourceId = new char[strlen(resId) + 1];
          strcpy(m_ResourceId, resId);
       }
+      else
+      {
+         m_ResourceId = nullptr;
+      }
    }
 
    Resource::~Resource()
    {
       if(m_ResourceId)
-         delete m_ResourceId;
+         delete [] m_ResourceId;
    }
 
    ResourceType Resource::GetType() const
@@ -70,7 +74,8 @@ namespace totem
             curr = curr->next;
             delete savedNode;
          }
-      }      
+      }
+      delete [] m_Table;
    }
 
    ResourceManager::ResourceNode::~ResourceNode()

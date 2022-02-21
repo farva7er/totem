@@ -12,7 +12,8 @@ namespace totem
       : size(size), bearing(bearing), advance(advance), texture(texture)
    {}
 
-   Font::Character::~Character() {
+   Font::Character::~Character()
+   {
       delete texture;
    }
 

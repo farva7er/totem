@@ -8,7 +8,7 @@ namespace totem
    Button::~Button()
    {
       delete m_Listener;
-      delete m_Text;
+      delete [] m_Text;
    }
 
    void Button::OnEvent(Event& e)
@@ -102,12 +102,12 @@ namespace totem
          m_Color(math::vec4f(0, 0, 0, 0.5f)) 
    {
 
-      Animation* hoverColorAnim =   new totem::HermiteModifAnim(
+      Animation* hoverColorAnim = new totem::HermiteModifAnim<math::vec4f>(
                               m_Color,
                               totem::math::vec4f(0, 0, 0, 0.8f),
                               0.2f
                            );
-      m_HoverScaleAnim =  new totem::HermiteModifAnim(
+      m_HoverScaleAnim = new totem::HermiteModifAnim<math::vec2f>(
                               m_Scale,
                               1.1f * m_InitScale,
                               0.2f
@@ -116,13 +116,13 @@ namespace totem
       m_HoverAnim.Add(hoverColorAnim);
       m_HoverAnim.Add(m_HoverScaleAnim);
 
-      Animation* idleColorAnim =  new totem::HermiteModifAnim(
+      Animation* idleColorAnim = new totem::HermiteModifAnim<math::vec4f>(
                         m_Color,
                         totem::math::vec4f(0, 0, 0, 0.5f),
                         0.5f
                      );
 
-      m_IdleScaleAnim =  new totem::HermiteModifAnim(
+      m_IdleScaleAnim =  new totem::HermiteModifAnim<math::vec2f>(
                         m_Scale,
                         m_InitScale,
                         0.2f
@@ -131,7 +131,7 @@ namespace totem
       m_IdleAnim.Add(idleColorAnim);
       m_IdleAnim.Add(m_IdleScaleAnim);
 
-      m_PushAnim = new totem::HermiteModifAnim(
+      m_PushAnim = new totem::HermiteModifAnim<math::vec4f>(
                         m_Color,
                         totem::math::vec4f(0, 0, 0, 1.0f),
                         0.1f

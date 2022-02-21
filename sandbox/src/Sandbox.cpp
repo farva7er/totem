@@ -44,24 +44,26 @@ public:
    Sandbox() : m_CurrPos(0), m_UIManager(m_Renderer)
    {
       m_ImageColor = totem::math::vec4f(1, 1, 1, 1);
-      m_ColorAnim = new totem::LinearInterpAnim(m_ImageColor,
+      m_ColorAnim =
+         new totem::LinearInterpAnim<totem::math::vec4f>
+                                    (m_ImageColor,
                                     totem::math::vec4f(0, 0, 0, 0),
                                     totem::math::vec4f(1, 1, 1, 1),
                                     1);
       m_LbAnim =                          
-            new totem::HermiteModifAnim(
+            new totem::HermiteModifAnim<totem::math::vec2f>(
                   m_ImagePos,
                   totem::math::vec2f(-0.75f, -0.75f),
                   2
             );
       m_RtAnim =                          
-            new totem::LinearModifAnim(
+            new totem::LinearModifAnim<totem::math::vec2f>(
                   m_ImagePos,
                   totem::math::vec2f(0.8f, 0.8f),
                   2
             );
 
-      totem::Animation* rotAnim = new totem::HermiteInterpAnim(
+      totem::Animation* rotAnim = new totem::HermiteInterpAnim<float>(
                                     m_Angle,
                                     0.0f,
                                     360.0f,
@@ -79,6 +81,8 @@ public:
       m_FullAnimGroup.Add(m_LbAnim);
       m_FullAnimGroup.Add(m_RtAnim);
       m_FullAnimGroup.Add(m_LbAnim2);
+
+      m_Animator.Add(m_FullAnimGroup);
 
       m_StartButton = m_UIManager.CreateButton(
                         totem::ButtonType::BoxButton,
@@ -167,7 +171,8 @@ public:
       m_Renderer->DrawRotatedRect(totem::math::vec2f(0, 0),
                            totem::math::vec2f(2.0f, 0.2f),
                            totem::math::vec4f(0, 0, 0, 0.7f),
-                           m_Angle);
+                           m_Angle,
+                           totem::math::vec2f(-1, 0));
 
 
       m_Renderer->DrawText("Welcome to totem!",
