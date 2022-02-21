@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Mat.h"
 
 namespace totem
@@ -38,6 +39,18 @@ namespace totem
          return getOrthoProj(-r, r, t, -t, n, f);
       }
 
+      mat4f getRotationZ(float radians)
+      {
+         mat4f mat;
+         mat[0][0] = cos(radians);
+         mat[0][1] = -sin(radians);
+         mat[1][0] = sin(radians);
+         mat[1][1] = cos(radians);
+         mat[2][2] = 1;
+         mat[3][3] = 1;
+         return mat;
+      }
+
       mat4f getTranslate(float tx, float ty, float tz)
       {
          mat4f mat;
@@ -63,6 +76,11 @@ namespace totem
       mat4f getScale(float s)
       {  
          return getScale(s, s);
+      }
+
+      float degToRad(float angle)
+      {
+         return (angle * M_PI) / 180;
       }
    }
 }

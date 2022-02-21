@@ -151,6 +151,26 @@ namespace totem
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
    }
 
+   void Renderer::DrawRotatedRect(const math::vec2f& pos,
+                                 const math::vec2f& scale,
+                                 const math::vec4f& color, float degAngle,
+                                 const math::vec2f& axis)
+   {
+      Shader* shader = GetShader(s_TextureShaderId);
+      shader->Use();
+      math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
+                                          pos.y * 10.0f)
+                     *  math::getRotationZ(math::degToRad(degAngle))
+                     *  math::getTranslate(-axis.x * scale.x, 
+                                         -axis.y * scale.y)
+                     *  math::getScale(scale.x, scale.y);
+      shader->SetUniformMatrix4fv("vModelMat", mat);
+      shader->SetUniform4f("fColor", color);
+      glBindTexture(GL_TEXTURE_2D, m_WhiteTexture);
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+   }
+
    void Renderer::DrawRect(const math::vec2f& pos, const math::vec2f& scale,
                            const char *imagePath, 
                            const math::vec4f& tintColor)

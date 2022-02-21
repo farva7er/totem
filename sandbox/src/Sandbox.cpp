@@ -61,10 +61,19 @@ public:
                   2
             );
 
+      totem::Animation* rotAnim = new totem::HermiteInterpAnim(
+                                    m_Angle,
+                                    0.0f,
+                                    360.0f,
+                                    3
+                                 );
+      m_Animator.Play(rotAnim);
+
       m_LbAnim2 = m_LbAnim->Clone();
 
       m_PartialAnimGroup.Add(m_ColorAnim);
       m_PartialAnimGroup.Add(m_LbAnim);
+      m_PartialAnimGroup.Add(rotAnim);
 
       m_FullAnimGroup.Add(m_ColorAnim);
       m_FullAnimGroup.Add(m_LbAnim);
@@ -153,7 +162,14 @@ public:
       m_Renderer->DrawRect(totem::math::vec2f(0, 0.55f), 
                            totem::math::vec2f(12.0f, 4.0f),
                            totem::math::vec4f(0, 0, 0, 0.5f));
-   
+
+      
+      m_Renderer->DrawRotatedRect(totem::math::vec2f(0, 0),
+                           totem::math::vec2f(2.0f, 0.2f),
+                           totem::math::vec4f(0, 0, 0, 0.7f),
+                           m_Angle);
+
+
       m_Renderer->DrawText("Welcome to totem!",
                            totem::math::vec2f(-0.5f, 0.5f),
                            2.5f,
@@ -189,6 +205,7 @@ private:
    totem::UIManager m_UIManager;
    totem::Button* m_StartButton;
    totem::Button* m_StopButton;
+   float m_Angle;
 };
 
 

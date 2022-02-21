@@ -46,10 +46,13 @@ namespace totem
 
       mat4f getOrthoProj(float l, float r, float t, float b, float n, float f);
       mat4f getOrthoProj(float r, float t, float n, float f);
+      mat4f getRotationZ(float radians);
       mat4f getTranslate(float tx, float ty, float tz);
       mat4f getTranslate(float tx, float ty);
       mat4f getScale(float sx, float sy);
-      mat4f getScale(float s); 
+      mat4f getScale(float s);
+
+      float degToRad(float angle);
    }
 }
 #endif

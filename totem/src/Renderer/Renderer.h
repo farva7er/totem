@@ -27,6 +27,10 @@ namespace totem
       void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
                      const math::vec4f& color);
 
+      void DrawRotatedRect( const math::vec2f& pos, const math::vec2f& scale,
+                           const math::vec4f& color, float angle,
+                           const math::vec2f& axis = math::vec2f(0, 0));
+
       void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
                      const char *imagePath, 
                      const math::vec4f& tintColor = 
