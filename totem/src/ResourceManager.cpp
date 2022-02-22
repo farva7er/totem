@@ -136,11 +136,16 @@ namespace totem
 
    Resource* ResourceManager::GetResourceInternal(const char* resId) const
    {
+      if(!resId)
+         return nullptr;
+
       unsigned int hashIndex = HashString(resId);
       ResourceNode *currNode = m_Table[hashIndex];
       while(currNode)
       {
-         if(0 == strcmp(currNode->data->GetId(), resId))
+         
+         if(currNode->data->GetId() && 
+            0 == strcmp(currNode->data->GetId(), resId))
          {
             //LOG_INFO("Reusing resource: %s", resId);
             Resource* res = currNode->data;

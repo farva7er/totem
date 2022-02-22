@@ -6,9 +6,9 @@
 
 namespace totem
 {
-   Texture::Texture(const char* resId, const unsigned char* data,
+   Texture::Texture(const unsigned char* data,
                      int width, int height, int channelCount)
-      : Resource(resId), m_Width(width), m_Height(height),
+      : Resource(nullptr), m_Width(width), m_Height(height),
          m_ChannelCount(channelCount)
    {
       

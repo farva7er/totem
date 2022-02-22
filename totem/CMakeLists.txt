@@ -39,6 +39,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Renderer/FontRenderer.cpp
                            src/Renderer/Renderer.h
                            src/Renderer/Renderer.cpp
+                           src/Renderer/RenderPrimitives.h
+                           src/Renderer/RenderPrimitives.cpp
                            src/Renderer/Shader.h
                            src/Renderer/Shader.cpp
                            src/Renderer/Texture.h

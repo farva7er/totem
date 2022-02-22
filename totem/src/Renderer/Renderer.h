@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "FontRenderer.h"
+#include "RenderPrimitives.h"
 
 namespace totem
 {
@@ -24,24 +25,8 @@ namespace totem
 
       void Clear(float r, float g, float b, float a = 1.0f);
 
-      void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
-                     const math::vec4f& color);
-
-      void DrawRotatedRect( const math::vec2f& pos, const math::vec2f& scale,
-                           const math::vec4f& color, float angle,
-                           const math::vec2f& axis = math::vec2f(0, 0));
-
-      void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
-                     const char *imagePath, 
-                     const math::vec4f& tintColor = 
-                     math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
-
-      void DrawRect( const math::vec2f& pos, const math::vec2f& scale,
-                     Texture* texture, 
-                     const math::vec4f& tintColor = 
-                     math::vec4f(1.0f, 1.0f, 1.0f, 1.0f),
-                     const char* shaderId = s_TextureShaderId);
-
+      void DrawRect(const Rect& rect);
+      
       void DrawImage(const char* imagePath, const math::vec2f& pos,
                      float scale = 1.0f,
                      const math::vec4f& tintColor =
@@ -92,7 +77,7 @@ namespace totem
    private:
       Window* m_Window;
       unsigned int m_VBO, m_VAO, m_EBO;
-      unsigned int m_WhiteTexture;
+      Texture* m_WhiteTexture;
       math::mat4f m_ProjMat;
       float m_SceneSize;
       float m_AspectRatio;

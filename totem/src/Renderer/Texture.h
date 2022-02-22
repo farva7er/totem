@@ -12,7 +12,7 @@ namespace totem
          Texture(const char* imagePath)
             : Resource(imagePath) {}
 
-         Texture(const char* resId, const unsigned char* data,
+         Texture(const unsigned char* data,
                      int width, int height, int channelCount);
  
          virtual ~Texture() override;

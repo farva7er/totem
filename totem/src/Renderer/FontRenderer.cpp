@@ -102,8 +102,7 @@ namespace totem
                   math::vec2i(face->glyph->bitmap_left,
                               face->glyph->bitmap_top),
                   face->glyph->advance.x,
-                  new Texture(nullptr,
-                              face->glyph->bitmap.buffer, 
+                  new Texture(face->glyph->bitmap.buffer, 
                               face->glyph->bitmap.width,
                               face->glyph->bitmap.rows,
                               1)
@@ -171,13 +170,15 @@ namespace totem
 
       float w = m_Master->PixelUnitXToCam(ch->size.x) * scale / dpiScaleX;
       float h = m_Master->PixelUnitYToCam(ch->size.y) * scale / dpiScaleY;
-
-      m_Master->DrawRect(math::vec2f(xpos, ypos),
-                        math::vec2f(w, h),
-                        ch->texture,
-                        color,
-                        m_FontShaderId);
- 
+      
+      Rect rect = Rect::Builder()
+                        .SetPos(math::vec2f(xpos, ypos))
+                        .SetScale(math::vec2f(w, h))
+                        .SetTexture(ch->texture)
+                        .SetColor(color)
+                        .SetShaderId(m_FontShaderId)
+                        .Construct();
+      m_Master->DrawRect(rect); 
    }
 
    float FontRenderer::GetAdvanceNormal(unsigned int codepoint,

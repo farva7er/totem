@@ -11,194 +11,194 @@ namespace totem
    const char* Renderer::s_TextureShaderId = "textureShader";
 
    //From learnopengl.com/In-Practice/Debugging
-   GLenum glCheckError_(const char *file, int line)
-   {
-      GLenum errorCode;
-      while ((errorCode = glGetError()) != GL_NO_ERROR)
+      GLenum glCheckError_(const char *file, int line)
       {
-         std::string error;
-         switch (errorCode)
+         GLenum errorCode;
+         while ((errorCode = glGetError()) != GL_NO_ERROR)
          {
-            case GL_INVALID_ENUM:
-               error = "INVALID_ENUM"; break; case GL_INVALID_VALUE:
-               error = "INVALID_VALUE"; break;
-            case GL_INVALID_OPERATION:
-               error = "INVALID_OPERATION"; break;
-            case GL_OUT_OF_MEMORY:
-               error = "OUT_OF_MEMORY"; break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION:
-               error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+            std::string error;
+            switch (errorCode)
+            {
+               case GL_INVALID_ENUM:
+                  error = "INVALID_ENUM"; break; case GL_INVALID_VALUE:
+                  error = "INVALID_VALUE"; break;
+               case GL_INVALID_OPERATION:
+                  error = "INVALID_OPERATION"; break;
+               case GL_OUT_OF_MEMORY:
+                  error = "OUT_OF_MEMORY"; break;
+               case GL_INVALID_FRAMEBUFFER_OPERATION:
+                  error = "INVALID_FRAMEBUFFER_OPERATION"; break;
 
+            }
+            std::cout << error << " | " << file << 
+                  " (" << line << ")" << std::endl;
          }
-         std::cout << error << " | " << file << 
-               " (" << line << ")" << std::endl;
+         return errorCode;
       }
-      return errorCode;
-   }
 
-   #define glCheckError() glCheckError_(__FILE__, __LINE__) 
+      #define glCheckError() glCheckError_(__FILE__, __LINE__) 
 
-   Renderer::Renderer(Window *window) 
-      : m_SceneSize(10.0f), m_FontRenderer(this)
-   {
-      m_Window = window;
+      Renderer::Renderer(Window *window) 
+         : m_SceneSize(10.0f), m_FontRenderer(this)
+      {
+         m_Window = window;
 
-      // There should be a valid context for glad to initialize 
-      m_Window->MakeCurrent();
-      if(!s_OpenGLInitialized)
-      { 
-         if (!gladLoadGLLoader((GLADloadproc)
-                  m_Window->GetOpenGLLoaderFunc()))
+         // There should be a valid context for glad to initialize 
+         m_Window->MakeCurrent();
+         if(!s_OpenGLInitialized)
+         { 
+            if (!gladLoadGLLoader((GLADloadproc)
+                     m_Window->GetOpenGLLoaderFunc()))
+            {
+               TOTEM_ASSERT(false, "Glad Failed to initialize!");
+               return;
+            }
+         }
+         s_OpenGLInitialized = true;
+         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+         m_Window->AddEventListener(this);
+         
+         glGenVertexArrays(1, &m_VAO);
+         glBindVertexArray(m_VAO);
+
+         static float vertices[] =
          {
-            TOTEM_ASSERT(false, "Glad Failed to initialize!");
+            -1.0f, -1.0f, 0.0f,     0.0f, 0.0f,
+             1.0f, -1.0f, 0.0f,     1.0f, 0.0f,
+             1.0f,  1.0f, 0.0f,     1.0f, 1.0f,
+            -1.0f,  1.0f, 0.0f,     0.0f, 1.0f
+         };
+
+         static unsigned int indices[] = 
+         {
+            0, 1, 2,
+            2, 3, 0
+         };
+
+         glGenBuffers(1, &m_VBO);
+         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
+                        vertices, GL_STATIC_DRAW);
+         glGenBuffers(1, &m_EBO);
+         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
+                        indices, GL_STATIC_DRAW);
+
+         glVertexAttribPointer(0, 3, GL_FLOAT, 
+                     GL_FALSE, 5 * sizeof(float), (void*)0);
+         glEnableVertexAttribArray(0);
+         glVertexAttribPointer(1, 2, GL_FLOAT,
+                     GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+         glEnableVertexAttribArray(1);
+
+         uint32_t whiteTexData = 0xffffffff; 
+         m_WhiteTexture = 
+            new Texture((unsigned char*)&whiteTexData, 1, 1, 4);
+
+         ResourceManager& rm = ResourceManager::GetInstance();
+         rm.AddResource(new Shader(
+                  s_TextureShaderId,
+                  "resources/shaders/Vtexture.glsl",
+                  "resources/shaders/Ftexture.glsl"));
+
+         glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+         m_FontRenderer.SetFont("resources/fonts/OpenSans-Regular.ttf");
+      }
+
+      Renderer::~Renderer()
+      {
+         delete m_WhiteTexture;
+         m_Window->RemoveEventListener(this);
+      }
+
+      void Renderer::OnEvent(Event& e)
+      {
+         if(e.GetType() == EventType::FramebufferResize)
+         {
+            FramebufferResizeEvent& fre = e.Cast<FramebufferResizeEvent>();
+            HandleResize(fre.GetWidth(), fre.GetHeight());
+         }
+      }
+    
+      Shader* Renderer::GetShader(const char* shaderId) const
+      {
+         ResourceManager& rm = ResourceManager::GetInstance();
+         Shader* shader = rm.GetResource<Shader>(shaderId);
+         TOTEM_ASSERT(shader, "Shader is not loaded %s", shaderId);
+         return shader;
+      }
+
+      void Renderer::Clear(float r, float g, float b, float a)
+      {
+         glClearColor(r, g, b, a);
+         glClear(GL_COLOR_BUFFER_BIT);
+      }
+ 
+      
+      void Renderer::DrawRect(const Rect& rect)
+      {
+         Shader* shader;
+         const char* shaderId = 
+                  rect.GetShaderId() ? rect.GetShaderId(): s_TextureShaderId;
+         shader = GetShader(shaderId);
+         if(!shader)
+         {
+            LOG_ERROR("Shader not found: %s", shaderId);
             return;
          }
-      }
-      s_OpenGLInitialized = true;
-      glClearColor(0.0f, 0.0f, 0.0f, 1.0f); m_Window->AddEventListener(this);
-      
-      glGenVertexArrays(1, &m_VAO);
-      glBindVertexArray(m_VAO);
+         shader->Use();
 
-      static float vertices[] =
-      {
-         -1.0f, -1.0f, 0.0f,     0.0f, 0.0f,
-          1.0f, -1.0f, 0.0f,     1.0f, 0.0f,
-          1.0f,  1.0f, 0.0f,     1.0f, 1.0f,
-         -1.0f,  1.0f, 0.0f,     0.0f, 1.0f
-      };
 
-      static unsigned int indices[] = 
-      {
-         0, 1, 2,
-         2, 3, 0
-      };
+         math::vec2f pos = rect.GetPos();
+         math::vec2f scale = rect.GetScale();
+         math::vec2f rotationAxis = rect.GetRotationAxis();
+         math::mat4f mat;
+         const float eps = 0.0001f; // Mehh, there are better alternatives!
+                                    // But let's just use that for a while :)
 
-      glGenBuffers(1, &m_VBO);
-      glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
-                     vertices, GL_STATIC_DRAW);
-      glGenBuffers(1, &m_EBO);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
-                     indices, GL_STATIC_DRAW);
+         // if all rotation parameters are almost default ones (i.e. zeroes)
+         // then just draw not rotated rect,
+         // otherwise draw rotated one
+         if(abs(rect.GetRotationAngle()) <= eps &&
+            abs(rotationAxis.x) <= eps && abs(rotationAxis.y) <= eps)
+         {
+            // Draw not rotated rect
+            mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
+                                                pos.y * 10.0f)
+                        *  math::getScale(scale.x, scale.y);
+         }
+         else
+         {
+            // Draw rotated rect
+            mat = 
+               math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
+                                             pos.y * 10.0f)
+               *  math::getRotationZ(math::degToRad(rect.GetRotationAngle()))
+               *  math::getTranslate(-rotationAxis.x * scale.x, 
+                                       -rotationAxis.y * scale.y)
+               *  math::getScale(scale.x, scale.y);
+         }
 
-      glVertexAttribPointer(0, 3, GL_FLOAT, 
-                  GL_FALSE, 5 * sizeof(float), (void*)0);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(1, 2, GL_FLOAT,
-                  GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-      glEnableVertexAttribArray(1);
+         shader->SetUniformMatrix4fv("vModelMat", mat);
+         shader->SetUniform4f("fColor", rect.GetColor());
 
-      glGenTextures(1, &m_WhiteTexture);
-      glBindTexture(GL_TEXTURE_2D, m_WhiteTexture);
+         const Texture* texture = m_WhiteTexture;
+         if(rect.GetImagePath())
+         {
+            ResourceManager& rm = ResourceManager::GetInstance();
+            texture = rm.GetResource<Texture>(rect.GetImagePath());
+            if(!texture)
+               texture = rm.LoadResource(new Texture(rect.GetImagePath()));
+         }
+         else if(rect.GetTexture())
+         {
+            texture = rect.GetTexture();
+         }
 
-      uint32_t whiteTexData = 0xffffffff;
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 
-         1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &whiteTexData);
-
-      ResourceManager& rm = ResourceManager::GetInstance();
-      rm.AddResource(new Shader(
-               s_TextureShaderId,
-               "resources/shaders/Vtexture.glsl",
-               "resources/shaders/Ftexture.glsl"));
-
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-      m_FontRenderer.SetFont("resources/fonts/OpenSans-Regular.ttf");
-   }
-
-   Renderer::~Renderer()
-   {
-      m_Window->RemoveEventListener(this);
-   }
-
-   void Renderer::OnEvent(Event& e)
-   {
-      if(e.GetType() == EventType::FramebufferResize)
-      {
-         FramebufferResizeEvent& fre = e.Cast<FramebufferResizeEvent>();
-         HandleResize(fre.GetWidth(), fre.GetHeight());
-      }
-   }
- 
-   Shader* Renderer::GetShader(const char* shaderId) const
-   {
-      ResourceManager& rm = ResourceManager::GetInstance();
-      Shader* shader = rm.GetResource<Shader>(shaderId);
-      TOTEM_ASSERT(shader, "Shader is not loaded %s", shaderId);
-      return shader;
-   }
-
-   void Renderer::Clear(float r, float g, float b, float a)
-   {
-      glClearColor(r, g, b, a);
-      glClear(GL_COLOR_BUFFER_BIT);
-   }
-
-   void Renderer::DrawRect(const math::vec2f& pos, const math::vec2f& scale,
-                           const math::vec4f& color)
-   {
-      Shader* shader = GetShader(s_TextureShaderId);
-      shader->Use();
-      math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
-                                          pos.y * 10.0f)
-                     *  math::getScale(scale.x, scale.y);
-      shader->SetUniformMatrix4fv("vModelMat", mat);
-      shader->SetUniform4f("fColor", color);
-      glBindTexture(GL_TEXTURE_2D, m_WhiteTexture);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-   }
-
-   void Renderer::DrawRotatedRect(const math::vec2f& pos,
-                                 const math::vec2f& scale,
-                                 const math::vec4f& color, float degAngle,
-                                 const math::vec2f& axis)
-   {
-      Shader* shader = GetShader(s_TextureShaderId);
-      shader->Use();
-      math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
-                                          pos.y * 10.0f)
-                     *  math::getRotationZ(math::degToRad(degAngle))
-                     *  math::getTranslate(-axis.x * scale.x, 
-                                         -axis.y * scale.y)
-                     *  math::getScale(scale.x, scale.y);
-      shader->SetUniformMatrix4fv("vModelMat", mat);
-      shader->SetUniform4f("fColor", color);
-      glBindTexture(GL_TEXTURE_2D, m_WhiteTexture);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-   }
-
-   void Renderer::DrawRect(const math::vec2f& pos, const math::vec2f& scale,
-                           const char *imagePath, 
-                           const math::vec4f& tintColor)
-   {
-      ResourceManager& rm = ResourceManager::GetInstance();
-      Texture *texture = rm.GetResource<Texture>(imagePath);
-      if(!texture)
-         texture = rm.LoadResource(new Texture(imagePath));
-      DrawRect(pos, scale, texture, tintColor);
-   }
-
-   void Renderer::DrawRect(const math::vec2f& pos, const math::vec2f& scale,
-                           Texture* texture, 
-                           const math::vec4f& tintColor,
-                           const char* shaderId)
-   {
-      Shader* shader = GetShader(shaderId);
-
-      shader->Use();
-      math::mat4f mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
-                                          pos.y * 10.0f)
-                     *  math::getScale(scale.x, scale.y);
-      shader->SetUniformMatrix4fv("vModelMat", mat);
-      shader->SetUniform4f("fColor", tintColor);
-
-      texture->Bind();
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-      glCheckError();
+         texture->Bind();
+         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
    }
 
    void Renderer::DrawImage(const char* imagePath, const math::vec2f& pos,
@@ -209,16 +209,25 @@ namespace totem
       if(!texture)
          texture = rm.LoadResource(new Texture(imagePath));
       float aspectRatio = texture->GetWidth()/(float)texture->GetHeight();
-      DrawRect(pos, math::vec2f(scale * aspectRatio, scale), imagePath,
-               tintColor);
+
+      Rect rect = Rect::Builder()
+                        .SetPos(pos)
+                        .SetScale(math::vec2f(scale*aspectRatio, scale))
+                        .SetImagePath(imagePath)
+                        .SetColor(tintColor)
+                        .Construct();
+      DrawRect(rect);
    }
 
 
    void Renderer::DrawBackground(const char* imagePath)
    {
-      DrawRect(math::vec2f(0, 0),
-               math::vec2f(m_SceneSize * m_AspectRatio, m_SceneSize),
-               imagePath);
+      math::vec2f scale(m_SceneSize * m_AspectRatio, m_SceneSize);
+      Rect rect = Rect::Builder()
+                  .SetScale(scale)
+                  .SetImagePath(imagePath)
+                  .Construct();
+      DrawRect(rect);
    }
 
    void Renderer::DrawText(const char* str, const math::vec2f& pos,

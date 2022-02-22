@@ -9,6 +9,8 @@
 
 #include "UI/UIManager.h"
 
+#include "Renderer/RenderPrimitives.h"
+
 enum { sq_count = 1000 };
 
 class Sandbox;
@@ -99,6 +101,7 @@ public:
       m_StopButton->SetPos(totem::math::vec2f(0.5f, -0.5f));
       m_StopButton->SetScale(totem::math::vec2f(2, 1));     
       m_StopButton->SetText("Stop Anim");
+
    }
 
    virtual void OnEvent(totem::Event& e) override
@@ -147,9 +150,13 @@ public:
       m_Renderer->DrawBackground("resources/image.jpeg");
       for(int i = 0; i < m_CurrPos; i++)
       {
-         m_Renderer->DrawRect(m_Positions[i], 
-                              totem::math::vec2f(0.7f, 0.7f),
-                              totem::math::vec4f(0.4f, 0.6f, 0.3f, 0.1f));
+         totem::Rect rect = totem::Rect::Builder()
+                        .SetPos(m_Positions[i])
+                        .SetScale(totem::math::vec2f(0.7f, 0.7f))
+                        .SetColor(totem::math::vec4f(0.4f, 0.6f, 0.4f, 0.1f))
+                        .Construct();
+
+         m_Renderer->DrawRect(rect);
 
       }
 /*
@@ -163,16 +170,22 @@ public:
                            3,
                            m_ImageColor);
 
-      m_Renderer->DrawRect(totem::math::vec2f(0, 0.55f), 
-                           totem::math::vec2f(12.0f, 4.0f),
-                           totem::math::vec4f(0, 0, 0, 0.5f));
+      totem::Rect textBgRect = totem::Rect::Builder()
+                              .SetPos(totem::math::vec2f(0, 0.55f))
+                              .SetScale(totem::math::vec2f(12, 4))
+                              .SetColor(totem::math::vec4f(0, 0, 0, 0.5f))
+                              .Construct();
 
-      
-      m_Renderer->DrawRotatedRect(totem::math::vec2f(0, 0),
-                           totem::math::vec2f(2.0f, 0.2f),
-                           totem::math::vec4f(0, 0, 0, 0.7f),
-                           m_Angle,
-                           totem::math::vec2f(-1, 0));
+      m_Renderer->DrawRect(textBgRect);
+
+      totem::Rect rotatedRect = totem::Rect::Builder()
+                           .SetScale(totem::math::vec2f(2.0f, 0.2f))
+                           .SetColor(totem::math::vec4f(0, 0, 0, 0.7f))
+                           .SetRotationAngle(m_Angle)
+                           .SetRotationAxis(totem::math::vec2f(-1, 0))
+                           .Construct();
+
+      m_Renderer->DrawRect(rotatedRect);
 
 
       m_Renderer->DrawText("Welcome to totem!",

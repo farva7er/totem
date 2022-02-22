@@ -174,7 +174,12 @@ namespace totem
    {
       Renderer* r = GetRenderer();
       //LOG_INFO("%f %f", m_InitScale.x, m_Scale.x);
-      r->DrawRect(m_Pos, m_Scale, m_Color);
+      Rect rect = Rect::Builder()
+                        .SetPos(m_Pos)
+                        .SetScale(m_Scale)
+                        .SetColor(m_Color)
+                        .Construct();
+      r->DrawRect(rect);
       if(m_Text)
       { 
          r->DrawControlledText(
