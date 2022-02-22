@@ -7,7 +7,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "FontRenderer.h"
-#include "RenderPrimitives.h"
+#include "Renderer/RendererPrimitives/Rect.h"
 
 namespace totem
 {

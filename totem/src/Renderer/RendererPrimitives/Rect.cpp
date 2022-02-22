@@ -1,8 +1,7 @@
-#include "RenderPrimitives.h"
+#include "Renderer/RendererPrimitives/Rect.h"
 
 namespace totem
 {
-
    Rect::Builder::Builder()
    {
       m_Result = new Rect();

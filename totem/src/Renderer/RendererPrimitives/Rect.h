@@ -1,8 +1,8 @@
-#ifndef _TOTEM_RENDER_PRIMITIVES_H_
-#define _TOTEM_RENDER_PRIMITIVES_H_
+#ifndef _TOTEM_RENDERER_PRIMITIVES_RECT_H_
+#define _TOTEM_RENDERER_PRIMITIVES_RECT_H_
 
 #include "Math/Vec.h"
-#include "Texture.h"
+#include "Renderer/Texture.h"
 
 namespace totem
 {

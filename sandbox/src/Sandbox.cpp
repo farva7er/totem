@@ -9,7 +9,7 @@
 
 #include "UI/UIManager.h"
 
-#include "Renderer/RenderPrimitives.h"
+#include "Renderer/RendererPrimitives/Rect.h"
 
 enum { sq_count = 1000 };
 
