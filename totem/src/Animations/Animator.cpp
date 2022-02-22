@@ -177,7 +177,11 @@ namespace totem
 
    void Animator::Add(Animation* anim)
    {
-      Insert(anim, 0.0f, nullptr);
+      AnimationNode* animNode = SearchNode(anim);
+      if(!animNode)
+      {
+         Insert(anim, 0.0f, nullptr);
+      }
    }
 
    void Animator::Play(Animation* anim, float delay, Animation* refAnim)
