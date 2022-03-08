@@ -89,6 +89,12 @@ add_subdirectory(Dependencies/glfw-3.3.6)
 
 add_subdirectory(Dependencies/stb)
 
+set(FT_DISABLE_ZLIB TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_BZIP2 TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_PNG TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_HARFBUZZ TRUE CACHE BOOL "" FORCE)
+set(FT_DISABLE_BROTLI TRUE CACHE BOOL "" FORCE)
+
 add_subdirectory(Dependencies/freetype-2.11.1)
 
 target_link_libraries(totem PRIVATE glad)
