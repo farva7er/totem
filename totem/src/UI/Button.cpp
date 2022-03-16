@@ -78,6 +78,9 @@ namespace totem
       strcpy(m_Text, text);
    }
 
+   void Button::SetColor(const math::vec4f& color)
+   {}
+
    bool Button::IsCursorHovered(const math::vec2i& cursorCoords) const
    {
       Renderer* renderer = GetRenderer();
@@ -198,4 +201,11 @@ namespace totem
       m_HoverScaleAnim->SetFinVal(1.1 * m_InitScale);
       m_IdleScaleAnim->SetFinVal(m_InitScale);
    }
+
+   void BoxButton::SetColor(const math::vec4f& color)
+   {
+      m_Color = color;
+   }
+
+
 }

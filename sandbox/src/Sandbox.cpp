@@ -92,6 +92,7 @@ public:
 
       m_StartButton->SetPos(totem::math::vec2f(-0.5f, -0.5f));
       m_StartButton->SetScale(totem::math::vec2f(2, 1));
+      m_StartButton->SetColor(totem::math::vec4f(0, 0.4f, 0.3f, 0.8f));
       m_StartButton->SetText("Start Anim");
  
       m_StopButton = m_UIManager.CreateButton(

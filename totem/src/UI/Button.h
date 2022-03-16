@@ -68,6 +68,7 @@ namespace totem
       
       virtual void SetPos(const math::vec2f& pos);
       virtual void SetScale(const math::vec2f& scale);
+      virtual void SetColor(const math::vec4f& color);
       virtual void SetText(const char* str);
 
    private:
@@ -101,8 +102,9 @@ namespace totem
       virtual void OnUpdate(float deltaTime) override;
       virtual void Draw() override;
 
-      virtual void SetScale(const math::vec2f& scale) override;
-   
+      virtual void SetScale(const math::vec2f& scale) override; 
+      virtual void SetColor(const math::vec4f& color) override;
+
    private:
       math::vec4f m_Color;
       Animator m_Animator;
