@@ -25,13 +25,13 @@ namespace totem
       bool IsPlaying() const;
       bool IsPaused() const;
       bool IsLooping() const;
-      bool IsAtStart() const;
 
    public:
       virtual Animation* Clone() = 0;
 
    protected:
       virtual void OnUpdate() = 0;
+      virtual void OnStart() {}
       float GetCurrTime() const { return m_CurrTime; }
       float GetDuration() const { return m_Duration; }
    private:
@@ -39,10 +39,10 @@ namespace totem
    private:
       State m_State;
       bool m_IsLooping;
+      bool m_IsAtFirstTick;
       float m_Duration;
       float m_CurrTime;
       int m_FinishCount;
-      bool m_StartFlag;
    };
 
    class AnimationGroup

@@ -56,13 +56,13 @@ namespace totem
       LinearModifAnim(T& var, T fin, float dur)
          : InterpAnim<T>(var, var, fin, dur) {} 
    private:
+      virtual void OnStart() override
+      {
+         this->m_InitVal = this->m_AnimVar;
+      }
+
       virtual void OnUpdate() override
       {
-         if(this->IsAtStart())
-         {
-            this->m_InitVal = this->m_AnimVar;
-         }
-
          this->m_AnimVar = this->m_InitVal + 
          (this->GetCurrTime()/this->GetDuration())*
          (this->m_FinVal - this->m_InitVal);
@@ -106,13 +106,14 @@ namespace totem
          : InterpAnim<T>(var, var, fin, dur)
       {} 
    private:
+
+      virtual void OnStart() override
+      {
+         this->m_InitVal = this->m_AnimVar;
+      }
+
       virtual void OnUpdate() override
       {
-         if(this->IsAtStart())
-         {
-            this->m_InitVal = this->m_AnimVar;
-         }
-
          float t = this->GetCurrTime()/this->GetDuration();
          this->m_AnimVar = this->m_InitVal + 
                   ((t-1)*(t-1)*(t-1) + 1)*(this->m_FinVal - this->m_InitVal);
@@ -156,13 +157,13 @@ namespace totem
          : InterpAnim<T>(var, var, fin, dur)
       {}
    private:
+      virtual void OnStart() override
+      {
+         this->m_InitVal = this->m_AnimVar;
+      }
+
       virtual void OnUpdate() override
       {
-         if(this->IsAtStart())
-         {
-            this->m_InitVal = this->m_AnimVar;
-         }
-
          float t = this->GetCurrTime()/this->GetDuration();
          this->m_AnimVar = this->m_InitVal + 
                   (-2*t*t*t+3*t*t)*(this->m_FinVal - this->m_InitVal);

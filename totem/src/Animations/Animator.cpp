@@ -3,9 +3,9 @@
 namespace totem
 {
    Animation::Animation(bool isLooping, float animDuration)
-      : m_State(State::PauseFromPlay), m_IsLooping(isLooping),
-      m_Duration(animDuration), m_CurrTime(0), m_FinishCount(0),
-      m_StartFlag(true) {}
+      : m_State(State::PauseFromPlay), m_IsLooping(isLooping), m_IsAtFirstTick(true),
+      m_Duration(animDuration), m_CurrTime(0), m_FinishCount(0)
+      {}
 
    Animation::Animation(const Animation& other)
    {
@@ -14,7 +14,7 @@ namespace totem
       m_Duration = other.m_Duration;
       m_CurrTime = 0.0f;
       m_FinishCount = 0;
-      m_StartFlag = true;
+      m_IsAtFirstTick = true;
    }
 
    void Animation::Play()
@@ -37,7 +37,7 @@ namespace totem
    void Animation::Reset()
    {
       m_CurrTime = 0.0f;
-      m_StartFlag = true;
+      m_IsAtFirstTick = true;
       m_FinishCount = 0;
    }
 
@@ -72,11 +72,6 @@ namespace totem
       return m_IsLooping;
    }
 
-   bool Animation::IsAtStart() const
-   {
-      return m_StartFlag;
-   }
-
    void Animation::Update(float deltaTime)
    { 
       if(IsPlaying())
@@ -91,9 +86,12 @@ namespace totem
             return;
          }
          m_CurrTime += deltaTime;
+
+         if(m_IsAtFirstTick)
+            OnStart();
+
+         m_IsAtFirstTick = false;
          OnUpdate();
-         //LOG_INFO("Anim Update %f", deltaTime);
-         m_StartFlag = false;
       } 
    }
 
