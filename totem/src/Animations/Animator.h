@@ -1,71 +1,10 @@
 #ifndef _TOTEM_ANIMATOR_H_
 #define _TOTEM_ANIMATOR_H_
 
+#include "Animation.h"
+
 namespace totem
 {
-   class Animation
-   {
-      friend class Animator;
-
-      enum class State { Play, PauseFromPlay, Delay, PauseFromDelay };
-   public:
-      Animation(bool isLooping, float animDuration);
-      Animation(const Animation& other);
-
-      virtual ~Animation() {}
-   private:
-      void Play();
-      void Pause();
-      void Delay();
-      void Reset();
-   protected:
-      int GetFinishCount() const;
-      bool HasFinished() const;
-      bool IsDelayed() const;
-      bool IsPlaying() const;
-      bool IsPaused() const;
-      bool IsLooping() const;
-
-   public:
-      virtual Animation* Clone() = 0;
-
-   protected:
-      virtual void OnUpdate() = 0;
-      virtual void OnStart() {}
-      float GetCurrTime() const { return m_CurrTime; }
-      float GetDuration() const { return m_Duration; }
-   private:
-      void Update(float deltaTime);
-   private:
-      State m_State;
-      bool m_IsLooping;
-      bool m_IsAtFirstTick;
-      float m_Duration;
-      float m_CurrTime;
-      int m_FinishCount;
-   };
-
-   class AnimationGroup
-   {
-      friend class Animator;
-
-   public:
-      AnimationGroup();
-      ~AnimationGroup();
-      void Add(Animation* anim);
-      void Add(const AnimationGroup& animGroup);
-   private:
-      struct AnimationNode
-      {
-         Animation* anim;
-         AnimationNode* next;
-         AnimationNode(Animation* anim, AnimationNode *next = nullptr)
-            : anim(anim), next(next) {}
-      };
-
-      AnimationNode* m_Animations;
-   };
-
    class Animator
    {
    public:
