@@ -7,37 +7,33 @@ namespace totem
    {
       friend class Animator;
 
-      enum class State { Play, PauseFromPlay, Delay, PauseFromDelay };
    public:
       Animation(bool isLooping, float animDuration);
       Animation(const Animation& other);
 
       virtual ~Animation() {}
-   private:
-      void Play();
-      void Pause();
-      void Delay();
-      void Reset();
-   protected:
-      int GetFinishCount() const;
-      bool HasFinished() const;
-      bool IsDelayed() const;
-      bool IsPlaying() const;
-      bool IsPaused() const;
-      bool IsLooping() const;
-
-   public:
       virtual Animation* Clone() = 0;
+
+      void Play() { m_IsActive = true; };
+      void Pause() { m_IsActive = false; };
+      void Reset();
+
+   protected:
+      int GetFinishCount() const { return m_FinishCount; };
+      bool HasFinishedOnce() const { return m_FinishCount > 0; };
+      bool IsActive() const { return m_IsActive; };
+      bool IsLooping() const { return m_IsLooping; };
 
    protected:
       virtual void OnUpdate() = 0;
       virtual void OnStart() {}
       float GetCurrTime() const { return m_CurrTime; }
       float GetDuration() const { return m_Duration; }
+
    private:
       void Update(float deltaTime);
    private:
-      State m_State;
+      bool m_IsActive;
       bool m_IsLooping;
       bool m_IsAtFirstTick;
       float m_Duration;
@@ -54,6 +50,11 @@ namespace totem
       ~AnimationGroup();
       void Add(Animation* anim);
       void Add(const AnimationGroup& animGroup);
+
+      void Play();
+      void Pause();
+      void Reset();
+
    private:
       struct AnimationNode
       {

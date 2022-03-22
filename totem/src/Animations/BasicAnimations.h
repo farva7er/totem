@@ -10,21 +10,35 @@ namespace totem
    class InterpAnim : public Animation
    {
    public:
-      InterpAnim(T& var, T init, T fin, float dur)
+      InterpAnim(T init, T fin, float dur)
          : Animation(false, dur), 
-         m_AnimVar(var), m_InitVal(init), m_FinVal(fin)
+         m_AnimVar(init), m_InitVal(init), m_FinVal(fin)
       {}
+
+      void ApplyVal(T& var)
+      {
+         if(this->IsActive())
+         {
+            var = this->m_AnimVar;
+         }
+      }
+
+      void SetInitVal(T init)
+      {
+         this->m_InitVal = init;
+      }
 
       void SetFinVal(T fin)
       {
          this->m_FinVal = fin;
       }
+
    protected:
 
       virtual void OnUpdate() = 0;
       virtual Animation* Clone() = 0;
 
-      T& m_AnimVar;
+      T m_AnimVar;
       T m_InitVal;
       T m_FinVal;
    };
@@ -33,8 +47,8 @@ namespace totem
    class LinearInterpAnim : public InterpAnim<T>
    {
    public:
-      LinearInterpAnim(T& var, T init, T fin, float dur)
-         : InterpAnim<T>(var, init, fin, dur) {} 
+      LinearInterpAnim(T init, T fin, float dur)
+         : InterpAnim<T>(init, fin, dur) {} 
    private:
       virtual void OnUpdate() override
       {
@@ -50,40 +64,11 @@ namespace totem
    };
 
    template <typename T>
-   class LinearModifAnim : public InterpAnim<T>
-   {
-   public:
-      LinearModifAnim(T& var, T fin, float dur)
-         : InterpAnim<T>(var, var, fin, dur) {} 
-   private:
-      virtual void OnStart() override
-      {
-         this->m_InitVal = this->m_AnimVar;
-      }
-
-      virtual void OnUpdate() override
-      {
-         this->m_AnimVar = this->m_InitVal + 
-         (this->GetCurrTime()/this->GetDuration())*
-         (this->m_FinVal - this->m_InitVal);
-      }
-
-      virtual Animation* Clone() override
-      {
-         return new LinearModifAnim(*this);
-      }
-   };
-
-   template <typename T>
    class CubicInterpAnim : public InterpAnim<T>
    {
    public:
-      CubicInterpAnim(T& var, T init, T fin, float dur)
-         : InterpAnim<T>(var, init, fin, dur)
-      {}
-      CubicInterpAnim<T>(T& var, T fin, float dur)
-         : InterpAnim<T>(var, var, fin, dur)
-      {}
+      CubicInterpAnim(T init, T fin, float dur)
+         : InterpAnim<T>(init, fin, dur) {} 
    private:
       virtual void OnUpdate() override
       {
@@ -99,42 +84,11 @@ namespace totem
    };
 
    template <typename T>
-   class CubicModifAnim : public InterpAnim<T>
-   {
-   public:
-      CubicModifAnim(T& var, T fin, float dur)
-         : InterpAnim<T>(var, var, fin, dur)
-      {} 
-   private:
-
-      virtual void OnStart() override
-      {
-         this->m_InitVal = this->m_AnimVar;
-      }
-
-      virtual void OnUpdate() override
-      {
-         float t = this->GetCurrTime()/this->GetDuration();
-         this->m_AnimVar = this->m_InitVal + 
-                  ((t-1)*(t-1)*(t-1) + 1)*(this->m_FinVal - this->m_InitVal);
-      }
-
-      virtual Animation* Clone() override
-      {
-         return new CubicModifAnim(*this);
-      }
-   };
-
-   template <typename T>
    class HermiteInterpAnim : public InterpAnim<T>
    {
    public:
-      HermiteInterpAnim(T& var, T init, T fin, float dur)
-         : InterpAnim<T>(var, init, fin, dur)
-      {}
-      HermiteInterpAnim<T>(T& var, T fin, float dur)
-         : InterpAnim<T>(var, var, fin, dur)
-      {}
+      HermiteInterpAnim(T init, T fin, float dur)
+         : InterpAnim<T>(init, fin, dur) {}
    private:
       virtual void OnUpdate() override
       {
@@ -148,33 +102,5 @@ namespace totem
          return new HermiteInterpAnim(*this);
       }
    };
-
-   template <typename T>
-   class HermiteModifAnim : public InterpAnim<T>
-   {
-   public:
-      HermiteModifAnim(T& var, T fin, float dur)
-         : InterpAnim<T>(var, var, fin, dur)
-      {}
-   private:
-      virtual void OnStart() override
-      {
-         this->m_InitVal = this->m_AnimVar;
-      }
-
-      virtual void OnUpdate() override
-      {
-         float t = this->GetCurrTime()/this->GetDuration();
-         this->m_AnimVar = this->m_InitVal + 
-                  (-2*t*t*t+3*t*t)*(this->m_FinVal - this->m_InitVal);
-      }
-
-      virtual Animation* Clone() override
-      {
-         return new HermiteModifAnim(*this);
-      }
-
-   };
-
 }
 #endif

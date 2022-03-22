@@ -20,35 +20,31 @@ namespace totem
 
    void Animator::OnUpdate(float deltaTime)
    {
-      AnimationNode** currNode = &m_Animations;
-      while(*currNode)
+      AnimationNode* currNode = m_Animations;
+      while(currNode)
       {
-         Animation* currAnim = (*currNode)->anim;
-          
-         if(currAnim->IsDelayed() && !currAnim->IsPaused())
+         Animation* currAnim = currNode->anim;
+         
+         if(currAnim->IsActive())
          {
-            Animation* refAnim = (*currNode)->refAnim;
-            if(refAnim && refAnim->GetFinishCount() > 0 &&
-                        (*currNode)->delay <= 0.0f)
+            if(currNode->delay > 0)
             {
-               currAnim->Play();
+               if(currNode->refAnim && currNode->refAnim->HasFinishedOnce())
+               {
+                  currNode->delay -= deltaTime;
+               }
+               else if(!currNode->refAnim)
+               {
+                  currNode->delay -= deltaTime;
+               }
             }
-            if(!refAnim && (*currNode)->delay <= 0.0f)
+            else
             {
-               currAnim->Play();
-            }
-            if(refAnim && refAnim->GetFinishCount() > 0)
-            {
-               (*currNode)->delay-=deltaTime;
-            }
-            if(!refAnim)
-            { 
-               (*currNode)->delay-=deltaTime;
-            }
+               currAnim->Update(deltaTime);
+            }      
          }
-            
-         currAnim->Update(deltaTime);
-         currNode = &((*currNode)->next);
+
+         currNode = currNode->next;
       }
    }
 
@@ -61,21 +57,29 @@ namespace totem
       }
    }
 
-   void Animator::Play(Animation* anim, float delay, Animation* refAnim)
+   void Animator::Add(const AnimationGroup& animGroup)
+   {
+      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
+      while(curr)
+      {
+         Add(curr->anim);
+         curr = curr->next;
+      }
+   }
+
+   void Animator::Sync(Animation* anim, float delay, Animation* refAnim)
    {
       AnimationNode* animNode = SearchNode(anim);
       if(!animNode)
       {
          Insert(anim, delay, refAnim);
-      }
-      else
-      {
-         animNode->delay = delay;
-         animNode->refAnim = refAnim;
+         animNode = SearchNode(anim);
       }
 
-      anim->Reset();
-      anim->Delay(); 
+      animNode->delay = delay;
+      animNode->refAnim = refAnim;
+
+      anim->Play();
    }
 
    void Animator::Insert(Animation* anim, float delay, Animation* refAnim)
@@ -95,61 +99,13 @@ namespace totem
       return nullptr;
    }
 
-   void Animator::Pause(Animation* anim)
-   {
-      anim->Pause();
-   }
-
-   void Animator::Release(Animation* anim)
-   {
-      if(!anim->IsDelayed() && anim->IsPaused())
-      {
-         if(anim->IsLooping() || !anim->HasFinished())
-            anim->Play();
-      }
-      else if(anim->IsDelayed() && anim->IsPaused())
-      {
-         anim->Delay();
-      }
-   }
-
-   void Animator::Add(const AnimationGroup& animGroup)
+   void Animator::Sync(const AnimationGroup& animGroup, float delay,
+                       Animation* refAnim)
    {
       AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
       while(curr)
       {
-         Add(curr->anim);
-         curr = curr->next;
-      }
-   }
-
-   void Animator::Play( const AnimationGroup& animGroup, float delay,
-                        Animation* refAnim)
-   {
-      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
-      while(curr)
-      {
-         Play(curr->anim, delay, refAnim);
-         curr = curr->next;
-      }
-   }
-
-   void Animator::Pause(const AnimationGroup& animGroup)
-   {
-      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
-      while(curr)
-      {
-         Pause(curr->anim);
-         curr = curr->next;
-      }
-   }
-
-   void Animator::Release(const AnimationGroup& animGroup)
-   {
-      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
-      while(curr)
-      {
-         Release(curr->anim);
+         Sync(curr->anim, delay, refAnim);
          curr = curr->next;
       }
    }

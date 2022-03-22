@@ -8,20 +8,18 @@ namespace totem
    class Animator
    {
    public:
-      Animator(): m_Animations(nullptr){}
+      Animator(): m_Animations(nullptr) {}
       ~Animator();
+
       void OnUpdate(float deltaTime);
       void Add(Animation* anim);
-      void Play( Animation* anim, 
-                     float delay = 0.0f, Animation* refAnim = nullptr);
-      void Pause(Animation* anim);
-      void Release(Animation *anim);
-
       void Add(const AnimationGroup& animGroup);
-      void Play(const AnimationGroup& animGroup, 
-                     float delay = 0.0f, Animation* refAnim = nullptr);
-      void Pause(const AnimationGroup& animGroup);
-      void Release(const AnimationGroup& animGroup);
+      void Sync(Animation* anim, float delay = 0.0f,
+                Animation* refAnim = nullptr);
+      void Sync(const AnimationGroup& animGroup, float delay = 0.0f,
+                Animation* refAnim = nullptr);
+
+
    private:
       struct AnimationNode
       {

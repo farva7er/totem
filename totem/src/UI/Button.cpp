@@ -104,14 +104,13 @@ namespace totem
       :  Button(manager, listener),
          m_Color(math::vec4f(0, 0, 0, 0.5f)) 
    {
-
+/*
       Animation* hoverColorAnim = new totem::HermiteModifAnim<math::vec4f>(
-                              m_Color,
+                              totem::math::vec4f()
                               totem::math::vec4f(0, 0, 0, 0.8f),
                               0.2f
                            );
       m_HoverScaleAnim = new totem::HermiteModifAnim<math::vec2f>(
-                              m_Scale,
                               1.1f * m_InitScale,
                               0.2f
                            );
@@ -147,30 +146,30 @@ namespace totem
       m_AnimGroup.Add(m_HoverAnim);
       m_AnimGroup.Add(m_IdleAnim);
       m_AnimGroup.Add(m_PushAnim);
-
+*/
    }
 
    void BoxButton::OnHover()
    {
-      m_Animator.Pause(m_AnimGroup);
-      m_Animator.Play(m_HoverAnim);
+      //m_AnimGroup.Pause();
+      //m_HoverAnim.Play();
    }
 
    void BoxButton::OnIdle()
    {
-      m_Animator.Pause(m_AnimGroup);
-      m_Animator.Play(m_IdleAnim);
+      //m_AnimGroup.Pause();
+      //m_IdleAnim.Play();
    }
 
    void BoxButton::OnPush()
    {
-      m_Animator.Pause(m_AnimGroup);
-      m_Animator.Play(m_PushAnim);
+      //m_Animator.Pause(m_AnimGroup);
+      //m_Animator.Play(m_PushAnim);
    }
 
    void BoxButton::OnUpdate(float deltaTime)
    {
-      m_Animator.OnUpdate(deltaTime);
+      //m_Animator.OnUpdate(deltaTime);
    }
 
    void BoxButton::Draw()
@@ -197,15 +196,13 @@ namespace totem
    void BoxButton::SetScale(const math::vec2f& scale)
    {
       Button::SetScale(scale);
-      m_InitScale = scale;
-      m_HoverScaleAnim->SetFinVal(1.1 * m_InitScale);
-      m_IdleScaleAnim->SetFinVal(m_InitScale);
+      //m_HoverScaleAnim->SetFinVal(1.1 * m_InitScale);
+      //m_IdleScaleAnim->SetFinVal(m_InitScale);
    }
 
    void BoxButton::SetColor(const math::vec4f& color)
    {
       m_Color = color;
    }
-
 
 }

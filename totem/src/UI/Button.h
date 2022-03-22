@@ -107,14 +107,6 @@ namespace totem
 
    private:
       math::vec4f m_Color;
-      Animator m_Animator;
-      AnimationGroup m_IdleAnim;
-      AnimationGroup m_HoverAnim;
-      Animation* m_PushAnim;
-      AnimationGroup m_AnimGroup;
-      math::vec2f m_InitScale;
-      InterpAnim<math::vec2f>* m_HoverScaleAnim;
-      InterpAnim<math::vec2f>* m_IdleScaleAnim;
    };
 }
 

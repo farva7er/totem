@@ -13,96 +13,22 @@
 
 enum { sq_count = 1000 };
 
-class Sandbox;
-
-class StartButtonListener : public totem::IClickListener
-{
-public:
-   StartButtonListener(Sandbox* sandbox)
-      : m_Sandbox(sandbox) {}
-
-   void OnClick();
-
-private:
-   Sandbox* m_Sandbox;
-};
-
-class StopButtonListener : public totem::IClickListener
-{
-public:
-   StopButtonListener(Sandbox* sandbox)
-      : m_Sandbox(sandbox) {}
-
-   void OnClick();
-
-private:
-   Sandbox* m_Sandbox;
-};
-
 class Sandbox : public App
 {
 
 public:
    Sandbox() : m_CurrPos(0), m_UIManager(m_Renderer)
    {
-      m_ImageColor = totem::math::vec4f(1, 1, 1, 1);
+      m_TriangleColor = totem::math::vec4f(1, 1, 1, 1);
       m_ColorAnim =
-         new totem::LinearInterpAnim<totem::math::vec4f>
-                                    (m_ImageColor,
+         new totem::LinearInterpAnim<totem::math::vec4f>(
                                     totem::math::vec4f(0, 0, 0, 0),
                                     totem::math::vec4f(1, 1, 1, 1),
-                                    1);
-      m_LbAnim =                          
-            new totem::HermiteModifAnim<totem::math::vec2f>(
-                  m_ImagePos,
-                  totem::math::vec2f(-0.75f, -0.75f),
-                  2
-            );
-      m_RtAnim =                          
-            new totem::LinearModifAnim<totem::math::vec2f>(
-                  m_ImagePos,
-                  totem::math::vec2f(0.8f, 0.8f),
-                  2
-            );
+                                    3);
 
-      totem::Animation* rotAnim = new totem::HermiteInterpAnim<float>(
-                                    m_Angle,
-                                    0.0f,
-                                    360.0f,
-                                    3
-                                 );
-      m_Animator.Play(rotAnim);
-
-      m_LbAnim2 = m_LbAnim->Clone();
-
-      m_PartialAnimGroup.Add(m_ColorAnim);
-      m_PartialAnimGroup.Add(m_LbAnim);
-      m_PartialAnimGroup.Add(rotAnim);
-
-      m_FullAnimGroup.Add(m_ColorAnim);
-      m_FullAnimGroup.Add(m_LbAnim);
-      m_FullAnimGroup.Add(m_RtAnim);
-      m_FullAnimGroup.Add(m_LbAnim2);
-
-      m_Animator.Add(m_FullAnimGroup);
-
-      m_StartButton = m_UIManager.CreateButton(
-                        totem::ButtonType::BoxButton,
-                        new StartButtonListener(this));
-
-      m_StartButton->SetPos(totem::math::vec2f(-0.5f, -0.5f));
-      m_StartButton->SetScale(totem::math::vec2f(2, 1));
-      m_StartButton->SetColor(totem::math::vec4f(0, 0.4f, 0.3f, 0.8f));
-      m_StartButton->SetText("Start Anim");
- 
-      m_StopButton = m_UIManager.CreateButton(
-                        totem::ButtonType::BoxButton,
-                        new StopButtonListener(this));
-
-      m_StopButton->SetPos(totem::math::vec2f(0.5f, -0.5f));
-      m_StopButton->SetScale(totem::math::vec2f(2, 1));     
-      m_StopButton->SetText("Stop Anim");
-
+      //m_ColorAnim->Play();
+      //m_Animator.Add(m_ColorAnim);
+      m_Animator.Sync(m_ColorAnim, 5);
    }
 
    virtual void OnEvent(totem::Event& e) override
@@ -130,18 +56,6 @@ public:
       m_UIManager.OnEvent(e);
    }
 
-   void PlayTriangleAnim()
-   {
-      m_Animator.Play(m_PartialAnimGroup);
-      m_Animator.Play(m_RtAnim, 2.0f, m_LbAnim);
-      m_Animator.Play(m_LbAnim2, 1.0f, m_RtAnim);
-   }
-
-   void PauseTriangleAnim()
-   {
-      m_Animator.Pause(m_FullAnimGroup);
-   }
-
    virtual void OnUpdate(float deltaTime) override
    {
 
@@ -160,16 +74,11 @@ public:
          m_Renderer->DrawRect(rect);
 
       }
-/*
-      m_Renderer->DrawRect(totem::math::vec2f(0.0f, 0.0f),
-                           totem::math::vec2f(14.0f, 7.0f),
-                           "image.jpeg",
-                           totem::math::vec4f(1, 1, 1, 0.5f));
-*/
+
       m_Renderer->DrawImage("resources/transp_image.png",
-                           m_ImagePos,
+                           m_TrianglePos,
                            3,
-                           m_ImageColor);
+                           m_TriangleColor);
 
       totem::Rect textBgRect = totem::Rect::Builder()
                               .SetPos(totem::math::vec2f(0, 0.55f))
@@ -178,15 +87,6 @@ public:
                               .Construct();
 
       m_Renderer->DrawRect(textBgRect);
-
-      totem::Rect rotatedRect = totem::Rect::Builder()
-                           .SetScale(totem::math::vec2f(2.0f, 0.2f))
-                           .SetColor(totem::math::vec4f(0, 0, 0, 0.7f))
-                           .SetRotationAngle(m_Angle)
-                           .SetRotationAxis(totem::math::vec2f(-1, 0))
-                           .Construct();
-
-      m_Renderer->DrawRect(rotatedRect);
 
 
       m_Renderer->DrawText("Welcome to totem!",
@@ -206,6 +106,7 @@ public:
       //LOG_INFO("deltaTime: %f", deltaTime);
 
       m_UIManager.OnUpdate(deltaTime);
+      m_ColorAnim->ApplyVal(m_TriangleColor);
    }
 
 private:
@@ -213,30 +114,11 @@ private:
    int m_CurrPos;
    float m_ScreenWidth, m_ScreenHeight;
    totem::Animator m_Animator;
-   totem::math::vec4f m_ImageColor;
-   totem::math::vec2f m_ImagePos;
-   totem::Animation* m_ColorAnim;
-   totem::Animation* m_LbAnim;
-   totem::Animation* m_LbAnim2;
-   totem::Animation* m_RtAnim;
-   totem::AnimationGroup m_FullAnimGroup;
-   totem::AnimationGroup m_PartialAnimGroup;
+   totem::math::vec4f m_TriangleColor;
+   totem::math::vec2f m_TrianglePos;
+   totem::InterpAnim<totem::math::vec4f>* m_ColorAnim;
    totem::UIManager m_UIManager;
-   totem::Button* m_StartButton;
-   totem::Button* m_StopButton;
-   float m_Angle;
 };
-
-
-void StartButtonListener::OnClick()
-{
-   m_Sandbox->PlayTriangleAnim();
-}
-
-void StopButtonListener::OnClick()
-{
-   m_Sandbox->PauseTriangleAnim();
-}
 
 App* App::CreateApp()
 {
