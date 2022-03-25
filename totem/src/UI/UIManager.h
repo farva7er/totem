@@ -30,10 +30,9 @@ namespace totem
       UIManager(Renderer* renderer);
       ~UIManager();
 
-      Button* CreateButton(ButtonType type, IClickListener* listener);
+      IButton* CreateButton(ButtonType type);
 
       void OnUpdate(float deltaTime);
-      void Forget(UIElement* element);
       virtual void OnEvent(Event& e) override;
 
       Renderer* GetRenderer() const;

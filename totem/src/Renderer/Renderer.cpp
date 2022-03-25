@@ -165,16 +165,14 @@ namespace totem
             abs(rotationAxis.x) <= eps && abs(rotationAxis.y) <= eps)
          {
             // Draw not rotated rect
-            mat = math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
-                                                pos.y * 10.0f)
+            mat = math::getTranslate(pos.x, pos.y)
                         *  math::getScale(scale.x, scale.y);
          }
          else
          {
             // Draw rotated rect
             mat = 
-               math::getTranslate(pos.x * 10.0 * m_AspectRatio, 
-                                             pos.y * 10.0f)
+               math::getTranslate(pos.x, pos.y)
                *  math::getRotationZ(math::degToRad(rect.GetRotationAngle()))
                *  math::getTranslate(-rotationAxis.x * scale.x, 
                                        -rotationAxis.y * scale.y)
@@ -212,7 +210,7 @@ namespace totem
 
       Rect rect = Rect::Builder()
                         .SetPos(pos)
-                        .SetScale(math::vec2f(scale*aspectRatio, scale))
+                        .SetScale(math::vec2f(scale * aspectRatio, scale))
                         .SetImagePath(imagePath)
                         .SetColor(tintColor)
                         .Construct();
@@ -233,34 +231,32 @@ namespace totem
    void Renderer::DrawText(const char* str, const math::vec2f& pos,
                            float scale, const math::vec4f& color)
    {
-      const float scaleFactor = 1.0f;
       math::vec2f currPos = pos;
       for(; *str; str++)
       {
-         m_FontRenderer.DrawChar(*str, currPos, scale * scaleFactor,
-                                 color);
-         currPos.x += m_FontRenderer.GetAdvanceNormal(*str, scale);
+         m_FontRenderer.DrawChar(*str, currPos, scale, color);
+         currPos.x += m_FontRenderer.GetAdvance(*str, scale);
       }
    }
 
    void Renderer::DrawControlledText(const char* str, 
-                              const math::vec2f& boxPos,
-                              const math::vec2f& boxScale,
-                              float scale,
-                              const math::vec4f& color,
-                              int alignFlags)
+                                    const math::vec2f& boxPos,
+                                    const math::vec2f& boxScale,
+                                    float scale,
+                                    const math::vec4f& color,
+                                    int alignFlags)
    {
       math::vec2f pos;
       math::vec2f textSize = CalcTextSize(str, scale);
 
       math::vec2f leftTop(
-         boxPos.x - CamUnitXToNormal(boxScale.x),
-         boxPos.y + CamUnitYToNormal(boxScale.y)
+         boxPos.x - boxScale.x,
+         boxPos.y + boxScale.y
       );
 
       math::vec2f rightBottom(
-         boxPos.x + CamUnitXToNormal(boxScale.x),
-         boxPos.y - CamUnitYToNormal(boxScale.y)
+         boxPos.x + boxScale.x,
+         boxPos.y - boxScale.y
       );
 
       if(alignFlags & TextAlign::HCenter)
@@ -284,8 +280,8 @@ namespace totem
 
       for(; *str; str++)
       {
-         size.x += m_FontRenderer.GetAdvanceNormal(*str, scale);
-         float height = m_FontRenderer.GetHeightNormal(*str, scale);
+         size.x += m_FontRenderer.GetAdvance(*str, scale);
+         float height = m_FontRenderer.GetHeight(*str, scale);
          if(height > size.y)
             size.y = height;
       }
@@ -311,58 +307,20 @@ namespace totem
       SetAspectRatio(width/(float)height);
       //LOG_INFO("Framebuffer Resized - W: %u H: %u", width, height);
    }
-
-   float Renderer::PixelUnitXToCam(int px) const
+ 
+   math::vec2f Renderer::GetSceneSize() const
    {
-      float res = (px / (float)m_Window->GetFBWidth()) * m_SceneSize *
-                                                      m_AspectRatio;
-      return res;
+      return math::vec2f(m_SceneSize * m_AspectRatio, m_SceneSize);
    }
 
-   float Renderer::PixelUnitYToCam(int py) const
+   math::vec2f Renderer::ScreenToScene(const math::vec2f screenCoords) const
    {
-      float res = (py / (float)m_Window->GetFBHeight()) * m_SceneSize;
-      return res;
-   }
-
-   float Renderer::PixelUnitXToNormal(int px) const
-   {
-      float res = (px / (float)m_Window->GetFBWidth());
-      return res;
-   }
-
-   float Renderer::PixelUnitYToNormal(int py) const
-   {
-      float res = (py / (float)m_Window->GetFBHeight());
-      return res;
-   }
-
-   math::vec2f Renderer::ScreenToNormal(math::vec2i scrCoords) const
-   {
-      float x = scrCoords.x / (float)m_Window->GetWidth();
-      x = 2*x - 1; // map from (0; 1) to (-1; 1)
-   
-      float y = scrCoords.y / (float)m_Window->GetHeight();
-      y = -(2*y - 1); // map from (0; 1) to (-1; 1)
-                   
-      return math::vec2f(x, y);
-   }
-
-   float Renderer::CamUnitXToNormal(float camX) const
-   {
-      float res = camX / (m_SceneSize * m_AspectRatio) ;
-      return res;
-   }
-
-   float Renderer::CamUnitYToNormal(float camY) const
-   {
-      float res = camY / m_SceneSize;
-      return res;
-   }
-
-   float Renderer::GetSceneSize() const
-   {
-      return m_SceneSize;
+      return math::vec2f(
+            m_SceneSize * m_AspectRatio * 
+            (2 * screenCoords.x / m_Window->GetWidth() - 1),
+            
+            m_SceneSize *
+            (1  - 2 * screenCoords.y / m_Window->GetHeight()));
    }
 
    math::vec2f Renderer::GetContentScale() const

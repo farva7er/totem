@@ -17,7 +17,7 @@ namespace totem
 
       void ApplyVal(T& var)
       {
-         if(this->IsActive())
+         if(!this->IsPaused())
          {
             var = this->m_AnimVar;
          }

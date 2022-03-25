@@ -14,14 +14,15 @@ namespace totem
       virtual ~Animation() {}
       virtual Animation* Clone() = 0;
 
-      void Play() { m_IsActive = true; };
-      void Pause() { m_IsActive = false; };
+      void Play() { m_IsPaused = false; };
+      void Pause() { m_IsPaused = true; };
       void Reset();
+
+      bool IsPaused() { return m_IsPaused; }
 
    protected:
       int GetFinishCount() const { return m_FinishCount; };
       bool HasFinishedOnce() const { return m_FinishCount > 0; };
-      bool IsActive() const { return m_IsActive; };
       bool IsLooping() const { return m_IsLooping; };
 
    protected:
@@ -33,7 +34,7 @@ namespace totem
    private:
       void Update(float deltaTime);
    private:
-      bool m_IsActive;
+      bool m_IsPaused;
       bool m_IsLooping;
       bool m_IsAtFirstTick;
       float m_Duration;

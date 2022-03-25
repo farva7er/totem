@@ -17,10 +17,7 @@ namespace totem
       while(m_Elements)
       {
          UIElementNode* savedNode = m_Elements;
-         UIElement* savedElement = m_Elements->element;
-         savedNode->element = nullptr;
          m_Elements = m_Elements->next;
-         delete savedElement;
          delete savedNode;
       }
    }
@@ -36,7 +33,7 @@ namespace totem
       while(curr)
       {
          curr->element->OnUpdate(deltaTime);
-         curr->element->Draw();
+         curr->element->Draw(m_Renderer);
          curr = curr->next;
       }
    }
@@ -44,27 +41,21 @@ namespace totem
    void UIManager::OnEvent(Event& e)
    {
       UIElementNode* curr = m_Elements;
+
+      if(e.GetType() == EventType::MouseMove)
+      {
+         MouseMoveEvent& me = e.Cast<MouseMoveEvent>();
+         math::vec2f mouseCoords = 
+            m_Renderer->ScreenToScene(math::vec2f(me.GetX(), me.GetY()));
+         me.SetX(mouseCoords.x);
+         me.SetY(mouseCoords.y);
+      }
+
       while(curr)
       {
+
          curr->element->OnEvent(e);
          curr = curr->next;
-      }
-   }
-
-   void UIManager::Forget(UIElement* element)
-   {
-      for(UIElementNode** curr = &m_Elements;
-            *curr;
-            curr = &((*curr)->next))
-      {
-         if((*curr)->element == element)
-         {
-            UIElementNode* savedNode = *curr;
-            *curr = (*curr)->next;
-            savedNode->element = nullptr;
-            delete savedNode;
-            break;
-         }
       }
    }
 
@@ -73,15 +64,18 @@ namespace totem
       return m_Renderer;
    }
 
-
-   Button* UIManager::CreateButton(ButtonType type, IClickListener* listener)
+   IButton* UIManager::CreateButton(ButtonType type)
    {
-      Button* button = nullptr;
+      IButton* button = nullptr;
 
       switch(type)
       {
          case ButtonType::BoxButton:
-            button = new BoxButton(this, listener);
+            button = new BoxButton();
+            break;
+         case ButtonType::AnimatedBoxButton:
+            button = new BoxButton();
+            button = new ButtonAnimDecorator(button);
             break;
          default:
             LOG_ERROR("Used unimplemented button! Type: %d", type);

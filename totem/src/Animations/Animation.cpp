@@ -3,13 +3,13 @@
 namespace totem
 {
    Animation::Animation(bool isLooping, float animDuration)
-      : m_IsActive(false), m_IsLooping(isLooping), m_IsAtFirstTick(true),
+      : m_IsPaused(true), m_IsLooping(isLooping), m_IsAtFirstTick(true),
       m_Duration(animDuration), m_CurrTime(0), m_FinishCount(0)
       {}
 
    Animation::Animation(const Animation& other)
    {
-      m_IsActive = false;
+      m_IsPaused = true;
       m_IsLooping = other.m_IsLooping;
       m_Duration = other.m_Duration;
       m_CurrTime = 0.0f;

@@ -267,7 +267,7 @@ namespace totem
    class MouseMoveEvent : public Event
    {
    public:
-      MouseMoveEvent(int x, int y)
+      MouseMoveEvent(float x, float y)
          : m_X(x), m_Y(y) {}
 
       virtual EventCategory GetCategory() const override
@@ -275,8 +275,11 @@ namespace totem
       virtual EventType GetType() const override
       { return EventType::MouseMove; }
 
-      int GetX() const { return m_X; }
-      int GetY() const { return m_Y; }
+      float GetX() const { return m_X; }
+      float GetY() const { return m_Y; }
+
+      void SetX(float x) { m_X = x; }
+      void SetY(float y) { m_Y = y; }
 
       virtual std::string ToString() const override
       {
@@ -286,7 +289,7 @@ namespace totem
       }
 
    private:
-      int m_X, m_Y;
+      float m_X, m_Y;
    };
 
    class MouseScrollEvent : public Event

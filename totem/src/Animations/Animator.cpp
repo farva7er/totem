@@ -25,7 +25,7 @@ namespace totem
       {
          Animation* currAnim = currNode->anim;
          
-         if(currAnim->IsActive())
+         if(!currAnim->IsPaused())
          {
             if(currNode->delay > 0)
             {

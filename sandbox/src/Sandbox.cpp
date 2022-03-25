@@ -13,6 +13,29 @@
 
 enum { sq_count = 1000 };
 
+class ButtonListener : public totem::IButtonListener
+{
+   virtual void OnClick() override
+   {
+      LOG_INFO("Click");
+   }
+
+   virtual void OnIdle() override
+   {
+      LOG_INFO("Idle");
+   }
+
+   virtual void OnPush() override
+   {
+      LOG_INFO("Push");
+   }
+
+   virtual void OnHover() override
+   {
+      LOG_INFO("Hover");
+   }
+};
+
 class Sandbox : public App
 {
 
@@ -29,6 +52,24 @@ public:
       //m_ColorAnim->Play();
       //m_Animator.Add(m_ColorAnim);
       m_Animator.Sync(m_ColorAnim, 5);
+
+      totem::IButton* button = m_UIManager
+         .CreateButton(totem::ButtonType::AnimatedBoxButton);
+      button->SetPos(totem::math::vec2f(5, 0));
+      button->SetScale(totem::math::vec2f(2, 1));
+      button->SetColor(totem::math::vec4f(0.3f, 0.1f, 0.8f, 1.0f));
+      button->AddListener(new ButtonListener());
+      button->SetText("No, Click me");
+
+      totem::IButton* animButton = m_UIManager
+         .CreateButton(totem::ButtonType::BoxButton);
+      animButton->SetPos(totem::math::vec2f(-5, 0));
+      animButton->SetScale(totem::math::vec2f(2, 1));
+      animButton->SetColor(totem::math::vec4f(0.6f, 0.2f, 0.3f, 1.0f));
+      animButton->AddListener(new ButtonListener());
+      animButton->SetText("Click me");
+
+
    }
 
    virtual void OnEvent(totem::Event& e) override
@@ -41,10 +82,14 @@ public:
          m_Positions[m_CurrPos] = 2 * 
                         totem::math::vec2f(me.GetX()/m_ScreenWidth - 0.5f,
                                           -me.GetY()/m_ScreenHeight + 0.5f);
+
+         totem::math::vec2f sceneSizes  = m_Renderer->GetSceneSize();
+         m_Positions[m_CurrPos].x *= sceneSizes.x;
+         m_Positions[m_CurrPos].y *= sceneSizes.y;
+
          m_CurrPos++;
          if(m_CurrPos >= sq_count)
             m_CurrPos = 0;
-         //m_Renderer->Clear(me.GetX()/1000.0f, me.GetY()/1000.0f, 0.2f);
       }
       if(e.GetType() == totem::EventType::WindowResize)
       {
@@ -80,29 +125,40 @@ public:
                            3,
                            m_TriangleColor);
 
+      totem::math::vec2f textBgRectPos(0, 5.5f);
+      totem::math::vec2f textBgRectScale(12, 4);
+
       totem::Rect textBgRect = totem::Rect::Builder()
-                              .SetPos(totem::math::vec2f(0, 0.55f))
-                              .SetScale(totem::math::vec2f(12, 4))
+                              .SetPos(textBgRectPos)
+                              .SetScale(textBgRectScale)
                               .SetColor(totem::math::vec4f(0, 0, 0, 0.5f))
                               .Construct();
 
       m_Renderer->DrawRect(textBgRect);
 
 
-      m_Renderer->DrawText("Welcome to totem!",
-                           totem::math::vec2f(-0.5f, 0.5f),
+      m_Renderer->DrawControlledText("Welcome to totem!",
+                           totem::math::vec2f(textBgRectPos.x, textBgRectPos.y + 2),
+                           totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.5),
                            2.5f,
-                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f));
+                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
+                           totem::TextAlign::HCenter | totem::TextAlign::VCenter);
 
-      m_Renderer->DrawText("visual novel engine",
-                           totem::math::vec2f(-0.35f, 0.4f),
+
+      m_Renderer->DrawControlledText("visual novel engine",
+                           totem::math::vec2f(textBgRectPos.x, textBgRectPos.y - 1),
+                           totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.25),
                            1.5f,
-                           totem::math::vec4f(0.4f, 0.8f, 0.4f, 0.8f));
+                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
+                           totem::TextAlign::HCenter | totem::TextAlign::VCenter);
 
-      m_Renderer->DrawText("hopefully, in future ;)",
-                           totem::math::vec2f(-0.2f, 0.3f),
-                           1,
-                           totem::math::vec4f(0.4f, 0.8f, 0.4f, 0.8f));
+      m_Renderer->DrawControlledText("hopefully, in future ;)",
+                           totem::math::vec2f(textBgRectPos.x, textBgRectPos.y - 3),
+                           totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.25),
+                           1.0f,
+                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
+                           totem::TextAlign::HCenter | totem::TextAlign::VCenter);
+
       //LOG_INFO("deltaTime: %f", deltaTime);
 
       m_UIManager.OnUpdate(deltaTime);

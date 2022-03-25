@@ -7,22 +7,13 @@
 
 namespace totem
 {
-   class UIManager;
-
    class UIElement : public IEventListener
    {
-      friend class UIManager;
-   protected:
-      UIElement(UIManager* manager);
-      virtual ~UIElement();
+   public:
+      virtual ~UIElement() {};
 
-      virtual void OnUpdate(float deltaTime) = 0;
-      virtual void Draw() = 0;
-
-      Renderer* GetRenderer() const;
-
-   private:
-      UIManager* m_Master;
+      virtual void OnUpdate(float deltaTime) {};
+      virtual void Draw(Renderer* renderer) const = 0;
    };
 }
 

@@ -13,7 +13,7 @@ namespace totem
    {
       friend class FontRenderer;
    public:
-      Font(const char* fontPath, const math::vec2f& dpiScale);
+      Font(const char* fontPath);
       ~Font();
 
       virtual void Load() override;
@@ -24,24 +24,21 @@ namespace totem
       static ResourceType GetStaticType()
       { return ResourceType::Font; }
       
-      math::vec2f GetDpiScale()
-      { return m_DpiScale; }
    private:
       struct Character
       {
-         math::vec2i size;
-         math::vec2i bearing;
-         unsigned int advance;
+         math::vec2f size;
+         math::vec2f bearing;
+         float advance;
          Texture* texture;
-         Character(const math::vec2i& size, const math::vec2i& bearing,
-                  unsigned int advance, Texture* texture);
+         Character(const math::vec2f& size, const math::vec2f& bearing,
+                  float advance, Texture* texture);
          ~Character();
       };
  
       enum { MaxCodepoint = 12288 };
       // Most common codepoints (0x02ff)
       Character* m_Characters[MaxCodepoint];
-      math::vec2f m_DpiScale;
    };
 
    class FontRenderer
@@ -52,8 +49,8 @@ namespace totem
 
       void DrawChar(unsigned int codepoint, const math::vec2f& pos,
                   float scale, const math::vec4f& color);
-      float GetAdvanceNormal(unsigned int codepoint, float scale) const;
-      float GetHeightNormal(unsigned int codepoint, float scale) const;
+      float GetAdvance(unsigned int codepoint, float scale) const;
+      float GetHeight(unsigned int codepoint, float scale) const;
       void SetAspectRatio(float aspectRatio);
    private:
       Font* m_CurrentFont;

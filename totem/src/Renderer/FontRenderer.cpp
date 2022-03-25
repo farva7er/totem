@@ -6,9 +6,9 @@
 
 namespace totem
 {
-   Font::Character::Character(const math::vec2i& size,
-                              const math::vec2i& bearing,
-                              unsigned int advance, Texture* texture)
+   Font::Character::Character(const math::vec2f& size,
+                              const math::vec2f& bearing,
+                              float advance, Texture* texture)
       : size(size), bearing(bearing), advance(advance), texture(texture)
    {}
 
@@ -17,8 +17,8 @@ namespace totem
       delete texture;
    }
 
-   Font::Font(const char* fontPath, const math::vec2f& dpiScale)
-      : Resource(fontPath), m_DpiScale(dpiScale)
+   Font::Font(const char* fontPath)
+      : Resource(fontPath)
    {
       for(int i = 0; i < MaxCodepoint; i++)
       {
@@ -57,8 +57,7 @@ namespace totem
       }
 
 
-      error = FT_Set_Char_Size(face, 0, 24*64,
-                              120 * m_DpiScale.x, 120 * m_DpiScale.y);
+      error = FT_Set_Pixel_Sizes(face, 0, 64);
       if(error)
       {
          LOG_ERROR("Couldn't set char size for font %s", m_ResourceId);
@@ -97,11 +96,11 @@ namespace totem
          m_Characters[charcode] = 
             new Character
             (
-                  math::vec2i(face->glyph->bitmap.width,
-                              face->glyph->bitmap.rows),
-                  math::vec2i(face->glyph->bitmap_left,
-                              face->glyph->bitmap_top),
-                  face->glyph->advance.x,
+                  math::vec2f(face->glyph->bitmap.width / (float)64,
+                              face->glyph->bitmap.rows / (float)64),
+                  math::vec2f(face->glyph->bitmap_left / (float)64,
+                              face->glyph->bitmap_top / (float)64),
+                  (face->glyph->advance.x >> 6) / (float)64,
                   new Texture(face->glyph->bitmap.buffer, 
                               face->glyph->bitmap.width,
                               face->glyph->bitmap.rows,
@@ -131,9 +130,7 @@ namespace totem
       Font* font = rm.GetResource<Font>(fontPath);
       if(!font)
       {
-         font = rm.LoadResource<Font>(
-               new Font(fontPath,
-                     m_Master->GetContentScale()));
+         font = rm.LoadResource<Font>(new Font(fontPath));
       }
 
       m_CurrentFont = font;
@@ -156,6 +153,32 @@ namespace totem
          return;
       }
 
+      math::vec2f baseScale(m_Master->GetSceneSize().y / 20, m_Master->GetSceneSize().y / 20);
+      baseScale = baseScale * scale;
+
+      math::vec2f chScale;
+      chScale.x = baseScale.x * ch->size.x;
+      chScale.y = baseScale.y * ch->size.y;
+
+      math::vec2f chBearing;
+      chBearing.x = 2 * baseScale.x * ch->bearing.x;
+      chBearing.y = 2 * baseScale.y * ch->bearing.y;
+
+      float xpos = pos.x + chBearing.x + chScale.x;
+      float ypos = pos.y + chScale.y - (2 * chScale.y - chBearing.y);
+
+
+      Rect rect = Rect::Builder()
+                        .SetPos(math::vec2f(xpos, ypos))
+                        .SetScale(chScale)
+                        .SetTexture(ch->texture)
+                        .SetColor(color)
+                        .SetShaderId(m_FontShaderId)
+                        .Construct();
+      m_Master->DrawRect(rect); 
+   
+/////////////////////
+/*
       float dpiScaleX = m_CurrentFont->GetDpiScale().x;
       float dpiScaleY = m_CurrentFont->GetDpiScale().y;
 
@@ -178,10 +201,11 @@ namespace totem
                         .SetColor(color)
                         .SetShaderId(m_FontShaderId)
                         .Construct();
-      m_Master->DrawRect(rect); 
+      m_Master->DrawRect(rect);
+*/
    }
 
-   float FontRenderer::GetAdvanceNormal(unsigned int codepoint,
+   float FontRenderer::GetAdvance(unsigned int codepoint,
                                        float scale) const
    {
       if(!m_CurrentFont)
@@ -197,13 +221,14 @@ namespace totem
          return 0;
       }
 
-      float dpiScaleX = m_CurrentFont->GetDpiScale().x;
-      float advance = 2 * m_Master->PixelUnitXToNormal(ch->advance >> 6) 
-                  * scale / dpiScaleX;
+      math::vec2f baseScale(m_Master->GetSceneSize().y / 20, m_Master->GetSceneSize().y / 20);
+      baseScale = baseScale * scale;
+
+      float advance = 2 * baseScale.x * ch->advance;
       return advance;
    }
 
-   float FontRenderer::GetHeightNormal(unsigned int codepoint,
+   float FontRenderer::GetHeight(unsigned int codepoint,
                                        float scale) const
    {
       if(!m_CurrentFont)
@@ -219,19 +244,20 @@ namespace totem
          return 0;
       }
 
-      float dpiScaleY = m_CurrentFont->GetDpiScale().y;
-      float h = 2 * m_Master->PixelUnitYToNormal(ch->size.y) 
-                  * scale / dpiScaleY;
-      return h;
+      math::vec2f baseScale(m_Master->GetSceneSize().y / 20, m_Master->GetSceneSize().y / 20);
+      baseScale = baseScale * scale;
+
+      float height = 2 * baseScale.y * ch->size.y;
+      return height;
    }
 
    void FontRenderer::SetAspectRatio(float aspectRatio)
    {
       Shader* shader = m_Master->GetShader(m_FontShaderId);
       shader->Use();
-      float sceneSize = m_Master->GetSceneSize();
-      math::mat4f mat = math::getOrthoProj(sceneSize * aspectRatio, 
-                                           sceneSize, -1.0f, 1.0f);
+      math::vec2f sceneSize = m_Master->GetSceneSize();
+      math::mat4f mat = math::getOrthoProj(sceneSize.x, 
+                                           sceneSize.y, -1.0f, 1.0f);
       shader->SetUniformMatrix4fv("vProjMat", mat);
    }
 }

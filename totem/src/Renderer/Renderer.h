@@ -49,17 +49,11 @@ namespace totem
                               TextAlign::VCenter | TextAlign::HCenter
                               );
  
-      float PixelUnitXToCam(int px) const;
-      float PixelUnitYToCam(int py) const;
-      float PixelUnitXToNormal(int px) const;
-      float PixelUnitYToNormal(int py) const;
-
-      math::vec2f ScreenToNormal(math::vec2i scrCoords) const;
-      float CamUnitXToNormal(float camX) const;
-      float CamUnitYToNormal(float camY) const;
+ 
+      math::vec2f ScreenToScene(const math::vec2f screenCoords) const;
 
       Shader* GetShader(const char* shaderId) const;
-      float GetSceneSize() const;
+      math::vec2f GetSceneSize() const;
       totem::math::vec2f GetContentScale() const;
 
    private:
