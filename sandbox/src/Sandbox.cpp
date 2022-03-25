@@ -137,27 +137,30 @@ public:
       m_Renderer->DrawRect(textBgRect);
 
 
-      m_Renderer->DrawControlledText("Welcome to totem!",
-                           totem::math::vec2f(textBgRectPos.x, textBgRectPos.y + 2),
-                           totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.5),
-                           2.5f,
-                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
-                           totem::TextAlign::HCenter | totem::TextAlign::VCenter);
+      m_Renderer->
+         DrawControlledText("Welcome to totem!",
+               totem::math::vec2f(textBgRectPos.x, textBgRectPos.y + 2),
+               totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.5),
+               2.5f,
+               totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
+               totem::TextAlign::HCenter | totem::TextAlign::VCenter);
 
 
-      m_Renderer->DrawControlledText("visual novel engine",
-                           totem::math::vec2f(textBgRectPos.x, textBgRectPos.y - 1),
-                           totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.25),
-                           1.5f,
-                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
-                           totem::TextAlign::HCenter | totem::TextAlign::VCenter);
+      m_Renderer->
+         DrawControlledText("visual novel engine",
+               totem::math::vec2f(textBgRectPos.x, textBgRectPos.y - 1),
+               totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.25),
+               1.5f,
+               totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
+               totem::TextAlign::HCenter | totem::TextAlign::VCenter);
 
-      m_Renderer->DrawControlledText("hopefully, in future ;)",
-                           totem::math::vec2f(textBgRectPos.x, textBgRectPos.y - 3),
-                           totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.25),
-                           1.0f,
-                           totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
-                           totem::TextAlign::HCenter | totem::TextAlign::VCenter);
+      m_Renderer->
+         DrawControlledText("hopefully, in future ;)",
+               totem::math::vec2f(textBgRectPos.x, textBgRectPos.y - 3),
+               totem::math::vec2f(textBgRectScale.x, textBgRectScale.y * 0.25),
+               1.0f,
+               totem::math::vec4f(0.6f, 0.7f, 0.6f, 0.8f),
+               totem::TextAlign::HCenter | totem::TextAlign::VCenter);
 
       //LOG_INFO("deltaTime: %f", deltaTime);
 
