@@ -83,12 +83,17 @@ namespace totem
 
       switch(type)
       {
-         case ButtonType::BoxButton:
+         case ButtonType::SimpleBoxButton:
             button = new BoxButton();
             break;
-         case ButtonType::AnimatedBoxButton:
+         case ButtonType::FixedBoxButton:
             button = new BoxButton();
-            button = new ButtonAnimDecorator(button);
+            button = new ButtonColorDecorator(button);
+            break;
+         case ButtonType::SoftBoxButton:
+            button = new BoxButton();
+            button = new ButtonColorDecorator(button);
+            button = new ButtonScaleDecorator(button);
             break;
          default:
             LOG_ERROR("Used unimplemented button! Type: %d", type);

@@ -11,8 +11,9 @@ namespace totem
 
    enum class ButtonType
    { 
-      BoxButton,
-      AnimatedBoxButton
+      SimpleBoxButton,
+      FixedBoxButton,
+      SoftBoxButton
    };
 
    // In order to use a button
@@ -146,14 +147,58 @@ namespace totem
       IButton* m_Wrapee;
    };
 
-   class ButtonAnimDecorator : public ButtonBaseDecorator
+   class ButtonScaleDecorator : public ButtonBaseDecorator
    {
    public:
-      ButtonAnimDecorator(IButton* button);
+      ButtonScaleDecorator(IButton* button);
 
       virtual void OnUpdate(float deltaTime) override;
 
       virtual void SetScale(const math::vec2f& scale) override;
+
+      void OnLostHover();
+      void OnHover();
+      void OnPush();
+
+   private:
+      class ButtonListener : public IUIElementListener
+      {
+      public:
+         ButtonListener(ButtonScaleDecorator* master)
+            : m_Master(master) {}
+
+         virtual void OnLostHover() override;
+         virtual void OnHover() override;
+         virtual void OnPush() override;
+
+         ButtonScaleDecorator* m_Master;
+      };
+
+      InterpAnim<math::vec2f>* m_LostHoverScaleAnim;
+      InterpAnim<math::vec2f>* m_HoverScaleAnim;
+      InterpAnim<math::vec2f>* m_PushScaleAnim;
+
+      AnimationGroup m_AllAnimations;
+
+      Animator m_Animator;
+
+      math::vec2f m_BaseScale;
+
+      float m_LostHoverAnimDuration;
+      float m_HoverAnimDuration;
+      float m_PushAnimDuration;
+
+      float m_HoverScaleFactor;
+      float m_PushScaleFactor;
+   };
+
+   class ButtonColorDecorator : public ButtonBaseDecorator
+   {
+   public:
+      ButtonColorDecorator(IButton* button);
+
+      virtual void OnUpdate(float deltaTime) override;
+
       virtual void SetColor(const math::vec4f& color) override;
 
       void OnLostHover();
@@ -164,19 +209,15 @@ namespace totem
       class ButtonListener : public IUIElementListener
       {
       public:
-         ButtonListener(ButtonAnimDecorator* master)
+         ButtonListener(ButtonColorDecorator* master)
             : m_Master(master) {}
 
          virtual void OnLostHover() override;
          virtual void OnHover() override;
          virtual void OnPush() override;
 
-         ButtonAnimDecorator* m_Master;
+         ButtonColorDecorator* m_Master;
       };
-
-      InterpAnim<math::vec2f>* m_LostHoverScaleAnim;
-      InterpAnim<math::vec2f>* m_HoverScaleAnim;
-      InterpAnim<math::vec2f>* m_PushScaleAnim;
 
       InterpAnim<math::vec4f>* m_LostHoverColorAnim;
       InterpAnim<math::vec4f>* m_HoverColorAnim;
@@ -186,20 +227,17 @@ namespace totem
 
       Animator m_Animator;
 
-      math::vec2f m_BaseScale;
       math::vec4f m_BaseColor;
 
       float m_LostHoverAnimDuration;
       float m_HoverAnimDuration;
       float m_PushAnimDuration;
 
-      float m_HoverScaleFactor;
-      float m_PushScaleFactor;
-
       float m_LostHoverColorAlpha;
       float m_HoverColorAlpha;
       float m_PushColorAlpha;
    };
+
 }
 
 #endif

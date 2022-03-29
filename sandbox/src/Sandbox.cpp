@@ -53,21 +53,29 @@ public:
       //m_Animator.Add(m_ColorAnim);
       m_Animator.Sync(m_ColorAnim, 5);
 
-      totem::IButton* button = m_UIManager
-         .CreateButton(totem::ButtonType::AnimatedBoxButton);
-      button->SetPos(totem::math::vec2f(5, 0));
-      button->SetScale(totem::math::vec2f(2, 1));
-      button->SetColor(totem::math::vec4f(0.3f, 0.1f, 0.8f, 1.0f));
-      button->AddListener(new ButtonListener());
-      button->SetText("No, Click me");
+      totem::IButton* sButton = m_UIManager
+         .CreateButton(totem::ButtonType::SimpleBoxButton);
+      sButton->SetPos(totem::math::vec2f(-5, 0));
+      sButton->SetScale(totem::math::vec2f(2, 1));
+      sButton->SetColor(totem::math::vec4f(0.3f, 0.8f, 0.8f, 1.0f));
+      sButton->AddListener(new ButtonListener());
+      sButton->SetText("Simple");
 
-      totem::IButton* animButton = m_UIManager
-         .CreateButton(totem::ButtonType::BoxButton);
-      animButton->SetPos(totem::math::vec2f(-5, 0));
-      animButton->SetScale(totem::math::vec2f(2, 1));
-      animButton->SetColor(totem::math::vec4f(0.6f, 0.2f, 0.3f, 1.0f));
-      animButton->AddListener(new ButtonListener());
-      animButton->SetText("Click me");
+      totem::IButton* fButton = m_UIManager
+         .CreateButton(totem::ButtonType::FixedBoxButton);
+      fButton->SetPos(totem::math::vec2f(0, 0));
+      fButton->SetScale(totem::math::vec2f(2, 1));
+      fButton->SetColor(totem::math::vec4f(0.3f, 0.1f, 0.8f, 1.0f));
+      fButton->AddListener(new ButtonListener());
+      fButton->SetText("Fixed");
+
+      totem::IButton* soButton = m_UIManager
+         .CreateButton(totem::ButtonType::SoftBoxButton);
+      soButton->SetPos(totem::math::vec2f(5, 0));
+      soButton->SetScale(totem::math::vec2f(2, 1));
+      soButton->SetColor(totem::math::vec4f(0.6f, 0.2f, 0.3f, 1.0f));
+      soButton->AddListener(new ButtonListener());
+      soButton->SetText("Soft");
 
 
    }

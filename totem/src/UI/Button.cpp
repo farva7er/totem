@@ -72,15 +72,13 @@ namespace totem
    }
 
 //////////////////////////////////////////////////////////////
-////////       ButtonAnimDecorator     ///////////////////////
+////////       ButtonScaleDecorator     //////////////////////
 //////////////////////////////////////////////////////////////
 
-   ButtonAnimDecorator::ButtonAnimDecorator(IButton* button)
+   ButtonScaleDecorator::ButtonScaleDecorator(IButton* button)
       : ButtonBaseDecorator(button)
    {
       m_BaseScale = button->GetScale();
-      m_BaseColor = button->GetColor();
-
 
       m_LostHoverAnimDuration = 0.3f;
       m_HoverAnimDuration = 0.2f;
@@ -88,10 +86,6 @@ namespace totem
 
       m_HoverScaleFactor = 1.1f;
       m_PushScaleFactor = 1.05f;
-
-      m_LostHoverColorAlpha = 0.7f;
-      m_HoverColorAlpha = 0.9f;
-      m_PushColorAlpha = 1.0f;
 
       m_LostHoverScaleAnim = new HermiteInterpAnim<math::vec2f>(
                                  math::vec2f(0, 0),
@@ -108,8 +102,100 @@ namespace totem
                                  m_BaseScale * m_PushScaleFactor,
                                  m_PushAnimDuration);
 
+      m_AllAnimations.Add(m_LostHoverScaleAnim);
+      m_AllAnimations.Add(m_HoverScaleAnim);
+      m_AllAnimations.Add(m_PushScaleAnim);
+
+      m_Animator.Add(m_AllAnimations);
+
+      button->AddListener(new ButtonListener(this));
+   }
+
+   void ButtonScaleDecorator::OnUpdate(float deltaTime)
+   {
+      m_Animator.OnUpdate(deltaTime);
+      math::vec2f scale;
+      m_LostHoverScaleAnim->ApplyVal(scale);
+      m_HoverScaleAnim->ApplyVal(scale);
+      m_PushScaleAnim->ApplyVal(scale);
+
+      if(!m_LostHoverScaleAnim->IsPaused() || !m_HoverScaleAnim->IsPaused() ||
+         !m_PushScaleAnim->IsPaused())
+      {
+         ButtonBaseDecorator::SetScale(scale);
+      }
+   }
+
+   void ButtonScaleDecorator::SetScale(const math::vec2f& scale)
+   {
+      ButtonBaseDecorator::SetScale(scale);
+      m_BaseScale = scale;
+      m_LostHoverScaleAnim->SetFinVal(scale);
+      m_HoverScaleAnim->SetFinVal(scale * m_HoverScaleFactor);
+      m_PushScaleAnim->SetFinVal(scale * m_PushScaleFactor);
+   }
+ 
+   void ButtonScaleDecorator::OnLostHover()
+   {
+      m_AllAnimations.Pause();
+
+      m_LostHoverScaleAnim->SetInitVal(GetScale());
+      m_LostHoverScaleAnim->Reset();
+      m_LostHoverScaleAnim->Play();
+   }
+
+   void ButtonScaleDecorator::OnHover()
+   {
+      m_AllAnimations.Pause();
+
+      m_HoverScaleAnim->SetInitVal(GetScale());
+      m_HoverScaleAnim->Reset();
+      m_HoverScaleAnim->Play();
+   }
+
+   void ButtonScaleDecorator::OnPush()
+   {
+      m_AllAnimations.Pause();
+
+      m_PushScaleAnim->SetInitVal(GetScale());
+      m_PushScaleAnim->Reset();
+      m_PushScaleAnim->Play();
+   }
+
+   void ButtonScaleDecorator::ButtonListener::OnLostHover()
+   {
+      m_Master->OnLostHover();
+   }
+
+   void ButtonScaleDecorator::ButtonListener::OnHover()
+   {
+      m_Master->OnHover();
+   }
+
+   void ButtonScaleDecorator::ButtonListener::OnPush()
+   {
+      m_Master->OnPush();
+   }
+
+//////////////////////////////////////////////////////////////
+////////       ButtonColorDecorator     //////////////////////
+//////////////////////////////////////////////////////////////
+
+   ButtonColorDecorator::ButtonColorDecorator(IButton* button)
+      : ButtonBaseDecorator(button)
+   {
+      m_BaseColor = button->GetColor();
 
 
+      m_LostHoverAnimDuration = 0.3f;
+      m_HoverAnimDuration = 0.2f;
+      m_PushAnimDuration = 0.1f;
+
+      m_LostHoverColorAlpha = 0.7f;
+      m_HoverColorAlpha = 0.9f;
+      m_PushColorAlpha = 1.0f;
+
+      
       m_LostHoverColorAnim = new HermiteInterpAnim<math::vec4f>(
                                  math::vec4f(0, 0, 0, 0),
                                  math::vec4f(m_BaseColor.x,
@@ -134,10 +220,6 @@ namespace totem
                                              m_PushColorAlpha),
                                  m_PushAnimDuration);
 
-      m_AllAnimations.Add(m_LostHoverScaleAnim);
-      m_AllAnimations.Add(m_HoverScaleAnim);
-      m_AllAnimations.Add(m_PushScaleAnim);
-
       m_AllAnimations.Add(m_LostHoverColorAnim);
       m_AllAnimations.Add(m_HoverColorAnim);
       m_AllAnimations.Add(m_PushColorAnim);
@@ -147,19 +229,9 @@ namespace totem
       button->AddListener(new ButtonListener(this));
    }
 
-   void ButtonAnimDecorator::OnUpdate(float deltaTime)
+   void ButtonColorDecorator::OnUpdate(float deltaTime)
    {
       m_Animator.OnUpdate(deltaTime);
-      math::vec2f scale;
-      m_LostHoverScaleAnim->ApplyVal(scale);
-      m_HoverScaleAnim->ApplyVal(scale);
-      m_PushScaleAnim->ApplyVal(scale);
-
-      if(!m_LostHoverScaleAnim->IsPaused() || !m_HoverScaleAnim->IsPaused() ||
-         !m_PushScaleAnim->IsPaused())
-      {
-         ButtonBaseDecorator::SetScale(scale);
-      }
 
       math::vec4f color;
 
@@ -174,16 +246,7 @@ namespace totem
       }
    }
 
-   void ButtonAnimDecorator::SetScale(const math::vec2f& scale)
-   {
-      ButtonBaseDecorator::SetScale(scale);
-      m_BaseScale = scale;
-      m_LostHoverScaleAnim->SetFinVal(scale);
-      m_HoverScaleAnim->SetFinVal(scale * m_HoverScaleFactor);
-      m_PushScaleAnim->SetFinVal(scale * m_PushScaleFactor);
-   }
-
-   void ButtonAnimDecorator::SetColor(const math::vec4f& color)
+   void ButtonColorDecorator::SetColor(const math::vec4f& color)
    { 
       ButtonBaseDecorator::SetColor(
             math::vec4f(color.x, color.y, color.z, m_LostHoverColorAlpha));
@@ -204,56 +267,44 @@ namespace totem
                                              m_PushColorAlpha));
    }
 
-   void ButtonAnimDecorator::OnLostHover()
+   void ButtonColorDecorator::OnLostHover()
    {
       m_AllAnimations.Pause();
-
-      m_LostHoverScaleAnim->SetInitVal(GetScale());
-      m_LostHoverScaleAnim->Reset();
-      m_LostHoverScaleAnim->Play();
 
       m_LostHoverColorAnim->SetInitVal(GetColor());
       m_LostHoverColorAnim->Reset();
       m_LostHoverColorAnim->Play();
    }
 
-   void ButtonAnimDecorator::OnHover()
+   void ButtonColorDecorator::OnHover()
    {
       m_AllAnimations.Pause();
-
-      m_HoverScaleAnim->SetInitVal(GetScale());
-      m_HoverScaleAnim->Reset();
-      m_HoverScaleAnim->Play();
 
       m_HoverColorAnim->SetInitVal(GetColor());
       m_HoverColorAnim->Reset();
       m_HoverColorAnim->Play();
    }
 
-   void ButtonAnimDecorator::OnPush()
+   void ButtonColorDecorator::OnPush()
    {
       m_AllAnimations.Pause();
-
-      m_PushScaleAnim->SetInitVal(GetScale());
-      m_PushScaleAnim->Reset();
-      m_PushScaleAnim->Play();
 
       m_PushColorAnim->SetInitVal(GetColor());
       m_PushColorAnim->Reset();
       m_PushColorAnim->Play();
    }
 
-   void ButtonAnimDecorator::ButtonListener::OnLostHover()
+   void ButtonColorDecorator::ButtonListener::OnLostHover()
    {
       m_Master->OnLostHover();
    }
 
-   void ButtonAnimDecorator::ButtonListener::OnHover()
+   void ButtonColorDecorator::ButtonListener::OnHover()
    {
       m_Master->OnHover();
    }
 
-   void ButtonAnimDecorator::ButtonListener::OnPush()
+   void ButtonColorDecorator::ButtonListener::OnPush()
    {
       m_Master->OnPush();
    } 
