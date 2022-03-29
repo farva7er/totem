@@ -12,7 +12,8 @@ namespace totem
    {
       Window,
       Keyboard,
-      Mouse
+      Mouse,
+      Other
    };
 
    enum class EventType
@@ -26,8 +27,9 @@ namespace totem
 
       MousePressed, MouseReleased,
       MouseMove,
-      MouseScroll
+      MouseScroll,
 
+      Other
    };
 
 
@@ -36,14 +38,22 @@ namespace totem
    public:
       Event() : m_IsHandled(false) {}
 
-      virtual EventCategory GetCategory() const = 0;
-      virtual EventType GetType() const = 0;
+      virtual EventCategory GetCategory() const
+      { return EventCategory::Other; }
+
+      virtual EventType GetType() const
+      { return EventType::Other; }
+
       bool IsHandled() const { return m_IsHandled; }
+
       void SetHandled() { m_IsHandled = true; }
+
       virtual std::string ToString() const = 0;
+
       template <typename T>
       T& Cast()
       { return *static_cast<T*>(this); }
+
    private:
       bool m_IsHandled;
    };

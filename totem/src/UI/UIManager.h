@@ -26,6 +26,24 @@ namespace totem
 
    class UIManager : public IEventListener
    {
+      class SceneResizeEvent : public Event
+      {
+      public:
+         SceneResizeEvent(float xScale, float yScale)
+            : m_XScale(xScale), m_YScale(yScale) {}
+
+         virtual std::string ToString() const override
+         {
+            std::stringstream ss;
+            ss << "Scene Resized Event: (" << 
+               m_XScale << ", " << m_YScale <<")";
+            return ss.str();
+         }
+
+      private:
+         float m_XScale, m_YScale;
+      };
+
    public:
       UIManager(Renderer* renderer);
       ~UIManager();
@@ -38,14 +56,14 @@ namespace totem
       Renderer* GetRenderer() const;
 
    private:
-      void AddElement(UIElement* element);
-
+      void AddElement(IUIElement* element);
+      void DispatchEvent(Event& e) const;
    private:
       struct UIElementNode
       {
-         UIElement* element;
+         IUIElement* element;
          UIElementNode* next;
-         UIElementNode(UIElement* el, UIElementNode* next = nullptr)
+         UIElementNode(IUIElement* el, UIElementNode* next = nullptr)
             : element(el), next(next) {}
          ~UIElementNode();
       };

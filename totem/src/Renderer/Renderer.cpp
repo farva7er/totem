@@ -56,8 +56,15 @@ namespace totem
          }
          s_OpenGLInitialized = true;
          glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-         m_Window->AddEventListener(this);
-         
+
+         m_Window->AddEventListener(this, 0);  //Renderer is an important 
+                                               //listener.
+                                               //It should recieve events
+                                               //before anyone else
+                                               //(or at least before any
+                                               // UI code that relies on
+                                               // renderer to be in
+                                               // up to date state) 
          glGenVertexArrays(1, &m_VAO);
          glBindVertexArray(m_VAO);
 

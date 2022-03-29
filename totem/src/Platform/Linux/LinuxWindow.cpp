@@ -115,6 +115,8 @@ namespace totem
          LOG_FATAL("GLFW Failed to initialize!");
          return;
       }
+      
+      //glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
       /* Create a windowed mode window and its OpenGL context */
       m_glfwWindow = glfwCreateWindow(Width, Height, Title, NULL, NULL);
@@ -168,12 +170,22 @@ namespace totem
    }
 
 
-   void LinuxWindow::AddEventListener(IEventListener* listener)
+   void LinuxWindow::AddEventListener(IEventListener* listener, int priority)
    {
 
-      EventListenerNode *newNode = 
-         new EventListenerNode(listener, m_EventListenerListHead);
-      m_EventListenerListHead = newNode;
+      // Nodes should be inserted in increasing priority order
+      
+      EventListenerNode** curr = &m_EventListenerListHead; 
+      while(*curr)
+      {
+         if((*curr)->priority > priority)
+            break;
+         curr = &((*curr)->next);
+      }
+
+      EventListenerNode* newNode = 
+         new EventListenerNode(listener, priority, *curr);
+      *curr = newNode;
    }
 
    void LinuxWindow::RemoveEventListener(IEventListener* listener)

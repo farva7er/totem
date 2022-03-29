@@ -1,5 +1,5 @@
 #include "UIManager.h"
-#include "UIElement.h"
+#include "IUIElement.h"
 
 namespace totem
 {
@@ -22,7 +22,7 @@ namespace totem
       }
    }
 
-   void UIManager::AddElement(UIElement* element)
+   void UIManager::AddElement(IUIElement* element)
    {
       m_Elements = new UIElementNode(element, m_Elements);
    }
@@ -40,8 +40,6 @@ namespace totem
 
    void UIManager::OnEvent(Event& e)
    {
-      UIElementNode* curr = m_Elements;
-
       if(e.GetType() == EventType::MouseMove)
       {
          MouseMoveEvent& me = e.Cast<MouseMoveEvent>();
@@ -49,8 +47,23 @@ namespace totem
             m_Renderer->ScreenToScene(math::vec2f(me.GetX(), me.GetY()));
          me.SetX(mouseCoords.x);
          me.SetY(mouseCoords.y);
+         DispatchEvent(me);
+         return;
+      }
+      else if(e.GetType() == EventType::WindowResize)
+      {
+         SceneResizeEvent sre(m_Renderer->GetSceneSize().x,
+                              m_Renderer->GetSceneSize().y);
+         DispatchEvent(sre);
+         return;
       }
 
+      DispatchEvent(e);
+   }
+
+   void UIManager::DispatchEvent(Event& e) const
+   {
+      UIElementNode* curr = m_Elements;
       while(curr)
       {
 

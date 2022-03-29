@@ -15,7 +15,8 @@ namespace totem
       virtual void OnUpdate() = 0;
       virtual bool IsClosed() const = 0;
 
-      virtual void AddEventListener(IEventListener *listener) = 0;
+      virtual void AddEventListener(IEventListener *listener,
+                                                int priority = 100) = 0;
       virtual void RemoveEventListener(IEventListener *listener) = 0;
       virtual void MakeCurrent() = 0;
       virtual void SendInitEvents() const = 0;

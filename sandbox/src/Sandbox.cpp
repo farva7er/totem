@@ -13,16 +13,16 @@
 
 enum { sq_count = 1000 };
 
-class ButtonListener : public totem::IButtonListener
+class ButtonListener : public totem::IUIElementListener
 {
-   virtual void OnClick() override
+   virtual void OnClick(int button) override
    {
-      LOG_INFO("Click");
+      LOG_INFO("Click: %d", button);
    }
 
-   virtual void OnIdle() override
+   virtual void OnLostHover() override
    {
-      LOG_INFO("Idle");
+      LOG_INFO("LostHover");
    }
 
    virtual void OnPush() override

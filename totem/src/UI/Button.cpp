@@ -4,143 +4,12 @@
 
 namespace totem
 {
-////////////////////////////////////////////////////////////////
-//      BaseButton         /////////////////////////////////////
-////////////////////////////////////////////////////////////////
-
-   BaseButton::~BaseButton()
-   {
-      while(m_Listeners)
-      {
-         ListenerNode* savedNode = m_Listeners;
-         m_Listeners = m_Listeners->m_Next;
-         delete savedNode;
-      }
-
-      delete [] m_Text;
-   }
-
-   void BaseButton::OnEvent(Event& e)
-   {  
-      if(e.GetType() == EventType::MouseMove)
-      {
-         MouseMoveEvent& me = e.Cast<MouseMoveEvent>();
-         math::vec2f mouseCoords(me.GetX(), me.GetY());
-         bool isHovered = IsHovered(mouseCoords);
-
-         if(m_State == State::Idle && isHovered)
-         {
-            m_State = State::Hovered;
-            SendOnHover();
-         }
-
-         if(m_State == State::Hovered && !isHovered)
-         {
-            m_State = State::Idle;
-            SendOnIdle();
-         }
-
-         if(m_State == State::Pushed && !isHovered)
-         {
-            m_State = State::Idle;
-            SendOnIdle();
-         }
-      }
-
-      if(e.GetType() == EventType::MouseReleased)
-      {
-         MouseReleasedEvent& me = e.Cast<MouseReleasedEvent>();
-         if(me.GetButton() == 0 && m_State == State::Pushed)
-         {
-            m_State = State::Hovered;
-            SendOnClick();
-            SendOnHover();
-         }
-      }
-
-      if(e.GetType() == EventType::MousePressed)
-      {
-         MousePressedEvent& me = e.Cast<MousePressedEvent>();
-         if(me.GetButton() == 0 && m_State == State::Hovered)
-         {
-            m_State = State::Pushed;
-            SendOnPush();
-         }
-      }
-   }
-
-   void BaseButton::SetPos(const math::vec2f& pos)
-   {
-      m_Pos = pos;
-   }
-
-   void BaseButton::SetScale(const math::vec2f& scale)
-   {
-      m_Scale = scale;
-   }
-
-   void BaseButton::SetText(const char* text)
-   {
-      if(m_Text)
-         delete [] m_Text;
-      m_Text = new char[strlen(text) + 1];
-      strcpy(m_Text, text);
-   }
-
-   void BaseButton::SetColor(const math::vec4f& color)
-   {
-      m_Color = color;
-   }
-
-
-   void BaseButton::AddListener(IButtonListener* listener) 
-   {
-      m_Listeners = new ListenerNode(listener, m_Listeners);
-   }
-
-   void BaseButton::SendOnIdle()
-   {
-      ListenerNode* curr = m_Listeners;
-      while(curr)
-      {
-         curr->m_Listener->OnIdle();
-         curr = curr->m_Next;
-      }
-   }
-
-   void BaseButton::SendOnHover()
-   {
-      ListenerNode* curr = m_Listeners;
-      while(curr)
-      {
-         curr->m_Listener->OnHover();
-         curr = curr->m_Next;
-      }
-   }
-
-   void BaseButton::SendOnPush()
-   {
-      ListenerNode* curr = m_Listeners;
-      while(curr)
-      {
-         curr->m_Listener->OnPush();
-         curr = curr->m_Next;
-      }
-   }
-
-   void BaseButton::SendOnClick()
-   {
-      ListenerNode* curr = m_Listeners;
-      while(curr)
-      {
-         curr->m_Listener->OnClick();
-         curr = curr->m_Next;
-      }
-   }
-
    ////////////////////////////////////////////////////////////////////
    /////         BoxButton       //////////////////////////////////////
    ////////////////////////////////////////////////////////////////////
+   BoxButton::BoxButton()
+      : m_Text(nullptr), m_Color(math::vec4f(0, 0, 0, 1))
+   {}
 
    void BoxButton::Draw(Renderer* renderer) const
    {
@@ -173,6 +42,21 @@ namespace totem
       return false;
    }
 
+   void BoxButton::SetText(const char* text)
+   {
+      if(m_Text)
+         delete [] m_Text;
+
+      if(!text)
+      {
+         m_Text = nullptr;
+         return;
+      }
+
+      m_Text = new char[strlen(text) + 1];
+      strcpy(m_Text, text);
+   }
+
 //////////////////////////////////////////////////////////////
 ////////         ButtonBaseDecorator      ////////////////////
 //////////////////////////////////////////////////////////////
@@ -182,7 +66,7 @@ namespace totem
       m_Wrapee->Draw(renderer);
    }
 
-   void ButtonBaseDecorator::AddListener(IButtonListener* listener)
+   void ButtonBaseDecorator::AddListener(IUIElementListener* listener)
    {
       m_Wrapee->AddListener(listener);
    }
@@ -198,21 +82,21 @@ namespace totem
       m_BaseColor = button->GetColor();
 
 
-      m_IdleAnimDuration = 0.3f;
+      m_LostHoverAnimDuration = 0.3f;
       m_HoverAnimDuration = 0.2f;
       m_PushAnimDuration = 0.1f;
 
       m_HoverScaleFactor = 1.1f;
       m_PushScaleFactor = 1.05f;
 
-      m_IdleColorAlpha = 0.7f;
+      m_LostHoverColorAlpha = 0.7f;
       m_HoverColorAlpha = 0.9f;
       m_PushColorAlpha = 1.0f;
 
-      m_IdleScaleAnim = new HermiteInterpAnim<math::vec2f>(
+      m_LostHoverScaleAnim = new HermiteInterpAnim<math::vec2f>(
                                  math::vec2f(0, 0),
                                  m_BaseScale,
-                                 m_IdleAnimDuration);
+                                 m_LostHoverAnimDuration);
 
       m_HoverScaleAnim = new HermiteInterpAnim<math::vec2f>(
                                  math::vec2f(0, 0),
@@ -226,13 +110,13 @@ namespace totem
 
 
 
-      m_IdleColorAnim = new HermiteInterpAnim<math::vec4f>(
+      m_LostHoverColorAnim = new HermiteInterpAnim<math::vec4f>(
                                  math::vec4f(0, 0, 0, 0),
                                  math::vec4f(m_BaseColor.x,
                                              m_BaseColor.y,
                                              m_BaseColor.z,
-                                             m_IdleColorAlpha),
-                                 m_IdleAnimDuration);
+                                             m_LostHoverColorAlpha),
+                                 m_LostHoverAnimDuration);
 
       m_HoverColorAnim = new HermiteInterpAnim<math::vec4f>(
                                  math::vec4f(0, 0, 0, 0),
@@ -250,11 +134,11 @@ namespace totem
                                              m_PushColorAlpha),
                                  m_PushAnimDuration);
 
-      m_AllAnimations.Add(m_IdleScaleAnim);
+      m_AllAnimations.Add(m_LostHoverScaleAnim);
       m_AllAnimations.Add(m_HoverScaleAnim);
       m_AllAnimations.Add(m_PushScaleAnim);
 
-      m_AllAnimations.Add(m_IdleColorAnim);
+      m_AllAnimations.Add(m_LostHoverColorAnim);
       m_AllAnimations.Add(m_HoverColorAnim);
       m_AllAnimations.Add(m_PushColorAnim);
 
@@ -267,11 +151,11 @@ namespace totem
    {
       m_Animator.OnUpdate(deltaTime);
       math::vec2f scale;
-      m_IdleScaleAnim->ApplyVal(scale);
+      m_LostHoverScaleAnim->ApplyVal(scale);
       m_HoverScaleAnim->ApplyVal(scale);
       m_PushScaleAnim->ApplyVal(scale);
 
-      if(!m_IdleScaleAnim->IsPaused() || !m_HoverScaleAnim->IsPaused() ||
+      if(!m_LostHoverScaleAnim->IsPaused() || !m_HoverScaleAnim->IsPaused() ||
          !m_PushScaleAnim->IsPaused())
       {
          ButtonBaseDecorator::SetScale(scale);
@@ -279,11 +163,11 @@ namespace totem
 
       math::vec4f color;
 
-      m_IdleColorAnim->ApplyVal(color);
+      m_LostHoverColorAnim->ApplyVal(color);
       m_HoverColorAnim->ApplyVal(color);
       m_PushColorAnim->ApplyVal(color);
 
-      if(!m_IdleColorAnim->IsPaused() || !m_HoverColorAnim->IsPaused() ||
+      if(!m_LostHoverColorAnim->IsPaused() || !m_HoverColorAnim->IsPaused() ||
          !m_PushColorAnim->IsPaused())
       {
          ButtonBaseDecorator::SetColor(color);
@@ -294,7 +178,7 @@ namespace totem
    {
       ButtonBaseDecorator::SetScale(scale);
       m_BaseScale = scale;
-      m_IdleScaleAnim->SetFinVal(scale);
+      m_LostHoverScaleAnim->SetFinVal(scale);
       m_HoverScaleAnim->SetFinVal(scale * m_HoverScaleFactor);
       m_PushScaleAnim->SetFinVal(scale * m_PushScaleFactor);
    }
@@ -302,12 +186,12 @@ namespace totem
    void ButtonAnimDecorator::SetColor(const math::vec4f& color)
    { 
       ButtonBaseDecorator::SetColor(
-            math::vec4f(color.x, color.y, color.z, m_IdleColorAlpha));
+            math::vec4f(color.x, color.y, color.z, m_LostHoverColorAlpha));
       m_BaseColor = color;
-      m_IdleColorAnim->SetFinVal(math::vec4f(color.x,
+      m_LostHoverColorAnim->SetFinVal(math::vec4f(color.x,
                                              color.y,
                                              color.z,
-                                             m_IdleColorAlpha));
+                                             m_LostHoverColorAlpha));
 
       m_HoverColorAnim->SetFinVal(math::vec4f(color.x,
                                              color.y,
@@ -320,17 +204,17 @@ namespace totem
                                              m_PushColorAlpha));
    }
 
-   void ButtonAnimDecorator::OnIdle()
+   void ButtonAnimDecorator::OnLostHover()
    {
       m_AllAnimations.Pause();
 
-      m_IdleScaleAnim->SetInitVal(GetScale());
-      m_IdleScaleAnim->Reset();
-      m_IdleScaleAnim->Play();
+      m_LostHoverScaleAnim->SetInitVal(GetScale());
+      m_LostHoverScaleAnim->Reset();
+      m_LostHoverScaleAnim->Play();
 
-      m_IdleColorAnim->SetInitVal(GetColor());
-      m_IdleColorAnim->Reset();
-      m_IdleColorAnim->Play();
+      m_LostHoverColorAnim->SetInitVal(GetColor());
+      m_LostHoverColorAnim->Reset();
+      m_LostHoverColorAnim->Play();
    }
 
    void ButtonAnimDecorator::OnHover()
@@ -359,9 +243,9 @@ namespace totem
       m_PushColorAnim->Play();
    }
 
-   void ButtonAnimDecorator::ButtonListener::OnIdle()
+   void ButtonAnimDecorator::ButtonListener::OnLostHover()
    {
-      m_Master->OnIdle();
+      m_Master->OnLostHover();
    }
 
    void ButtonAnimDecorator::ButtonListener::OnHover()
