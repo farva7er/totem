@@ -143,7 +143,7 @@ namespace totem
 
       virtual void AddListener(IUIElementListener* listener) override;
 
-   private:
+   protected:
       IButton* m_Wrapee;
    };
 

@@ -92,8 +92,8 @@ namespace totem
             break;
          case ButtonType::SoftBoxButton:
             button = new BoxButton();
-            button = new ButtonColorDecorator(button);
             button = new ButtonScaleDecorator(button);
+            button = new ButtonColorDecorator(button);
             break;
          default:
             LOG_ERROR("Used unimplemented button! Type: %d", type);

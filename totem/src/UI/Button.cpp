@@ -124,6 +124,8 @@ namespace totem
       {
          ButtonBaseDecorator::SetScale(scale);
       }
+
+      m_Wrapee->OnUpdate(deltaTime);
    }
 
    void ButtonScaleDecorator::SetScale(const math::vec2f& scale)
@@ -244,6 +246,8 @@ namespace totem
       {
          ButtonBaseDecorator::SetColor(color);
       }
+
+      m_Wrapee->OnUpdate(deltaTime);
    }
 
    void ButtonColorDecorator::SetColor(const math::vec4f& color)
