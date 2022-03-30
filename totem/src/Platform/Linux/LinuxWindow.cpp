@@ -116,7 +116,7 @@ namespace totem
          return;
       }
       
-      //glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+      glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
       /* Create a windowed mode window and its OpenGL context */
       m_glfwWindow = glfwCreateWindow(Width, Height, Title, NULL, NULL);
@@ -126,7 +126,6 @@ namespace totem
          glfwTerminate();
          return;
       }
-
 
       glfwSetWindowUserPointer(m_glfwWindow, this);
   

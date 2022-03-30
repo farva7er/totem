@@ -57,6 +57,7 @@ namespace totem
       virtual math::vec4f GetColor() const = 0;
       virtual void SetText(const char* text) = 0;
       virtual void SetColor(const math::vec4f& color) = 0;
+      virtual void AddListener(IUIElementListener* listener) = 0;
    };
 
    
@@ -69,10 +70,10 @@ namespace totem
       virtual void OnEvent(Event& e) override
       { BaseElement::OnEvent(e); }
       
-      virtual math::vec2f GetPos() const override
+      virtual const math::vec2f& GetPos() const override
       { return BaseElement::GetPos(); }
 
-      virtual math::vec2f GetScale() const override
+      virtual const math::vec2f& GetScale() const override
       { return BaseElement::GetScale(); }
 
       virtual void SetPos(const math::vec2f& pos) override
@@ -116,10 +117,10 @@ namespace totem
       virtual void Draw(Renderer* renderer) const override;
       virtual void OnEvent(Event& e) override { m_Wrapee->OnEvent(e); }
 
-      virtual math::vec2f GetPos() const override
+      virtual const math::vec2f& GetPos() const override
       { return m_Wrapee->GetPos(); }
 
-      virtual math::vec2f GetScale() const override
+      virtual const math::vec2f& GetScale() const override
       { return m_Wrapee->GetScale(); }
 
       virtual math::vec4f GetColor() const override

@@ -17,7 +17,7 @@ namespace totem
       VCenter = 0x2
    };
    
-   class Renderer : public IEventListener
+   class Renderer
    {
    public:
       Renderer(Window *window);
@@ -48,33 +48,22 @@ namespace totem
                               int alignFlags =
                               TextAlign::VCenter | TextAlign::HCenter
                               );
- 
- 
-      math::vec2f ScreenToScene(const math::vec2f screenCoords) const;
-
+  
       Shader* GetShader(const char* shaderId) const;
-      math::vec2f GetSceneSize() const;
-      totem::math::vec2f GetContentScale() const;
-
+      void SetViewport(unsigned int width, unsigned int height);
+      void SetCanvasScale(const math::vec2f& scale);
+      const math::vec2f& GetCanvasScale() const;
    private:
       static bool s_OpenGLInitialized; 
       static const char* s_TextureShaderId;
 
-      // also recalculates projection matrix
-      void SetAspectRatio(float aspectRatio);
-      void HandleResize(unsigned int width, unsigned int height);
-      virtual void OnEvent(Event& e) override;
-
       math::vec2f CalcTextSize(const char* str, float scale) const;
-
-
    private:
       Window* m_Window;
       unsigned int m_VBO, m_VAO, m_EBO;
       Texture* m_WhiteTexture;
       math::mat4f m_ProjMat;
-      float m_SceneSize;
-      float m_AspectRatio;
+      math::vec2f m_CanvasScale;
       FontRenderer m_FontRenderer;
    };
 }

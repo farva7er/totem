@@ -39,7 +39,7 @@ namespace totem
       #define glCheckError() glCheckError_(__FILE__, __LINE__) 
 
       Renderer::Renderer(Window *window) 
-         : m_SceneSize(10.0f), m_FontRenderer(this)
+         : m_FontRenderer(this)
       {
          m_Window = window;
 
@@ -54,17 +54,10 @@ namespace totem
                return;
             }
          }
+
          s_OpenGLInitialized = true;
          glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-         m_Window->AddEventListener(this, 0);  //Renderer is an important 
-                                               //listener.
-                                               //It should recieve events
-                                               //before anyone else
-                                               //(or at least before any
-                                               // UI code that relies on
-                                               // renderer to be in
-                                               // up to date state) 
          glGenVertexArrays(1, &m_VAO);
          glBindVertexArray(m_VAO);
 
@@ -117,16 +110,6 @@ namespace totem
       Renderer::~Renderer()
       {
          delete m_WhiteTexture;
-         m_Window->RemoveEventListener(this);
-      }
-
-      void Renderer::OnEvent(Event& e)
-      {
-         if(e.GetType() == EventType::FramebufferResize)
-         {
-            FramebufferResizeEvent& fre = e.Cast<FramebufferResizeEvent>();
-            HandleResize(fre.GetWidth(), fre.GetHeight());
-         }
       }
     
       Shader* Renderer::GetShader(const char* shaderId) const
@@ -227,9 +210,8 @@ namespace totem
 
    void Renderer::DrawBackground(const char* imagePath)
    {
-      math::vec2f scale(m_SceneSize * m_AspectRatio, m_SceneSize);
       Rect rect = Rect::Builder()
-                  .SetScale(scale)
+                  .SetScale(m_CanvasScale)
                   .SetImagePath(imagePath)
                   .Construct();
       DrawRect(rect);
@@ -295,44 +277,23 @@ namespace totem
       return size;
    }
 
-   void Renderer::SetAspectRatio(float aspectRatio)
+   void Renderer::SetCanvasScale(const math::vec2f& scale)
    {
       Shader* shader = GetShader(s_TextureShaderId);
       shader->Use();
-      math::mat4f mat = math::getOrthoProj(m_SceneSize * aspectRatio, 
-                                           m_SceneSize, -1.0f, 1.0f);
+      math::mat4f mat = math::getOrthoProj(scale.x, scale.y, -1.0f, 1.0f);
       shader->SetUniformMatrix4fv("vProjMat", mat);
-      //LOG_INFO("aspectRatio: %f", aspectRatio);
-      m_AspectRatio = aspectRatio;
-
-      m_FontRenderer.SetAspectRatio(aspectRatio);
+      m_CanvasScale = scale;
+      m_FontRenderer.SetCanvasScale(scale);
    }
 
-   void Renderer::HandleResize(unsigned int width, unsigned int height)
+   const math::vec2f& Renderer::GetCanvasScale() const
+   {
+      return m_CanvasScale;
+   }
+
+   void Renderer::SetViewport(unsigned int width, unsigned int height)
    {
       glViewport(0, 0, width, height);
-      SetAspectRatio(width/(float)height);
-      //LOG_INFO("Framebuffer Resized - W: %u H: %u", width, height);
-   }
- 
-   math::vec2f Renderer::GetSceneSize() const
-   {
-      return math::vec2f(m_SceneSize * m_AspectRatio, m_SceneSize);
-   }
-
-   math::vec2f Renderer::ScreenToScene(const math::vec2f screenCoords) const
-   {
-      return math::vec2f(
-            m_SceneSize * m_AspectRatio * 
-            (2 * screenCoords.x / m_Window->GetWidth() - 1),
-            
-            m_SceneSize *
-            (1  - 2 * screenCoords.y / m_Window->GetHeight()));
-   }
-
-   math::vec2f Renderer::GetContentScale() const
-   {
-      return math::vec2f(m_Window->GetContentScaleX(),
-                        m_Window->GetContentScaleY());
-   }
+   } 
 }

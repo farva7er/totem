@@ -51,7 +51,7 @@ namespace totem
                   float scale, const math::vec4f& color);
       float GetAdvance(unsigned int codepoint, float scale) const;
       float GetHeight(unsigned int codepoint, float scale) const;
-      void SetAspectRatio(float aspectRatio);
+      void SetCanvasScale(const math::vec2f& scale);
    private:
       Font* m_CurrentFont;
       Renderer* m_Master;

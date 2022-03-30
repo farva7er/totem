@@ -153,7 +153,8 @@ namespace totem
          return;
       }
 
-      math::vec2f baseScale(m_Master->GetSceneSize().y / 20, m_Master->GetSceneSize().y / 20);
+      math::vec2f baseScale(m_Master->GetCanvasScale().y / 20,
+                           m_Master->GetCanvasScale().y / 20);
       baseScale = baseScale * scale;
 
       math::vec2f chScale;
@@ -175,34 +176,7 @@ namespace totem
                         .SetColor(color)
                         .SetShaderId(m_FontShaderId)
                         .Construct();
-      m_Master->DrawRect(rect); 
-   
-/////////////////////
-/*
-      float dpiScaleX = m_CurrentFont->GetDpiScale().x;
-      float dpiScaleY = m_CurrentFont->GetDpiScale().y;
-
-      float xpos = pos.x + (2 * m_Master->PixelUnitXToNormal(ch->bearing.x) +
-                        m_Master->PixelUnitXToNormal(ch->size.x)) * scale
-                        / dpiScaleX;
-
-      float dy = (m_Master->PixelUnitYToNormal(ch->size.y) -
-                  2 * m_Master->PixelUnitYToNormal(ch->size.y - ch->bearing.y))
-                  * scale / dpiScaleY;
-      float ypos = pos.y + dy;
-
-      float w = m_Master->PixelUnitXToCam(ch->size.x) * scale / dpiScaleX;
-      float h = m_Master->PixelUnitYToCam(ch->size.y) * scale / dpiScaleY;
-      
-      Rect rect = Rect::Builder()
-                        .SetPos(math::vec2f(xpos, ypos))
-                        .SetScale(math::vec2f(w, h))
-                        .SetTexture(ch->texture)
-                        .SetColor(color)
-                        .SetShaderId(m_FontShaderId)
-                        .Construct();
-      m_Master->DrawRect(rect);
-*/
+      m_Master->DrawRect(rect);  
    }
 
    float FontRenderer::GetAdvance(unsigned int codepoint,
@@ -221,7 +195,8 @@ namespace totem
          return 0;
       }
 
-      math::vec2f baseScale(m_Master->GetSceneSize().y / 20, m_Master->GetSceneSize().y / 20);
+      math::vec2f baseScale(m_Master->GetCanvasScale().y / 20,
+                           m_Master->GetCanvasScale().y / 20);
       baseScale = baseScale * scale;
 
       float advance = 2 * baseScale.x * ch->advance;
@@ -244,20 +219,19 @@ namespace totem
          return 0;
       }
 
-      math::vec2f baseScale(m_Master->GetSceneSize().y / 20, m_Master->GetSceneSize().y / 20);
+      math::vec2f baseScale(m_Master->GetCanvasScale().y / 20,
+                           m_Master->GetCanvasScale().y / 20);
       baseScale = baseScale * scale;
 
       float height = 2 * baseScale.y * ch->size.y;
       return height;
    }
 
-   void FontRenderer::SetAspectRatio(float aspectRatio)
+   void FontRenderer::SetCanvasScale(const math::vec2f& scale)
    {
       Shader* shader = m_Master->GetShader(m_FontShaderId);
       shader->Use();
-      math::vec2f sceneSize = m_Master->GetSceneSize();
-      math::mat4f mat = math::getOrthoProj(sceneSize.x, 
-                                           sceneSize.y, -1.0f, 1.0f);
+      math::mat4f mat = math::getOrthoProj(scale.x, scale.y, -1.0f, 1.0f);
       shader->SetUniformMatrix4fv("vProjMat", mat);
    }
 }

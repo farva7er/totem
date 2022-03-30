@@ -5,6 +5,17 @@
 
 namespace totem
 {
+   class IUIElementListener
+   {
+   public:
+      virtual ~IUIElementListener() {}
+
+      virtual void OnClick(int btn) {}
+      virtual void OnLostHover() {}
+      virtual void OnHover() {}
+      virtual void OnPush() {}
+   };
+
    class BaseElement : public IUIElement
    {
    public:
@@ -19,13 +30,13 @@ namespace totem
 
       virtual void OnEvent(Event& e) override;
       
-      virtual math::vec2f GetPos() const override { return m_Pos; }
-      virtual math::vec2f GetScale() const override { return m_Scale; }
+      virtual const math::vec2f& GetPos() const override { return m_Pos; }
+      virtual const math::vec2f& GetScale() const override { return m_Scale; }
 
       virtual void SetPos(const math::vec2f& pos) override;
       virtual void SetScale(const math::vec2f& scale) override;
 
-      virtual void AddListener(IUIElementListener* listener) override;
+      virtual void AddListener(IUIElementListener* listener);
 
    protected:
       virtual bool IsHovered(const math::vec2f& cursorCoords) const = 0;

@@ -12,19 +12,20 @@ namespace totem
    {
      
    public:
+      UILinearLayout();
       virtual ~UILinearLayout();
 
       virtual void OnEvent(Event& e) override;
       virtual void OnUpdate(float deltaTime) override;
-      virtual void Draw(Renderer* renderer) override;
+      virtual void Draw(Renderer* renderer) const override;
 
       virtual const math::vec2f& GetPos() const override { return m_Pos; }
       virtual const math::vec2f& GetScale() const override { return m_Scale; }
 
       virtual void SetPos(const math::vec2f& pos) override;
       virtual void SetScale(const math::vec2f& scale) override;
+      void SetSpacing(float spacing);
 
-   private:
       void AddElement(IUIElement* element);
    private:
       struct UIElementNode
@@ -39,6 +40,7 @@ namespace totem
       UIElementNode* m_Elements;
       math::vec2f m_Pos;
       math::vec2f m_Scale;
+      float m_Spacing;
       float m_FreeSlotPos;
    };
 }

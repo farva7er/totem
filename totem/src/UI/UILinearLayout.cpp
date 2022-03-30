@@ -10,7 +10,8 @@ namespace totem
    UILinearLayout::UILinearLayout()
       :  m_Elements(nullptr),
          m_Pos({0, 0}),
-         m_Scale({1, 0})
+         m_Scale({1, 0}),
+         m_Spacing(0)
    {
       m_FreeSlotPos = m_Pos.y;
    }
@@ -35,21 +36,36 @@ namespace totem
          curr->element->SetPos(prevPos + delta);
          curr = curr->next;
       }
-
+      m_Pos = pos;
+      m_FreeSlotPos += delta.y;
    }
 
    void UILinearLayout::SetScale(const math::vec2f& scale)
    {
-      // TODO
+      // TODO Use scale.y
+      m_Scale.x = scale.x;
+      UIElementNode* curr = m_Elements;
+      while(curr)
+      {
+         totem::math::vec2f elScale(scale.x, curr->element->GetScale().y);
+         curr->element->SetScale(elScale);
+         curr = curr->next;
+      }
+   }
+
+   void UILinearLayout::SetSpacing(float spacing)
+   {
+      m_Spacing = spacing;
    }
 
    void UILinearLayout::AddElement(IUIElement* element)
    {
-      math::vec2f elPos(m_Pos.x, m_FreeSlotPos - element.GetScale().y);
-      element.SetScale(m_Scale.x, element.GetScale().y);
-      element.SetPos(elPos);
-      m_FreeSlotPos -= element.GetScale().y;
-      m_Scale.y += element.GetScale().y;
+      math::vec2f elPos(m_Pos.x, m_FreeSlotPos - element->GetScale().y);
+      element->SetScale({ m_Scale.x, element->GetScale().y });
+      element->SetPos(elPos);
+      m_FreeSlotPos -= 2 * element->GetScale().y + m_Spacing;
+      m_Pos.y -= element->GetScale() .y + m_Spacing/2;
+      m_Scale.y += element->GetScale().y + m_Spacing/2;
       m_Elements = new UIElementNode(element, m_Elements);
    }
 
@@ -63,7 +79,7 @@ namespace totem
       }
    }
 
-   void UILinearLayout::Draw(Renderer* renderer)
+   void UILinearLayout::Draw(Renderer* renderer) const
    {
       UIElementNode* curr = m_Elements;
       while(curr)
@@ -74,7 +90,7 @@ namespace totem
    }
 
 
-   void UIManager::OnEvent(Event& e)
+   void UILinearLayout::OnEvent(Event& e)
    {
       UIElementNode* curr = m_Elements;
       while(curr)
