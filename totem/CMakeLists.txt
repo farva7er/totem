@@ -52,8 +52,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/UI/Button.h
                            src/UI/Button.cpp
                            src/UI/IUIElement.h
-                           src/UI/UIManager.h
-                           src/UI/UIManager.cpp
+                           src/UI/UILinearLayout.h
+                           src/UI/UILinearLayout.cpp
                            src/Filesystem/Utils.h
                            src/Filesystem/Utils.cpp
                            )
