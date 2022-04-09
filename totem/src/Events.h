@@ -38,6 +38,9 @@ namespace totem
    public:
       Event() : m_IsHandled(false) {}
 
+      static EventType GetStaticType()
+      { return EventType::Other; }
+
       virtual EventCategory GetCategory() const
       { return EventCategory::Other; }
 
@@ -69,6 +72,29 @@ namespace totem
       virtual void OnEvent(Event& e) = 0;
    };
 
+   ////////////////////////////////////////////////////////////
+   ////////////// EventDispatcher /////////////////////////////
+   //////////////////////////////////////////////////////////// 
+
+   template <typename T>
+   class EventDispatcher
+   {
+   public:
+      EventDispatcher(T* obj)
+         : m_Obj(obj) {}
+
+      template <typename EventType>
+      void Dispatch(void (T::*func)(EventType& e), Event& e)
+      {
+         if(EventType::GetStaticType() == e.GetType())
+            (m_Obj->*func)(*static_cast<EventType*>(&e));
+      }
+
+   private:
+      T* m_Obj;
+
+   };
+
 
    /////////////////////////////////////////////////
    //////// WINDOW EVENTS //////////////////////////
@@ -77,6 +103,8 @@ namespace totem
    class WindowCloseEvent : public Event
    {
    public:
+      static EventType GetStaticType()
+      { return EventType::WindowClose; }
       virtual EventCategory GetCategory() const override
       { return EventCategory::Window; }
       virtual EventType GetType() const override
@@ -95,6 +123,8 @@ namespace totem
       WindowResizeEvent(int width, int height)
          : m_Width(width), m_Height(height) {}
 
+      static EventType GetStaticType()
+      { return EventType::WindowResize; }
       virtual EventCategory GetCategory() const override
       { return EventCategory::Window; }
       virtual EventType GetType() const override
@@ -119,6 +149,8 @@ namespace totem
       FramebufferResizeEvent(int width, int height)
          : m_Width(width), m_Height(height) {}
 
+      static EventType GetStaticType()
+      { return EventType::FramebufferResize; }
       virtual EventCategory GetCategory() const override
       { return EventCategory::Window; }
       virtual EventType GetType() const override
@@ -161,6 +193,8 @@ namespace totem
       KeyPressedEvent(int code)
          : KeyEvent(code) {}
 
+      static EventType GetStaticType()
+      { return EventType::KeyPressed; }
       virtual EventType GetType() const override
       { return EventType::KeyPressed; }
 
@@ -178,6 +212,8 @@ namespace totem
       KeyReleasedEvent(int code)
          : KeyEvent(code) {}
 
+      static EventType GetStaticType()
+      { return EventType::KeyReleased; }
       virtual EventType GetType() const override
       { return EventType::KeyReleased; }
 
@@ -195,6 +231,8 @@ namespace totem
       KeyRepeatEvent(int code)
          : KeyEvent(code) {}
 
+      static EventType GetStaticType()
+      { return EventType::KeyRepeat; }
       virtual EventType GetType() const override
       { return EventType::KeyRepeat; }
 
@@ -212,6 +250,8 @@ namespace totem
       CharPressedEvent(int code)
          : KeyEvent(code) {}
 
+      static EventType GetStaticType()
+      { return EventType::CharPressed; }
       virtual EventType GetType() const override
       { return EventType::CharPressed; }
 
@@ -246,6 +286,8 @@ namespace totem
       MousePressedEvent(int button)
          : MouseButtonEvent(button) {}
 
+      static EventType GetStaticType()
+      { return EventType::MousePressed; }
       virtual EventType GetType() const override
       { return EventType::MousePressed; }
 
@@ -263,6 +305,8 @@ namespace totem
       MouseReleasedEvent(int button)
          : MouseButtonEvent(button) {}
 
+      static EventType GetStaticType()
+      { return EventType::MouseReleased; }
       virtual EventType GetType() const override
       { return EventType::MouseReleased; }
 
@@ -280,6 +324,8 @@ namespace totem
       MouseMoveEvent(float x, float y)
          : m_X(x), m_Y(y) {}
 
+      static EventType GetStaticType()
+      { return EventType::MouseMove; }
       virtual EventCategory GetCategory() const override
       { return EventCategory::Mouse; }
       virtual EventType GetType() const override
@@ -308,6 +354,8 @@ namespace totem
       MouseScrollEvent(double xOffset, double yOffset)
          : m_XOffset(xOffset), m_YOffset(yOffset) {}
 
+      static EventType GetStaticType()
+      { return EventType::MouseScroll; }
       virtual EventCategory GetCategory() const override
       { return EventCategory::Mouse; }
       virtual EventType GetType() const override

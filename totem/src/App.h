@@ -26,6 +26,8 @@ public:
 
 private:
    virtual void OnEvent(totem::Event& e) override;
+   void OnWindowResize(totem::WindowResizeEvent& e);
+   void OnMouseMove(totem::MouseMoveEvent& e);
    virtual void OnUpdate(float deltaTime);
 
    totem::math::vec2f

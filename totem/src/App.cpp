@@ -49,21 +49,10 @@ const totem::math::vec2f& App::GetCanvasScale() const
 
 void App::OnEvent(totem::Event& e)
 {
-   if(e.GetType() == totem::EventType::WindowResize)
-   {
-      totem::WindowResizeEvent& wre = e.Cast<totem::WindowResizeEvent>();
-      m_Renderer->SetViewport(wre.GetWidth(), wre.GetHeight());
-   }
+   totem::EventDispatcher<App> d(this);
 
-
-   if(e.GetType() == totem::EventType::MouseMove)
-   {
-      totem::MouseMoveEvent& mme = e.Cast<totem::MouseMoveEvent>();
-      totem::math::vec2f canvasCoords =
-                              ScreenToCanvas({ mme.GetX(), mme.GetY() });
-      mme.SetX(canvasCoords.x);
-      mme.SetY(canvasCoords.y);
-   }
+   d.Dispatch<totem::WindowResizeEvent>(&App::OnWindowResize, e);
+   d.Dispatch<totem::MouseMoveEvent>(&App::OnMouseMove, e);
 
    if(m_RootElement)
    {
@@ -71,6 +60,19 @@ void App::OnEvent(totem::Event& e)
    }
 
    OnTotemEvent(e);
+}
+
+void App::OnWindowResize(totem::WindowResizeEvent& e)
+{
+   m_Renderer->SetViewport(e.GetWidth(), e.GetHeight());
+}
+
+void App::OnMouseMove(totem::MouseMoveEvent& e)
+{
+   totem::math::vec2f canvasCoords =
+                           ScreenToCanvas({ e.GetX(), e.GetY() });
+   e.SetX(canvasCoords.x);
+   e.SetY(canvasCoords.y);
 }
 
 totem::math::vec2f

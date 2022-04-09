@@ -47,6 +47,9 @@ namespace totem
       void SendOnPush();
       void SendOnClick(int button);
 
+      void OnMouseMove(MouseMoveEvent& e);
+      void OnMousePressed(MousePressedEvent& e);
+      void OnMouseReleased(MouseReleasedEvent& e);
    protected:
       enum class State { LostHover, Hovered, Pushed };
       State m_State;

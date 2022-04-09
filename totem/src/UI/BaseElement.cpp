@@ -17,50 +17,53 @@ namespace totem
    }
 
    void BaseElement::OnEvent(Event& e)
-   {  
-      if(e.GetType() == EventType::MouseMove)
+   {
+      EventDispatcher<BaseElement> d(this);
+      d.Dispatch<MouseMoveEvent>(&BaseElement::OnMouseMove, e);
+      d.Dispatch<MousePressedEvent>(&BaseElement::OnMousePressed, e);
+      d.Dispatch<MouseReleasedEvent>(&BaseElement::OnMouseReleased, e);
+   }
+
+   void BaseElement::OnMouseMove(MouseMoveEvent& e)
+   {
+      math::vec2f mouseCoords(e.GetX(), e.GetY());
+      bool isHovered = IsHovered(mouseCoords);
+
+      if(m_State == State::LostHover && isHovered)
       {
-         MouseMoveEvent& me = e.Cast<MouseMoveEvent>();
-         math::vec2f mouseCoords(me.GetX(), me.GetY());
-         bool isHovered = IsHovered(mouseCoords);
-
-         if(m_State == State::LostHover && isHovered)
-         {
-            m_State = State::Hovered;
-            SendOnHover();
-         }
-
-         if(m_State == State::Hovered && !isHovered)
-         {
-            m_State = State::LostHover;
-            SendOnLostHover();
-         }
-
-         if(m_State == State::Pushed && !isHovered)
-         {
-            m_State = State::LostHover;
-            SendOnLostHover();
-         }
+         m_State = State::Hovered;
+         SendOnHover();
       }
 
-      if(e.GetType() == EventType::MouseReleased)
+      if(m_State == State::Hovered && !isHovered)
       {
-         MouseReleasedEvent& me = e.Cast<MouseReleasedEvent>();
-         if(m_State == State::Pushed)
-         {
-            m_State = State::Hovered;
-            SendOnClick(me.GetButton());
-            SendOnHover();
-         }
+         m_State = State::LostHover;
+         SendOnLostHover();
       }
 
-      if(e.GetType() == EventType::MousePressed)
+      if(m_State == State::Pushed && !isHovered)
       {
-         if(m_State == State::Hovered)
-         {
-            m_State = State::Pushed;
-            SendOnPush();
-         }
+         m_State = State::LostHover;
+         SendOnLostHover();
+      }
+   }
+
+   void BaseElement::OnMousePressed(MousePressedEvent& e)
+   {
+      if(m_State == State::Hovered)
+      {
+         m_State = State::Pushed;
+         SendOnPush();
+      }
+   }
+
+   void BaseElement::OnMouseReleased(MouseReleasedEvent& e)
+   {
+      if(m_State == State::Pushed)
+      {
+         m_State = State::Hovered;
+         SendOnClick(e.GetButton());
+         SendOnHover();
       }
    }
 
