@@ -36,7 +36,7 @@ class ButtonListener : public totem::IUIElementListener
    }
 };
 
-class Sandbox : public App
+class Sandbox : public totem::App
 {
 
 public:
@@ -208,7 +208,7 @@ private:
    totem::InterpAnim<totem::math::vec4f>* m_ColorAnim;
 };
 
-App* App::CreateApp()
+totem::App* totem::App::CreateApp()
 {
    return new Sandbox();
 }

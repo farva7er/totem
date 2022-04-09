@@ -6,39 +6,41 @@
 #include "Renderer/Renderer.h"
 #include "UI/IUIElement.h"
 
-class App : public totem::IEventListener
+namespace totem
 {
-public:
-   App();
-   virtual ~App();
+   class App : public IEventListener
+   {
+   public:
+      App();
+      virtual ~App();
 
-   // To Be defined by sandbox
-   static App* CreateApp();
+      // To Be defined by sandbox
+      static App* CreateApp();
 
-   void Run();
-   virtual void OnTotemEvent(totem::Event& e) = 0;
-   virtual void OnTotemUpdate(float deltaTime) = 0;
+      void Run();
+      virtual void OnTotemEvent(Event& e) = 0;
+      virtual void OnTotemUpdate(float deltaTime) = 0;
 
-   void SetCanvasScale(const totem::math::vec2f& scale);
-   const totem::math::vec2f& GetCanvasScale() const;
-   void SetBackground(const char* imagePath)
-   { m_Background = imagePath; }
+      void SetCanvasScale(const math::vec2f& scale);
+      const math::vec2f& GetCanvasScale() const;
+      void SetBackground(const char* imagePath)
+      { m_Background = imagePath; }
 
-private:
-   virtual void OnEvent(totem::Event& e) override;
-   void OnWindowResize(totem::WindowResizeEvent& e);
-   void OnMouseMove(totem::MouseMoveEvent& e);
-   virtual void OnUpdate(float deltaTime);
+   private:
+      virtual void OnEvent(Event& e) override;
+      void OnWindowResize(WindowResizeEvent& e);
+      void OnMouseMove(MouseMoveEvent& e);
+      virtual void OnUpdate(float deltaTime);
 
-   totem::math::vec2f
-   ScreenToCanvas(const totem::math::vec2f& screenCoords) const;
+      math::vec2f ScreenToCanvas(const math::vec2f& screenCoords) const;
 
-private:
-   totem::Window* m_Window;
-protected:
-   totem::Renderer* m_Renderer;
-   totem::IUIElement* m_RootElement;
-   const char* m_Background;
-};
+   private:
+      Window* m_Window;
+   protected:
+      Renderer* m_Renderer;
+      IUIElement* m_RootElement;
+      const char* m_Background;
+   };
+}
 
 #endif

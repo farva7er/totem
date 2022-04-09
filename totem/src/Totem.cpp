@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-   App* app = App::CreateApp();
+   totem::App* app = totem::App::CreateApp();
    TOTEM_ASSERT(true, "TEST assertion");
    app->Run();
    delete app;
