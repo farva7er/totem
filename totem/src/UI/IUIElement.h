@@ -12,12 +12,6 @@ namespace totem
    public:
       virtual ~IUIElement() {};
 
-      virtual const math::vec2f& GetPos() const = 0;
-      virtual const math::vec2f& GetScale() const = 0;
-
-      virtual void SetPos(const math::vec2f& pos) = 0;
-      virtual void SetScale(const math::vec2f& scale) = 0;
-
       virtual void OnUpdate(float deltaTime) {};
       virtual void Draw(Renderer* renderer) const = 0;
    };

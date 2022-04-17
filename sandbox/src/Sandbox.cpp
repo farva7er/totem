@@ -13,7 +13,7 @@
 
 enum { sq_count = 1000 };
 
-class ButtonListener : public totem::IUIElementListener
+class ButtonListener : public totem::IIEListener
 {
    virtual void OnClick(int button) override
    {
@@ -33,6 +33,11 @@ class ButtonListener : public totem::IUIElementListener
    virtual void OnHover() override
    {
       LOG_INFO("Hover");
+   }
+
+   virtual totem::IIEListener* Clone() const
+   {
+      return new ButtonListener();
    }
 };
 

@@ -2,7 +2,7 @@
 #define _TOTEM_UI_BUTTON_H_
 
 #include "IUIElement.h"
-#include "BaseElement.h"
+#include "InteractiveElement.h"
 #include "Animations/Animator.h"
 #include "Animations/BasicAnimations.h"
 
@@ -16,74 +16,52 @@ namespace totem
       SoftBoxButton
    };
 
-   // In order to use a button
-   // client should create a class that implements
-   // IClickListener, then using a factory method
-   // in UIManager create a button, passing the IClickListener
-   // as a parameter to factory method
-   //
-   // For instance, in order to create a button using CreateButton method
-   // create a class that implements IClickListener inteface.
-   // This class can hold any data that will be necessary when button
-   // is clicked.
-   //
-   // 
-   // class ExampleButtonListener : public totem::IClickListener
-   // {
-   // public:
-   //    ExampleButtonListener(SomeType* someData)
-   //       : m_SomeData(someData) {}
-   //
-   //    void OnClick()
-   //    {
-   //       Do necessary actions here...
-   //    }
-   // private:
-   //    SomeType* m_SomeData;
-   // };
-   //
-   // After that you can create a button like that
-   //
-   // Button* exampleButton = m_UIManager.CreateButton(
-   //                            totem::ButtonType::BoxButton,
-   //                            new ExampleButtonListener(someData));
-
-   
-
-   class IButton : public IUIElement
+   class IButton : public IMovableElement
    {
    public:
+      IButton() = default;
+      virtual ~IButton() = default;
+      IButton(const IButton& other) = default;
+      IButton& operator=(const IButton& other) = default;
+
+      virtual const math::vec2f& GetPos() const = 0;
+      virtual const math::vec2f& GetScale() const = 0;
+      virtual void SetPos(const math::vec2f& pos) = 0;
+      virtual void SetScale(const math::vec2f& scale) = 0;
       virtual const char* GetText() const = 0;
       virtual math::vec4f GetColor() const = 0;
       virtual void SetText(const char* text) = 0;
       virtual void SetColor(const math::vec4f& color) = 0;
-      virtual void AddListener(IUIElementListener* listener) = 0;
+      virtual void AddListener(IIEListener* listener) = 0;
    };
 
    
-   class BoxButton : public BaseElement, public IButton
+   class BoxButton : public InteractiveElement, public IButton
    {
    public:
       BoxButton();
+      virtual ~BoxButton();
+      BoxButton(const BoxButton& other);
+      BoxButton& operator=(const BoxButton& other);
 
       virtual void Draw(Renderer* renderer) const override;
       virtual void OnEvent(Event& e) override
-      { BaseElement::OnEvent(e); }
+      { InteractiveElement::OnEvent(e); }
       
       virtual const math::vec2f& GetPos() const override
-      { return BaseElement::GetPos(); }
+      { return InteractiveElement::GetPos(); }
 
       virtual const math::vec2f& GetScale() const override
-      { return BaseElement::GetScale(); }
+      { return InteractiveElement::GetScale(); }
 
       virtual void SetPos(const math::vec2f& pos) override
-      { BaseElement::SetPos(pos); }
+      { InteractiveElement::SetPos(pos); }
 
       virtual void SetScale(const math::vec2f& scale) override
-      { BaseElement::SetScale(scale); }
+      { InteractiveElement::SetScale(scale); }
 
-      virtual void AddListener(IUIElementListener* listener) override
-      { BaseElement::AddListener(listener); }
+      virtual void AddListener(IIEListener* listener) override
+      { InteractiveElement::AddListener(listener); }
 
       virtual const char* GetText() const override
       { return m_Text; }
@@ -95,8 +73,6 @@ namespace totem
       virtual void SetColor(const math::vec4f& color) override
       { m_Color = color; }
 
-   private:
-      virtual bool IsHovered(const math::vec2f& cursorCoords) const override;
    private:
       char* m_Text;
       math::vec4f m_Color;
@@ -142,7 +118,7 @@ namespace totem
       virtual void SetText(const char* str) override
       { m_Wrapee->SetText(str); }
 
-      virtual void AddListener(IUIElementListener* listener) override;
+      virtual void AddListener(IIEListener* listener) override;
 
    protected:
       IButton* m_Wrapee;
@@ -162,16 +138,22 @@ namespace totem
       void OnPush();
 
    private:
-      class ButtonListener : public IUIElementListener
+      class ButtonListener : public IIEListener
       {
       public:
          ButtonListener(ButtonScaleDecorator* master)
             : m_Master(master) {}
 
+         virtual ~ButtonListener() = default;
+         ButtonListener(const ButtonListener& other) = default;
+         ButtonListener& operator=(const ButtonListener& other) = default;
+
          virtual void OnLostHover() override;
          virtual void OnHover() override;
          virtual void OnPush() override;
 
+         virtual IIEListener* Clone() const;
+      private:
          ButtonScaleDecorator* m_Master;
       };
 
@@ -207,16 +189,23 @@ namespace totem
       void OnPush();
 
    private:
-      class ButtonListener : public IUIElementListener
+      class ButtonListener : public IIEListener
       {
       public:
          ButtonListener(ButtonColorDecorator* master)
             : m_Master(master) {}
 
+         virtual ~ButtonListener() = default;
+         ButtonListener(const ButtonListener& other) = default;
+         ButtonListener& operator=(const ButtonListener& other) = default;
+
+
          virtual void OnLostHover() override;
          virtual void OnHover() override;
          virtual void OnPush() override;
 
+         virtual IIEListener* Clone() const;
+      private:
          ButtonColorDecorator* m_Master;
       };
 

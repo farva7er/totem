@@ -8,38 +8,35 @@
 
 namespace totem
 {   
-   class UILinearLayout : public IUIElement
+   class UILinearLayout : public MovableElement
    {
      
    public:
       UILinearLayout();
       virtual ~UILinearLayout();
+      UILinearLayout(const UILinearLayout& other) = delete;
+      UILinearLayout& operator=(const UILinearLayout& other) = delete;
 
       virtual void OnEvent(Event& e) override;
       virtual void OnUpdate(float deltaTime) override;
       virtual void Draw(Renderer* renderer) const override;
 
-      virtual const math::vec2f& GetPos() const override { return m_Pos; }
-      virtual const math::vec2f& GetScale() const override { return m_Scale; }
-
       virtual void SetPos(const math::vec2f& pos) override;
       virtual void SetScale(const math::vec2f& scale) override;
       void SetSpacing(float spacing);
 
-      void AddElement(IUIElement* element);
+      void AddElement(IMovableElement* element);
    private:
-      struct UIElementNode
+      struct ElementNode
       {
-         IUIElement* element;
-         UIElementNode* next;
-         UIElementNode(IUIElement* el, UIElementNode* next = nullptr)
+         IMovableElement* element;
+         ElementNode* next;
+         ElementNode(IMovableElement* el, ElementNode* next = nullptr)
             : element(el), next(next) {}
-         ~UIElementNode();
+         ~ElementNode();
       };
 
-      UIElementNode* m_Elements;
-      math::vec2f m_Pos;
-      math::vec2f m_Scale;
+      ElementNode* m_Elements;
       float m_Spacing;
       float m_FreeSlotPos;
    };

@@ -2,15 +2,13 @@
 
 namespace totem
 {
-   UILinearLayout::UIElementNode::~UIElementNode()
+   UILinearLayout::ElementNode::~ElementNode()
    {
       delete element;
    }
 
    UILinearLayout::UILinearLayout()
       :  m_Elements(nullptr),
-         m_Pos({0, 0}),
-         m_Scale({1, 0}),
          m_Spacing(0)
    {
       m_FreeSlotPos = m_Pos.y;
@@ -20,7 +18,7 @@ namespace totem
    {
       while(m_Elements)
       {
-         UIElementNode* savedNode = m_Elements;
+         ElementNode* savedNode = m_Elements;
          m_Elements = m_Elements->next;
          delete savedNode;
       }
@@ -29,7 +27,7 @@ namespace totem
    void UILinearLayout::SetPos(const math::vec2f& pos)
    {
       math::vec2f delta = pos - m_Pos;
-      UIElementNode* curr = m_Elements;
+      ElementNode* curr = m_Elements;
       while(curr)
       {
          const math::vec2f& prevPos = curr->element->GetPos();
@@ -44,7 +42,7 @@ namespace totem
    {
       // TODO Use scale.y
       m_Scale.x = scale.x;
-      UIElementNode* curr = m_Elements;
+      ElementNode* curr = m_Elements;
       while(curr)
       {
          totem::math::vec2f elScale(scale.x, curr->element->GetScale().y);
@@ -58,7 +56,7 @@ namespace totem
       m_Spacing = spacing;
    }
 
-   void UILinearLayout::AddElement(IUIElement* element)
+   void UILinearLayout::AddElement(IMovableElement* element)
    {
       math::vec2f elPos(m_Pos.x, m_FreeSlotPos - element->GetScale().y);
       element->SetScale({ m_Scale.x, element->GetScale().y });
@@ -66,12 +64,12 @@ namespace totem
       m_FreeSlotPos -= 2 * element->GetScale().y + m_Spacing;
       m_Pos.y -= element->GetScale() .y + m_Spacing/2;
       m_Scale.y += element->GetScale().y + m_Spacing/2;
-      m_Elements = new UIElementNode(element, m_Elements);
+      m_Elements = new ElementNode(element, m_Elements);
    }
 
    void UILinearLayout::OnUpdate(float deltaTime)
    {
-      UIElementNode* curr = m_Elements;
+      ElementNode* curr = m_Elements;
       while(curr)
       {
          curr->element->OnUpdate(deltaTime);
@@ -81,7 +79,7 @@ namespace totem
 
    void UILinearLayout::Draw(Renderer* renderer) const
    {
-      UIElementNode* curr = m_Elements;
+      ElementNode* curr = m_Elements;
       while(curr)
       {
          curr->element->Draw(renderer);
@@ -92,7 +90,7 @@ namespace totem
 
    void UILinearLayout::OnEvent(Event& e)
    {
-      UIElementNode* curr = m_Elements;
+      ElementNode* curr = m_Elements;
       while(curr)
       {
          curr->element->OnEvent(e);

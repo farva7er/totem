@@ -11,6 +11,44 @@ namespace totem
       : m_Text(nullptr), m_Color(math::vec4f(0, 0, 0, 1))
    {}
 
+   BoxButton::~BoxButton()
+   {
+      if(m_Text)
+         delete [] m_Text;
+   }
+
+   BoxButton::BoxButton(const BoxButton& other)
+      : InteractiveElement(other)
+   {
+      if(other.GetText())
+      {
+         m_Text = new char[strlen(other.GetText()) + 1];
+         strcpy(m_Text, other.GetText());
+      }
+      else
+      {
+         m_Text = nullptr;
+      } 
+   }
+
+   BoxButton& BoxButton::operator=(const BoxButton& other)
+   {
+      InteractiveElement::operator=(other);
+      if(m_Text)
+         delete [] m_Text;
+
+      if(other.GetText())
+      {
+         m_Text = new char[strlen(other.GetText()) + 1];
+         strcpy(m_Text, other.GetText());
+      }
+      else
+      {
+         m_Text = nullptr;
+      }
+      return *this;
+   }
+
    void BoxButton::Draw(Renderer* renderer) const
    {
       Rect rect = Rect::Builder()
@@ -28,18 +66,6 @@ namespace totem
                      TextAlign::VCenter | TextAlign::HCenter
                      );
       }
-   }
-
-   bool BoxButton::IsHovered(const math::vec2f& cursorCoords) const
-   {
-      if(cursorCoords.x >= m_Pos.x - m_Scale.x &&
-         cursorCoords.x <= m_Pos.x + m_Scale.x &&
-         cursorCoords.y >= m_Pos.y - m_Scale.y &&
-         cursorCoords.y <= m_Pos.y + m_Scale.y)
-      {
-         return true;
-      }
-      return false;
    }
 
    void BoxButton::SetText(const char* text)
@@ -66,7 +92,7 @@ namespace totem
       m_Wrapee->Draw(renderer);
    }
 
-   void ButtonBaseDecorator::AddListener(IUIElementListener* listener)
+   void ButtonBaseDecorator::AddListener(IIEListener* listener)
    {
       m_Wrapee->AddListener(listener);
    }
@@ -177,6 +203,11 @@ namespace totem
    void ButtonScaleDecorator::ButtonListener::OnPush()
    {
       m_Master->OnPush();
+   }
+
+   IIEListener* ButtonScaleDecorator::ButtonListener::Clone() const
+   {
+      return new ButtonScaleDecorator::ButtonListener(*this);
    }
 
 //////////////////////////////////////////////////////////////
@@ -311,5 +342,10 @@ namespace totem
    void ButtonColorDecorator::ButtonListener::OnPush()
    {
       m_Master->OnPush();
-   } 
+   }
+
+   IIEListener* ButtonColorDecorator::ButtonListener::Clone() const
+   {
+      return new ButtonColorDecorator::ButtonListener(*this);
+   }
 }
