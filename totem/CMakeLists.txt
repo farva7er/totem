@@ -59,6 +59,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/UI/UILinearLayout.cpp
                            src/Filesystem/Utils.h
                            src/Filesystem/Utils.cpp
+                           src/Internationalization/Text.h
+                           src/Internationalization/Text.cpp
                            )
 
 
