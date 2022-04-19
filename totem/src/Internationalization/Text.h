@@ -4,7 +4,7 @@
 namespace totem
 {
 
-   typedef char utf8_t;
+   typedef unsigned char utf8_t;
    typedef unsigned int unicode_t;
 
    class Text

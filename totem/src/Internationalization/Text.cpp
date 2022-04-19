@@ -122,6 +122,7 @@ namespace totem
       else
       {
          m_HasEnded = true;
+         m_CurrCodepoint = 0;
       }
    }
 

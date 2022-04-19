@@ -1,5 +1,5 @@
 #include "Tests.h"
-#include "Log.h"
+#include "TextTests.h"
 
 totem::App* totem::App::CreateApp()
 {
@@ -8,5 +8,5 @@ totem::App* totem::App::CreateApp()
 
 void TestApp::Run()
 {
-   LOG_INFO("Hello, tests passed!");
+   TextTestsRun();
 }
