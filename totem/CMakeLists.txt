@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.10)
 project(totem)
 
 add_library(totem STATIC   src/App.h
-                           src/App.cpp
                            src/Assert.h
                            src/Events.h
                            src/Log.h
@@ -61,6 +60,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Filesystem/Utils.cpp
                            src/Internationalization/Text.h
                            src/Internationalization/Text.cpp
+                           src/Novel/NovelApp.h
+                           src/Novel/NovelApp.cpp
                            )
 
 

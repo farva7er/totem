@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "App.h"
+#include "Novel/NovelApp.h"
 #include "Log.h"
 #include "Renderer/Renderer.h"
 #include "Math/Vec.h"
@@ -41,7 +41,7 @@ class ButtonListener : public totem::IIEListener
    }
 };
 
-class Sandbox : public totem::App
+class Sandbox : public totem::NovelApp
 {
 
 public:

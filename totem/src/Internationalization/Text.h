@@ -10,7 +10,7 @@ namespace totem
    class Text
    {
    public:
-      //Construct Text from a given utf8 buffer
+      // Construct Text from a given utf-8 buffer
       Text(const utf8_t* str, unsigned int sizeInBytes);
 
       // An optimisation hint, reserve some bytes upfront

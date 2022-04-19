@@ -1,4 +1,4 @@
-#include "App.h"
+#include "NovelApp.h"
 #include "Window.h"
 #include "Renderer/Renderer.h"
 #include "Timer.h"
@@ -7,7 +7,7 @@
 
 namespace totem
 {
-   App::App()
+   NovelApp::NovelApp()
    {
       m_Window = Window::Create(1280, 720, "Totem");
       m_Window->AddEventListener(this);
@@ -15,7 +15,7 @@ namespace totem
       m_RootElement = nullptr;
    }
 
-   App::~App()
+   NovelApp::~NovelApp()
    {
       ResourceManager::DeleteInstance();
       delete m_RootElement;
@@ -23,7 +23,7 @@ namespace totem
       delete m_Window;
    }
 
-   void App::Run()
+   void NovelApp::Run()
    {
       float frameTime = Timer::GetTimeSec(), 
             prevFrameTime = Timer::GetTimeSec();
@@ -40,22 +40,22 @@ namespace totem
    }
 
 
-   void App::SetCanvasScale(const math::vec2f& scale)
+   void NovelApp::SetCanvasScale(const math::vec2f& scale)
    {
       m_Renderer->SetCanvasScale(scale);
    }
 
-   const math::vec2f& App::GetCanvasScale() const
+   const math::vec2f& NovelApp::GetCanvasScale() const
    {
       return m_Renderer->GetCanvasScale();
    }
 
-   void App::OnEvent(Event& e)
+   void NovelApp::OnEvent(Event& e)
    {
-      EventDispatcher<App> d(this);
+      EventDispatcher<NovelApp> d(this);
 
-      d.Dispatch<WindowResizeEvent>(&App::OnWindowResize, e);
-      d.Dispatch<MouseMoveEvent>(&App::OnMouseMove, e);
+      d.Dispatch<WindowResizeEvent>(&NovelApp::OnWindowResize, e);
+      d.Dispatch<MouseMoveEvent>(&NovelApp::OnMouseMove, e);
 
       if(m_RootElement)
       {
@@ -65,12 +65,12 @@ namespace totem
       OnTotemEvent(e);
    }
 
-   void App::OnWindowResize(WindowResizeEvent& e)
+   void NovelApp::OnWindowResize(WindowResizeEvent& e)
    {
       m_Renderer->SetViewport(e.GetWidth(), e.GetHeight());
    }
 
-   void App::OnMouseMove(MouseMoveEvent& e)
+   void NovelApp::OnMouseMove(MouseMoveEvent& e)
    {
       math::vec2f canvasCoords =
                               ScreenToCanvas({ e.GetX(), e.GetY() });
@@ -79,7 +79,7 @@ namespace totem
    }
 
    math::vec2f
-   App::ScreenToCanvas(const math::vec2f& screenCoords) const
+   NovelApp::ScreenToCanvas(const math::vec2f& screenCoords) const
    {
       return math::vec2f(
             GetCanvasScale().x * 
@@ -89,7 +89,7 @@ namespace totem
             (1  - 2 * screenCoords.y / m_Window->GetHeight()));
    }
 
-   void App::OnUpdate(float deltaTime)
+   void NovelApp::OnUpdate(float deltaTime)
    {
       if(m_Background)
          m_Renderer->DrawBackground(m_Background);
