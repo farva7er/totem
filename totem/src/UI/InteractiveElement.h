@@ -12,7 +12,7 @@ namespace totem
 
       virtual IIEListener* Clone() const = 0;
 
-      virtual void OnClick(int btn) {}
+      virtual void OnClick(int /*btn*/) {}
       virtual void OnLostHover() {}
       virtual void OnHover() {}
       virtual void OnPush() {}

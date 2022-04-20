@@ -12,6 +12,7 @@ namespace totem
       m_Window = Window::Create(1280, 720, "Totem");
       m_Window->AddEventListener(this);
       m_Renderer = new Renderer(m_Window);
+      m_Background = nullptr;
       m_RootElement = nullptr;
    }
 

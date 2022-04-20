@@ -79,10 +79,10 @@ target_compile_definitions(
    $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:TOTEM_PLATFORM_WINDOWS>
 )
 
-target_compile_options(
-   totem
-   PUBLIC
-   $<$<CONFIG:Debug>:-Wall -g>
+
+target_compile_options(totem PRIVATE
+   $<$<CXX_COMPILER_ID:MSVC>:/W4>
+   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
 )
 
 ###############################################

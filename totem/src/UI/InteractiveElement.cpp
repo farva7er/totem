@@ -81,7 +81,7 @@ namespace totem
       }
    }
 
-   void InteractiveElement::OnMousePressed(MousePressedEvent& e)
+   void InteractiveElement::OnMousePressed(MousePressedEvent& /*e*/)
    {
       if(m_State == State::Hovered)
       {

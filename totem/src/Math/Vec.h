@@ -17,12 +17,12 @@ namespace totem
          }
          T& operator[] (size_t i)
          {
-            TOTEM_ASSERT(i >= 0 && i < dim, "vec out of bounds");
+            TOTEM_ASSERT(i < dim, "vec out of bounds");
             return coord[dim];
          }
          const T& operator[] (size_t i) const
          {
-            TOTEM_ASSERT(i >= 0 && i < dim, "vec out of bounds");
+            TOTEM_ASSERT(i < dim, "vec out of bounds");
             return coord[dim];
          }
 
@@ -37,12 +37,12 @@ namespace totem
          vec(T x, T y) : x(x), y(y) {}
          T& operator[] (size_t i)
          {
-            TOTEM_ASSERT(i >= 0 && i < 2, "vec out of bounds");
+            TOTEM_ASSERT(i < 2, "vec out of bounds");
             return i == 0 ? x : y;
          }
          const T& operator[] (size_t i) const
          {
-            TOTEM_ASSERT(i >= 0 && i < 2, "vec out of bounds");
+            TOTEM_ASSERT(i < 2, "vec out of bounds");
             return i == 0 ? x : y;
          }
 
@@ -55,12 +55,12 @@ namespace totem
          vec(T x, T y, T z) : x(x), y(y), z(z) {}
          T& operator[] (size_t i)
          {
-            TOTEM_ASSERT(i >= 0 && i < 3, "vec out of bounds");
+            TOTEM_ASSERT(i < 3, "vec out of bounds");
             return i == 0 ? x : ( i == 1 ? y : z);
          }
          const T& operator[] (size_t i) const
          {
-            TOTEM_ASSERT(i >= 0 && i < 3, "vec out of bounds");
+            TOTEM_ASSERT(i < 3, "vec out of bounds");
             return i == 0 ? x : ( i == 1 ? y : z);
          }
 
@@ -84,12 +84,12 @@ namespace totem
          vec(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
          T& operator[] (size_t i)
          {
-            TOTEM_ASSERT(i >= 0 && i < 4, "vec out of bounds");
+            TOTEM_ASSERT(i < 4, "vec out of bounds");
             return i == 0 ? x : ( i == 1 ? y : ( i == 2 ? z : w ));
          }
          const T& operator[] (size_t i) const
          {
-            TOTEM_ASSERT(i >= 0 && i < 4, "vec out of bounds");
+            TOTEM_ASSERT(i < 4, "vec out of bounds");
             return i == 0 ? x : ( i == 1 ? y : ( i == 2 ? z : w ));
          }
 

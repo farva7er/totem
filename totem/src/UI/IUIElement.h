@@ -12,7 +12,7 @@ namespace totem
    public:
       virtual ~IUIElement() {};
 
-      virtual void OnUpdate(float deltaTime) {};
+      virtual void OnUpdate(float /*deltaTime*/) {};
       virtual void Draw(Renderer* renderer) const = 0;
    };
 

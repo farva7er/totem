@@ -48,6 +48,8 @@ public:
    Sandbox() : m_CurrPos(0)
    {
       SetCanvasScale(totem::math::vec2f(16, 9));
+      SetBackground("resources/image.jpeg");
+
       m_TrianglePos = totem::math::vec2f(-10, 5);
       m_TriangleColor = totem::math::vec4f(1, 1, 1, 1);
       m_ColorAnim =
@@ -143,7 +145,6 @@ public:
       //LOG_INFO("%f", deltaTime);
       m_Animator.OnUpdate(deltaTime);
       //m_Renderer->Clear(0.2f, 0.3f, 0.2f);
-      SetBackground("resources/image.jpeg");
       for(int i = 0; i < m_CurrPos; i++)
       {
          totem::Rect rect = totem::Rect::Builder()

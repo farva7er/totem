@@ -31,8 +31,8 @@ namespace totem
       w->OnEvent(e); 
    }
 
-   static void key_callback(GLFWwindow* window,
-                           int key, int scancode, int action, int mods)
+   static void key_callback(GLFWwindow* window, int key,
+                        int /*scancode*/, int action, int /*mods*/)
    {
       LinuxWindow* w = (LinuxWindow*)glfwGetWindowUserPointer(window);
 
@@ -70,7 +70,7 @@ namespace totem
    }
 
    void mouse_button_callback(GLFWwindow* window,
-                              int button, int action, int mods)
+                              int button, int action, int /*mods*/)
    {
       LinuxWindow* w = (LinuxWindow*)glfwGetWindowUserPointer(window);
       if (action == GLFW_PRESS)
