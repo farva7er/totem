@@ -10,14 +10,15 @@ namespace totem
    {
    public:
       BasicElementImpl()
-         :  m_Parent(nullptr),
+         :  m_ID(IUIElement::ObtainID()),
+            m_Parent(nullptr),
             m_Pos(math::vec2f(0, 0)),
             m_Scale(math::vec2f(1, 1))
-      { m_ID = ++IUIElement::s_ID_Counter; }
+      {}
 
       virtual ~BasicElementImpl();
-      BasicElementImpl(const BasicElementImpl& other) = default;
-      BasicElementImpl& operator=(const BasicElementImpl& other) = default;
+      BasicElementImpl(const BasicElementImpl& other);
+      BasicElementImpl& operator=(const BasicElementImpl& other);
 
       virtual unsigned int GetID() const
       { return m_ID; }

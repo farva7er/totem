@@ -50,6 +50,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/UI/BasicElementImpl.cpp
                            src/UI/Button.h
                            src/UI/Button.cpp
+                           src/UI/CheckButton.h
+                           src/UI/CheckButton.cpp
                            src/UI/IIEListener.h
                            src/UI/IMovableElement.h
                            src/UI/InteractiveElementImpl.h

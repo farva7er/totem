@@ -22,8 +22,11 @@ namespace totem
 
       virtual void OnUpdate(float /*deltaTime*/) {};
       virtual void Draw(Renderer* renderer) const = 0;
-   public:
+
+   private:
       static unsigned int s_ID_Counter;
+   public:
+      static unsigned int ObtainID();
    };
 }
 

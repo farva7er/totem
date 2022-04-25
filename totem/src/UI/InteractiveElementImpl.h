@@ -23,6 +23,10 @@ namespace totem
 
    protected:
       virtual bool IsHovered(const math::vec2f& cursorCoords) const;
+      virtual void OnLostHover() {};
+      virtual void OnHover() {};
+      virtual void OnPush() {};
+      virtual void OnClick(int /*button*/) {};
 
    private:
       void SendOnLostHover();

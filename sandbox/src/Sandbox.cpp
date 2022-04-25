@@ -10,6 +10,7 @@
 #include "UI/UILinearLayout.h"
 #include "UI/IIEListener.h"
 #include "UI/Button.h"
+#include "UI/CheckButton.h"
 
 #include "Renderer/RendererPrimitives/Rect.h"
 
@@ -68,7 +69,7 @@ public:
 
       totem::UILinearLayout* layout = new totem::UILinearLayout();
       layout->SetScale(totem::math::vec2f(4, 0));
-      layout->SetPos(totem::math::vec2f(0, 2));
+      layout->SetPos(totem::math::vec2f(0, 4));
       layout->SetSpacing(0.1f);
 
 
@@ -112,10 +113,16 @@ public:
       soButton2->SetText("Soft l2");
 
       layout2->AddElement(fButton2);
-      layout2->AddElement(soButton2);
+      //layout2->AddElement(soButton2);
       
       layout->AddElement(layout2);
       delete soButton2;
+
+      totem::IButton* checkButton = new totem::CheckButton();
+      checkButton->SetPos({ 0, 8 });
+      checkButton->SetColor({ 0.1f, 0.1f, 0.1f, 0.8f });
+      checkButton = new totem::ButtonScaleDecorator(checkButton);
+      layout2->AddElement(checkButton);
 
       m_RootElement = layout;
    }
@@ -152,7 +159,7 @@ public:
       {
          totem::Rect rect = totem::Rect::Builder()
                         .SetPos(m_Positions[i])
-                        .SetScale(totem::math::vec2f(0.7f, 0.7f))
+                        .SetScale(totem::math::vec2f(0.2f, 0.2f))
                         .SetColor(totem::math::vec4f(0.4f, 0.6f, 0.4f, 0.1f))
                         .Construct();
 

@@ -117,6 +117,7 @@ namespace totem
          curr->m_Listener->OnLostHover();
          curr = curr->m_Next;
       }
+      OnLostHover();
    }
 
    void InteractiveElementImpl::SendOnHover()
@@ -127,6 +128,7 @@ namespace totem
          curr->m_Listener->OnHover();
          curr = curr->m_Next;
       }
+      OnHover();
    }
 
    void InteractiveElementImpl::SendOnPush()
@@ -137,6 +139,7 @@ namespace totem
          curr->m_Listener->OnPush();
          curr = curr->m_Next;
       }
+      OnPush();
    }
 
    void InteractiveElementImpl::SendOnClick(int button)
@@ -147,6 +150,7 @@ namespace totem
          curr->m_Listener->OnClick(button);
          curr = curr->m_Next;
       }
+      OnClick(button);
    }
 
    bool
