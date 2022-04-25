@@ -18,7 +18,7 @@ namespace totem
    }
 
    BoxButton::BoxButton(const BoxButton& other)
-      : InteractiveElement(other)
+      : InteractiveElementImpl(other)
    {
       if(other.GetText())
       {
@@ -33,7 +33,7 @@ namespace totem
 
    BoxButton& BoxButton::operator=(const BoxButton& other)
    {
-      InteractiveElement::operator=(other);
+      InteractiveElementImpl::operator=(other);
       if(m_Text)
          delete [] m_Text;
 

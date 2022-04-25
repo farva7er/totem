@@ -58,6 +58,8 @@ namespace totem
 
    void UILinearLayout::AddElement(IMovableElement* element)
    {
+      element->SetParent(this);
+
       math::vec2f elPos(m_Pos.x, m_FreeSlotPos - element->GetScale().y);
       element->SetScale({ m_Scale.x, element->GetScale().y });
       element->SetPos(elPos);
@@ -65,6 +67,24 @@ namespace totem
       m_Pos.y -= element->GetScale() .y + m_Spacing/2;
       m_Scale.y += element->GetScale().y + m_Spacing/2;
       m_Elements = new ElementNode(element, m_Elements);
+   }
+
+   void UILinearLayout::Forget(unsigned int elID)
+   {
+      ElementNode** curr = &m_Elements;
+      while(*curr)
+      {
+         //LOG_INFO("FORGET: %u , %u", elID, (*curr)->element->GetID());
+         if(elID  == (*curr)->element->GetID())
+         {
+            (*curr)->element = nullptr; // Don't need to delete it
+            ElementNode* savedNode = *curr;
+            *curr = (*curr)->next;
+            delete savedNode;
+            return;
+         }
+         curr = &((*curr)->next);
+      }
    }
 
    void UILinearLayout::OnUpdate(float deltaTime)

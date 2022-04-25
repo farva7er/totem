@@ -1,14 +1,13 @@
 #ifndef _TOTEM_UI_BUTTON_H_
 #define _TOTEM_UI_BUTTON_H_
 
-#include "IUIElement.h"
-#include "InteractiveElement.h"
+#include "IMovableElement.h"
+#include "InteractiveElementImpl.h"
 #include "Animations/Animator.h"
 #include "Animations/BasicAnimations.h"
 
 namespace totem
 {
-
    enum class ButtonType
    { 
       SimpleBoxButton,
@@ -19,24 +18,19 @@ namespace totem
    class IButton : public IMovableElement
    {
    public:
-      IButton() = default;
       virtual ~IButton() = default;
-      IButton(const IButton& other) = default;
-      IButton& operator=(const IButton& other) = default;
-
-      virtual const math::vec2f& GetPos() const = 0;
-      virtual const math::vec2f& GetScale() const = 0;
-      virtual void SetPos(const math::vec2f& pos) = 0;
-      virtual void SetScale(const math::vec2f& scale) = 0;
+ 
       virtual const char* GetText() const = 0;
-      virtual math::vec4f GetColor() const = 0;
       virtual void SetText(const char* text) = 0;
+
+      virtual math::vec4f GetColor() const = 0;
       virtual void SetColor(const math::vec4f& color) = 0;
+
       virtual void AddListener(IIEListener* listener) = 0;
    };
 
    
-   class BoxButton : public InteractiveElement, public IButton
+   class BoxButton : public IButton, public InteractiveElementImpl
    {
    public:
       BoxButton();
@@ -46,22 +40,22 @@ namespace totem
 
       virtual void Draw(Renderer* renderer) const override;
       virtual void OnEvent(Event& e) override
-      { InteractiveElement::OnEvent(e); }
+      { InteractiveElementImpl::OnEvent(e); }
       
       virtual const math::vec2f& GetPos() const override
-      { return InteractiveElement::GetPos(); }
+      { return InteractiveElementImpl::GetPos(); }
 
       virtual const math::vec2f& GetScale() const override
-      { return InteractiveElement::GetScale(); }
+      { return InteractiveElementImpl::GetScale(); }
 
       virtual void SetPos(const math::vec2f& pos) override
-      { InteractiveElement::SetPos(pos); }
+      { InteractiveElementImpl::SetPos(pos); }
 
       virtual void SetScale(const math::vec2f& scale) override
-      { InteractiveElement::SetScale(scale); }
+      { InteractiveElementImpl::SetScale(scale); }
 
       virtual void AddListener(IIEListener* listener) override
-      { InteractiveElement::AddListener(listener); }
+      { InteractiveElementImpl::AddListener(listener); }
 
       virtual const char* GetText() const override
       { return m_Text; }
@@ -72,6 +66,18 @@ namespace totem
       virtual void SetText(const char* text) override;
       virtual void SetColor(const math::vec4f& color) override
       { m_Color = color; }
+
+      virtual IUIElement* GetParent() const override
+      { return InteractiveElementImpl::GetParent(); }
+
+      virtual void SetParent(IUIElement* el) override
+      { InteractiveElementImpl::SetParent(el); }
+
+      virtual void Forget(unsigned int elID) override
+      { InteractiveElementImpl::Forget(elID); }
+
+      virtual unsigned int GetID() const override
+      { return InteractiveElementImpl::GetID(); }
 
    private:
       char* m_Text;
@@ -117,6 +123,18 @@ namespace totem
 
       virtual void SetText(const char* str) override
       { m_Wrapee->SetText(str); }
+
+      virtual IUIElement* GetParent() const override
+      { return m_Wrapee->GetParent(); }
+
+      virtual void SetParent(IUIElement* el) override
+      { m_Wrapee->SetParent(el); }
+
+      virtual void Forget(unsigned int elID) override
+      { m_Wrapee->Forget(elID); }
+
+      virtual unsigned int GetID() const override
+      { return m_Wrapee->GetID(); }
 
       virtual void AddListener(IIEListener* listener) override;
 

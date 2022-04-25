@@ -1,36 +1,23 @@
-#include "MovableElement.h"
+#ifndef _TOTEM_INTERACTIVE_ELEMENT_IMPL_H_
+#define _TOTEM_INTERACTIVE_ELEMENT_IMPL_H_
+
+#include "BasicElementImpl.h"
+#include "IIEListener.h"
 
 namespace totem
 {
-   class IIEListener
+   class InteractiveElementImpl : public BasicElementImpl
    {
    public:
-      IIEListener() = default;
-      virtual ~IIEListener() = default;
-      IIEListener(const IIEListener& other) = default;
-      IIEListener& operator=(const IIEListener& other) = default;
-
-      virtual IIEListener* Clone() const = 0;
-
-      virtual void OnClick(int /*btn*/) {}
-      virtual void OnLostHover() {}
-      virtual void OnHover() {}
-      virtual void OnPush() {}
-   };
-
-
-   class InteractiveElement : public MovableElement
-   {
-   public:
-      InteractiveElement()
+      InteractiveElementImpl()
          :  m_State(State::LostHover),
             m_Listeners(nullptr)
       {}
-      virtual ~InteractiveElement();
-      InteractiveElement(const InteractiveElement& other);
-      InteractiveElement& operator=(const InteractiveElement& other);
+      virtual ~InteractiveElementImpl();
+      InteractiveElementImpl(const InteractiveElementImpl& other);
+      InteractiveElementImpl& operator=(const InteractiveElementImpl& other);
             
-      virtual void OnEvent(Event& e) override;
+      virtual void OnEvent(Event& e);
       void AddListener(IIEListener* listener);
       void ClearListeners();
 
@@ -63,3 +50,5 @@ namespace totem
       ListenerNode* m_Listeners; 
    };
 }
+
+#endif

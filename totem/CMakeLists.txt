@@ -46,13 +46,16 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Renderer/Shader.cpp
                            src/Renderer/Texture.h
                            src/Renderer/Texture.cpp
+                           src/UI/BasicElementImpl.h
+                           src/UI/BasicElementImpl.cpp
                            src/UI/Button.h
                            src/UI/Button.cpp
-                           src/UI/InteractiveElement.h
-                           src/UI/InteractiveElement.cpp
+                           src/UI/IIEListener.h
+                           src/UI/IMovableElement.h
+                           src/UI/InteractiveElementImpl.h
+                           src/UI/InteractiveElementImpl.cpp
                            src/UI/IUIElement.h
-                           src/UI/MovableElement.h
-                           src/UI/MovableElement.cpp
+                           src/UI/IUIElement.cpp
                            src/UI/TextBox.h
                            src/UI/UILinearLayout.h
                            src/UI/UILinearLayout.cpp

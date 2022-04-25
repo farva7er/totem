@@ -1,15 +1,16 @@
-#include "InteractiveElement.h"
+#include "InteractiveElementImpl.h"
 #include "Events.h"
 
 namespace totem
 {
-   InteractiveElement::~InteractiveElement()
+   InteractiveElementImpl::~InteractiveElementImpl()
    {
       ClearListeners();
    }
 
-   InteractiveElement::InteractiveElement(const InteractiveElement& other)
-      : MovableElement(other)
+   InteractiveElementImpl::
+   InteractiveElementImpl(const InteractiveElementImpl& other)
+      : BasicElementImpl(other)
    {
       m_State = State::LostHover;
 
@@ -21,10 +22,10 @@ namespace totem
       }
    }
 
-   InteractiveElement&
-   InteractiveElement::operator=(const InteractiveElement& other)
+   InteractiveElementImpl&
+   InteractiveElementImpl::operator=(const InteractiveElementImpl& other)
    {
-      MovableElement::operator=(other);
+      BasicElementImpl::operator=(other);
       m_State = State::LostHover;
       
       ClearListeners();
@@ -37,7 +38,7 @@ namespace totem
       return *this;
    }
 
-   void InteractiveElement::ClearListeners()
+   void InteractiveElementImpl::ClearListeners()
    {
       while(m_Listeners)
       {
@@ -49,15 +50,18 @@ namespace totem
       m_Listeners = nullptr;
    }
 
-   void InteractiveElement::OnEvent(Event& e)
+   void InteractiveElementImpl::OnEvent(Event& e)
    {
-      EventDispatcher<InteractiveElement> d(this);
-      d.Dispatch<MouseMoveEvent>(&InteractiveElement::OnMouseMove, e);
-      d.Dispatch<MousePressedEvent>(&InteractiveElement::OnMousePressed, e);
-      d.Dispatch<MouseReleasedEvent>(&InteractiveElement::OnMouseReleased, e);
+      EventDispatcher<InteractiveElementImpl> d(this);
+      d.Dispatch<MouseMoveEvent>(
+            &InteractiveElementImpl::OnMouseMove, e);
+      d.Dispatch<MousePressedEvent>(
+            &InteractiveElementImpl::OnMousePressed, e);
+      d.Dispatch<MouseReleasedEvent>(
+            &InteractiveElementImpl::OnMouseReleased, e);
    }
 
-   void InteractiveElement::OnMouseMove(MouseMoveEvent& e)
+   void InteractiveElementImpl::OnMouseMove(MouseMoveEvent& e)
    {
       math::vec2f mouseCoords(e.GetX(), e.GetY());
       bool isHovered = IsHovered(mouseCoords);
@@ -81,7 +85,7 @@ namespace totem
       }
    }
 
-   void InteractiveElement::OnMousePressed(MousePressedEvent& /*e*/)
+   void InteractiveElementImpl::OnMousePressed(MousePressedEvent& /*e*/)
    {
       if(m_State == State::Hovered)
       {
@@ -90,7 +94,7 @@ namespace totem
       }
    }
 
-   void InteractiveElement::OnMouseReleased(MouseReleasedEvent& e)
+   void InteractiveElementImpl::OnMouseReleased(MouseReleasedEvent& e)
    {
       if(m_State == State::Pushed)
       {
@@ -100,12 +104,12 @@ namespace totem
       }
    }
 
-   void InteractiveElement::AddListener(IIEListener* listener) 
+   void InteractiveElementImpl::AddListener(IIEListener* listener) 
    {
       m_Listeners = new ListenerNode(listener, m_Listeners);
    }
 
-   void InteractiveElement::SendOnLostHover()
+   void InteractiveElementImpl::SendOnLostHover()
    {
       ListenerNode* curr = m_Listeners;
       while(curr)
@@ -115,7 +119,7 @@ namespace totem
       }
    }
 
-   void InteractiveElement::SendOnHover()
+   void InteractiveElementImpl::SendOnHover()
    {
       ListenerNode* curr = m_Listeners;
       while(curr)
@@ -125,7 +129,7 @@ namespace totem
       }
    }
 
-   void InteractiveElement::SendOnPush()
+   void InteractiveElementImpl::SendOnPush()
    {
       ListenerNode* curr = m_Listeners;
       while(curr)
@@ -135,7 +139,7 @@ namespace totem
       }
    }
 
-   void InteractiveElement::SendOnClick(int button)
+   void InteractiveElementImpl::SendOnClick(int button)
    {
       ListenerNode* curr = m_Listeners;
       while(curr)
@@ -145,8 +149,8 @@ namespace totem
       }
    }
 
-
-   bool InteractiveElement::IsHovered(const math::vec2f& cursorCoords) const
+   bool
+   InteractiveElementImpl::IsHovered(const math::vec2f& cursorCoords) const
    {
       if(cursorCoords.x >= m_Pos.x - m_Scale.x &&
          cursorCoords.x <= m_Pos.x + m_Scale.x &&

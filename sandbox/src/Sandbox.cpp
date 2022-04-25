@@ -8,6 +8,8 @@
 #include "Animations/BasicAnimations.h"
 
 #include "UI/UILinearLayout.h"
+#include "UI/IIEListener.h"
+#include "UI/Button.h"
 
 #include "Renderer/RendererPrimitives/Rect.h"
 
@@ -113,6 +115,7 @@ public:
       layout2->AddElement(soButton2);
       
       layout->AddElement(layout2);
+      delete soButton2;
 
       m_RootElement = layout;
    }
