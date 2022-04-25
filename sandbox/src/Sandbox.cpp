@@ -11,6 +11,7 @@
 #include "UI/IIEListener.h"
 #include "UI/Button.h"
 #include "UI/CheckButton.h"
+#include "UI/CommonMediators/UIButtonExclusiveGroup.h"
 
 #include "Renderer/RendererPrimitives/Rect.h"
 
@@ -69,7 +70,7 @@ public:
 
       totem::UILinearLayout* layout = new totem::UILinearLayout();
       layout->SetScale(totem::math::vec2f(4, 0));
-      layout->SetPos(totem::math::vec2f(0, 4));
+      layout->SetPos(totem::math::vec2f(0, 9));
       layout->SetSpacing(0.1f);
 
 
@@ -95,6 +96,7 @@ public:
       layout->AddElement(fButton);
       layout->AddElement(soButton);
 
+
       totem::UILinearLayout* layout2 = new totem::UILinearLayout();
       layout2->SetScale(totem::math::vec2f(4, 0));
       layout2->SetSpacing(0.4f);
@@ -118,15 +120,27 @@ public:
       layout->AddElement(layout2);
       delete soButton2;
 
-      totem::CheckButton* checkButton = new totem::CheckButton();
-      checkButton->SetPos({ 0, 8 });
-      checkButton->SetColor({ 0.1f, 0.1f, 0.1f, 0.8f });
-      //checkButton->SetActive(false);
-      checkButton->SetChecked(true);
-      totem::IButton* chckButton = 
-         new totem::ButtonScaleDecorator(checkButton);
-      layout2->AddElement(chckButton);
-      fButton2->SetActive(false);
+      totem::CheckButton* checkButton1 = new totem::CheckButton();
+      checkButton1->SetColor({ 0.1f, 0.1f, 0.1f, 0.8f });
+      checkButton1->SetChecked(true);
+      checkButton1->SetActive(false);
+
+      totem::CheckButton* checkButton2 = new totem::CheckButton();
+      checkButton2->SetColor({ 0.1f, 0.1f, 0.1f, 0.8f });
+
+      totem::CheckButton* checkButton3 = new totem::CheckButton();
+      checkButton3->SetColor({ 0.1f, 0.1f, 0.1f, 0.8f });
+
+      m_RadioButtonGroup.AddButton(checkButton1);
+      m_RadioButtonGroup.AddButton(checkButton2);
+      m_RadioButtonGroup.AddButton(checkButton3);
+
+      layout->AddElement(checkButton1);
+      layout->AddElement(checkButton2);
+      layout->AddElement(checkButton3);
+
+      m_RadioButtonGroup.RemoveButton(checkButton3);
+
       m_RootElement = layout;
    }
 
@@ -225,6 +239,7 @@ private:
    totem::math::vec4f m_TriangleColor;
    totem::math::vec2f m_TrianglePos;
    totem::InterpAnim<totem::math::vec4f>* m_ColorAnim;
+   totem::UIButtonExclusiveGroup m_RadioButtonGroup;
 };
 
 totem::App* totem::App::CreateApp()

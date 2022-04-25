@@ -25,6 +25,7 @@ namespace totem
 
       virtual void OnEvent(Event& e);
       void AddListener(IIEListener* listener);
+      void RemoveListener(IIEListener* listener);
       void ClearListeners();
 
    protected:

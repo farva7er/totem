@@ -46,6 +46,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Renderer/Shader.cpp
                            src/Renderer/Texture.h
                            src/Renderer/Texture.cpp
+                           src/UI/CommonMediators/UIButtonExclusiveGroup.h
+                           src/UI/CommonMediators/UIButtonExclusiveGroup.cpp
                            src/UI/BasicElementImpl.h
                            src/UI/BasicElementImpl.cpp
                            src/UI/Button.h

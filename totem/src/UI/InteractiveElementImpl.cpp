@@ -123,6 +123,27 @@ namespace totem
       m_Listeners = new ListenerNode(listener, m_Listeners);
    }
 
+   void InteractiveElementImpl::RemoveListener(IIEListener* listener) 
+   {
+      ListenerNode** curr = &m_Listeners;
+      while(*curr)
+      {
+         if((*curr)->m_Listener == listener)
+         {
+            ListenerNode* savedNode = *curr;
+            (*curr)->m_Listener = nullptr;   // Client just wants us to
+                                             // forget about this listener
+                                             // it's not our responsibility
+                                             // to delete listener
+            *curr = (*curr)->m_Next;
+            delete savedNode;
+            return;
+         }
+         curr = &((*curr)->m_Next);
+      }
+
+   }
+
    void InteractiveElementImpl::SendOnLostHover()
    {
       ListenerNode* curr = m_Listeners;

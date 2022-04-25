@@ -37,6 +37,9 @@ namespace totem
       virtual void AddListener(IIEListener* listener) override
       { InteractiveElementImpl::AddListener(listener); }
 
+      virtual void RemoveListener(IIEListener* listener) override
+      { InteractiveElementImpl::RemoveListener(listener); }
+
       virtual math::vec4f GetColor() const override
       { return m_Color; }
 

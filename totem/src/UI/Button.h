@@ -30,6 +30,7 @@ namespace totem
       virtual void SetColor(const math::vec4f& color) = 0;
 
       virtual void AddListener(IIEListener* listener) = 0;
+      virtual void RemoveListener(IIEListener* listener) = 0;
    };
 
    
@@ -64,6 +65,9 @@ namespace totem
 
       virtual void AddListener(IIEListener* listener) override
       { InteractiveElementImpl::AddListener(listener); }
+
+      virtual void RemoveListener(IIEListener* listener) override
+      { InteractiveElementImpl::RemoveListener(listener); }
 
       virtual const char* GetText() const override
       { return m_Text; }
@@ -150,6 +154,10 @@ namespace totem
       { return m_Wrapee->GetID(); }
 
       virtual void AddListener(IIEListener* listener) override;
+
+      virtual void RemoveListener(IIEListener* listener) override
+      { m_Wrapee->RemoveListener(listener); }
+
 
    protected:
       IButton* m_Wrapee;
