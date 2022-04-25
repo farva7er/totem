@@ -24,11 +24,13 @@ namespace totem
 
    void CheckButton::Draw(Renderer* renderer) const
    {
+      const math::vec4f grayColor{0.5f, 0.5f, 0.5f, 0.5f};
+      const math::vec4f& color = IsActive() ? m_Color : grayColor;
 
       Rect outerRect = Rect::Builder()
                         .SetPos(m_Pos)
                         .SetScale(m_Scale)
-                        .SetColor(m_Color)
+                        .SetColor(color)
                         .Construct();
 
       renderer->DrawRect(outerRect);
@@ -37,7 +39,7 @@ namespace totem
       {
          Rect innerRect = Rect::Builder()
                            .SetPos(m_Pos)
-                           .SetScale(m_Scale * 0.7f)
+                           .SetScale(m_Scale * 0.5f)
                            .SetColor({0, 0, 0, 0.7f})
                            .Construct();
 
@@ -56,6 +58,16 @@ namespace totem
 
    void CheckButton::OnClick(int /*button*/)
    {
-      m_IsChecked = m_IsChecked ? false : true;
+      SetChecked(!IsChecked());
+   }
+
+   bool CheckButton::IsChecked() const
+   {
+      return m_IsChecked;
+   }
+
+   void CheckButton::SetChecked(bool checked)
+   {
+      m_IsChecked = checked;
    }
 }

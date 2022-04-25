@@ -10,13 +10,19 @@ namespace totem
    {
    public:
       InteractiveElementImpl()
-         :  m_State(State::LostHover),
+         :  m_IsActive(true),
+            m_State(State::LostHover),
             m_Listeners(nullptr)
       {}
+
       virtual ~InteractiveElementImpl();
       InteractiveElementImpl(const InteractiveElementImpl& other);
       InteractiveElementImpl& operator=(const InteractiveElementImpl& other);
-            
+   
+      bool IsActive() const
+      { return m_IsActive; }
+      void SetActive(bool isActive);
+
       virtual void OnEvent(Event& e);
       void AddListener(IIEListener* listener);
       void ClearListeners();
@@ -50,6 +56,8 @@ namespace totem
          {}
          ~ListenerNode() { delete m_Listener; }
       };
+
+      bool m_IsActive;
       State m_State;
       ListenerNode* m_Listeners; 
    };

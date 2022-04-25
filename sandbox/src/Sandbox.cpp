@@ -118,12 +118,15 @@ public:
       layout->AddElement(layout2);
       delete soButton2;
 
-      totem::IButton* checkButton = new totem::CheckButton();
+      totem::CheckButton* checkButton = new totem::CheckButton();
       checkButton->SetPos({ 0, 8 });
       checkButton->SetColor({ 0.1f, 0.1f, 0.1f, 0.8f });
-      checkButton = new totem::ButtonScaleDecorator(checkButton);
-      layout2->AddElement(checkButton);
-
+      //checkButton->SetActive(false);
+      checkButton->SetChecked(true);
+      totem::IButton* chckButton = 
+         new totem::ButtonScaleDecorator(checkButton);
+      layout2->AddElement(chckButton);
+      fButton2->SetActive(false);
       m_RootElement = layout;
    }
 

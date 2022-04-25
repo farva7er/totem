@@ -50,8 +50,22 @@ namespace totem
       m_Listeners = nullptr;
    }
 
+   void InteractiveElementImpl::SetActive(bool isActive)
+   {
+      m_IsActive = isActive;
+
+      if(!isActive)
+      {
+         m_State = State::LostHover;
+         SendOnLostHover();
+      }
+   }
+
    void InteractiveElementImpl::OnEvent(Event& e)
    {
+      if(!m_IsActive)
+         return;
+
       EventDispatcher<InteractiveElementImpl> d(this);
       d.Dispatch<MouseMoveEvent>(
             &InteractiveElementImpl::OnMouseMove, e);

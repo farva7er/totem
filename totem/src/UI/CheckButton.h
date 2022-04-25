@@ -16,6 +16,12 @@ namespace totem
       virtual void Draw(Renderer* renderer) const override;
       virtual void OnEvent(Event& e) override
       { InteractiveElementImpl::OnEvent(e); }
+
+      virtual bool IsActive() const override
+      { return InteractiveElementImpl::IsActive(); }
+
+      virtual void SetActive(bool isActive) override
+      { InteractiveElementImpl::SetActive(isActive); }
       
       virtual const math::vec2f& GetPos() const override
       { return InteractiveElementImpl::GetPos(); }
@@ -53,6 +59,9 @@ namespace totem
       { return nullptr; }
 
       virtual void SetText(const char* /*str*/) override {}
+
+      bool IsChecked() const;
+      void SetChecked(bool checked);
 
    private:
       virtual void OnClick(int button) override;

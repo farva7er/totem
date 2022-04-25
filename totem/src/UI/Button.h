@@ -19,6 +19,9 @@ namespace totem
    {
    public:
       virtual ~IButton() = default;
+
+      virtual bool IsActive() const = 0;
+      virtual void SetActive(bool isActive) = 0;
  
       virtual const char* GetText() const = 0;
       virtual void SetText(const char* text) = 0;
@@ -41,6 +44,11 @@ namespace totem
       virtual void Draw(Renderer* renderer) const override;
       virtual void OnEvent(Event& e) override
       { InteractiveElementImpl::OnEvent(e); }
+
+      virtual bool IsActive() const override
+      { return InteractiveElementImpl::IsActive(); }
+      virtual void SetActive(bool isActive) override
+      { InteractiveElementImpl::SetActive(isActive); }
       
       virtual const math::vec2f& GetPos() const override
       { return InteractiveElementImpl::GetPos(); }
@@ -98,6 +106,11 @@ namespace totem
 
       virtual void Draw(Renderer* renderer) const override;
       virtual void OnEvent(Event& e) override { m_Wrapee->OnEvent(e); }
+
+      virtual bool IsActive() const override
+      { return m_Wrapee->IsActive(); }
+      virtual void SetActive(bool isActive) override
+      { m_Wrapee->SetActive(isActive); }
 
       virtual const math::vec2f& GetPos() const override
       { return m_Wrapee->GetPos(); }
