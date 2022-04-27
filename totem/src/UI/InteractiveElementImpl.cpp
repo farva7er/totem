@@ -12,7 +12,7 @@ namespace totem
    InteractiveElementImpl(const InteractiveElementImpl& other)
       : BasicElementImpl(other)
    {
-      m_State = State::LostHover;
+      m_State = LostHoverState::GetInstance();
 
       ListenerNode* currOther = other.m_Listeners;
       while(currOther)
@@ -26,7 +26,7 @@ namespace totem
    InteractiveElementImpl::operator=(const InteractiveElementImpl& other)
    {
       BasicElementImpl::operator=(other);
-      m_State = State::LostHover;
+      m_State = LostHoverState::GetInstance();
       
       ClearListeners();
       ListenerNode* currOther = other.m_Listeners;
@@ -56,7 +56,7 @@ namespace totem
 
       if(!isActive)
       {
-         m_State = State::LostHover;
+         m_State = LostHoverState::GetInstance();
          SendOnLostHover();
       }
    }
@@ -77,45 +77,22 @@ namespace totem
 
    void InteractiveElementImpl::OnMouseMove(MouseMoveEvent& e)
    {
-      math::vec2f mouseCoords(e.GetX(), e.GetY());
-      bool isHovered = IsHovered(mouseCoords);
-
-      if(m_State == State::LostHover && isHovered)
-      {
-         m_State = State::Hovered;
-         SendOnHover();
-      }
-
-      if(m_State == State::Hovered && !isHovered)
-      {
-         m_State = State::LostHover;
-         SendOnLostHover();
-      }
-
-      if(m_State == State::Pushed && !isHovered)
-      {
-         m_State = State::LostHover;
-         SendOnLostHover();
-      }
+      m_State->OnMouseMove(this, e);
    }
 
-   void InteractiveElementImpl::OnMousePressed(MousePressedEvent& /*e*/)
+   void InteractiveElementImpl::OnMousePressed(MousePressedEvent& e)
    {
-      if(m_State == State::Hovered)
-      {
-         m_State = State::Pushed;
-         SendOnPush();
-      }
+      m_State->OnMousePressed(this, e);
    }
 
    void InteractiveElementImpl::OnMouseReleased(MouseReleasedEvent& e)
    {
-      if(m_State == State::Pushed)
-      {
-         m_State = State::Hovered;
-         SendOnClick(e.GetButton());
-         SendOnHover();
-      }
+      m_State->OnMouseReleased(this, e);
+   }
+
+   void InteractiveElementImpl::SetState(State* newState)
+   {
+      m_State = newState;
    }
 
    void InteractiveElementImpl::AddListener(IIEListener* listener) 
@@ -199,5 +176,90 @@ namespace totem
          return true;
       }
       return false;
+   }
+
+   InteractiveElementImpl::LostHoverState
+   InteractiveElementImpl::LostHoverState::s_Instance;
+
+   InteractiveElementImpl::HoveredState
+   InteractiveElementImpl::HoveredState::s_Instance;
+
+   InteractiveElementImpl::PushedState
+   InteractiveElementImpl::PushedState::s_Instance;
+
+   void InteractiveElementImpl::State::
+   ChangeState(InteractiveElementImpl* el, State* newState)
+   {
+      el->SetState(newState);
+   }
+
+   void InteractiveElementImpl::LostHoverState::
+   OnMouseMove(InteractiveElementImpl* el, MouseMoveEvent& e)
+   {
+      math::vec2f mouseCoords(e.GetX(), e.GetY());
+      bool isHovered = el->IsHovered(mouseCoords);
+
+      if(isHovered)
+      {
+         el->SetState(HoveredState::GetInstance());
+         el->SendOnHover();
+      }
+   }
+
+   void InteractiveElementImpl::LostHoverState::
+   OnMousePressed(InteractiveElementImpl* /*el*/, MousePressedEvent& /*e*/)
+   {}
+
+   void InteractiveElementImpl::LostHoverState::
+   OnMouseReleased(InteractiveElementImpl* /*el*/, MouseReleasedEvent& /*e*/)
+   {}
+
+   void InteractiveElementImpl::HoveredState::
+   OnMouseMove(InteractiveElementImpl* el, MouseMoveEvent& e)
+   {
+      math::vec2f mouseCoords(e.GetX(), e.GetY());
+      bool isHovered = el->IsHovered(mouseCoords);
+
+      if(!isHovered)
+      {
+         el->SetState(LostHoverState::GetInstance());
+         el->SendOnLostHover();
+      }
+   }
+
+   void InteractiveElementImpl::HoveredState::
+   OnMousePressed(InteractiveElementImpl* el, MousePressedEvent& /*e*/)
+   {
+      el->SetState(PushedState::GetInstance());
+      el->SendOnPush();
+   }
+
+   void InteractiveElementImpl::HoveredState::
+   OnMouseReleased(InteractiveElementImpl* /*el*/, MouseReleasedEvent& /*e*/)
+   {}
+
+   void InteractiveElementImpl::PushedState::
+   OnMouseMove(InteractiveElementImpl* el, MouseMoveEvent& e)
+   {
+      math::vec2f mouseCoords(e.GetX(), e.GetY());
+      bool isHovered = el->IsHovered(mouseCoords);
+
+      if(!isHovered)
+      {
+         el->SetState(LostHoverState::GetInstance());
+         el->SendOnLostHover();
+      }
+   }
+
+   void InteractiveElementImpl::PushedState::
+   OnMousePressed(InteractiveElementImpl* /*el*/, MousePressedEvent& /*e*/)
+   {}
+
+   void InteractiveElementImpl::PushedState::
+   OnMouseReleased(InteractiveElementImpl* el, MouseReleasedEvent& e)
+   {
+      el->SetState(HoveredState::GetInstance());
+      el->SendOnClick(e.GetButton());
+      el->SendOnHover();
    }
 }
