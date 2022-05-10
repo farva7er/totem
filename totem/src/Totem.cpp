@@ -2,9 +2,9 @@
 #include "Log.h"
 #include "Assert.h"
 
-int main()
+int main(int argc, char** argv)
 {
-   totem::App* app = totem::App::CreateApp();
+   totem::App* app = totem::App::CreateApp(argc, argv);
    TOTEM_ASSERT(true, "TEST assertion");
    app->Run();
    delete app;

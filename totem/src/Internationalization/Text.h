@@ -10,15 +10,21 @@ namespace totem
    class Text
    {
    public:
+      Text();
       // Construct Text from a given utf-8 buffer
       Text(const utf8_t* str, unsigned int sizeInBytes);
 
       // An optimisation hint, reserve some bytes upfront
       Text(unsigned int reserveBytes);
-      ~Text();
 
+      ~Text();
       Text(const Text& other);
       Text& operator=(const Text& other);
+
+      Text& operator+=(char c);
+      utf8_t* GetRawData();
+      const utf8_t* GetRawData() const;
+      unsigned int GetRawSize() const;
  
       class Iterator
       {

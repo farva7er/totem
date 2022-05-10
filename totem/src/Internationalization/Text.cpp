@@ -3,6 +3,10 @@
 
 namespace totem
 {
+   Text::Text()
+      : Text(nullptr, 0)
+   {}
+
    Text::Text(const utf8_t* str, unsigned int sizeInBytes)
    {
       if(!str || !sizeInBytes)
@@ -93,11 +97,49 @@ namespace totem
       return *this;
    }
 
+   Text& Text::operator+=(char c)
+   {
+      if(m_OccupiedBytes == 0)
+      {
+         m_AvailableBytes = 1;
+         m_Data = new utf8_t[1];
+      }
+      // if there are no empty bytes
+      else if(m_OccupiedBytes == m_AvailableBytes)
+      {
+         utf8_t* newData = new utf8_t[2 * m_AvailableBytes];
+         m_AvailableBytes *= 2;
+         memcpy(newData, m_Data, m_OccupiedBytes);
+         delete [] m_Data;
+         m_Data = newData;
+      }
+
+      m_Data[m_OccupiedBytes] = c;
+      m_OccupiedBytes++;
+
+      return *this;
+   }
+
+
+   utf8_t* Text::GetRawData()
+   {
+      return m_Data;
+   }
+
+   const utf8_t* Text::GetRawData() const
+   {
+      return m_Data;
+   }
+
+   unsigned int Text::GetRawSize() const
+   {
+      return m_OccupiedBytes;
+   }
+
    utf8_t Text::operator[](unsigned i) const
    {
       return m_Data[i];
    }
-
 
    Text::Iterator Text::GetIterator() const
    {

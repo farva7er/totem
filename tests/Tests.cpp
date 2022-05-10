@@ -1,9 +1,9 @@
 #include "Tests.h"
 #include "TextTests.h"
 
-totem::App* totem::App::CreateApp()
+totem::App* totem::App::CreateApp(int argc, char** argv)
 {
-   return new TestApp();
+   return new TestApp(argc, argv);
 }
 
 void TestApp::Run()

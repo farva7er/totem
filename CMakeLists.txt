@@ -5,6 +5,7 @@ project(totem-development)
 
 add_subdirectory(totem)
 add_subdirectory(sandbox)
+add_subdirectory(tools/tgenerator)
 add_subdirectory(tests)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

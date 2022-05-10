@@ -12,7 +12,7 @@ namespace totem
    class NovelApp : public App, public IEventListener
    {
    public:
-      NovelApp();
+      NovelApp(int argc, char** argv);
       virtual ~NovelApp();
 
       virtual void Run() override;

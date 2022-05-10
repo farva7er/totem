@@ -7,7 +7,8 @@
 
 namespace totem
 {
-   NovelApp::NovelApp()
+   NovelApp::NovelApp(int argc, char** argv)
+      : App(argc, argv)
    {
       m_Window = Window::Create(1280, 720, "Totem");
       m_Window->AddEventListener(this);

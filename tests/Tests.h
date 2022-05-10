@@ -16,6 +16,7 @@
 class TestApp : public totem::App
 {
 public:
+   TestApp(int argc, char** argv) : totem::App(argc, argv) {}
    virtual void Run() override;
 };
 

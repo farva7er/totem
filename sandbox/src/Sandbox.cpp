@@ -49,7 +49,7 @@ class Sandbox : public totem::NovelApp
 {
 
 public:
-   Sandbox() : m_CurrPos(0)
+   Sandbox(int argc, char** argv) : totem::NovelApp(argc, argv), m_CurrPos(0)
    {
       SetCanvasScale(totem::math::vec2f(16, 9));
       SetBackground("resources/image.jpeg");
@@ -242,7 +242,7 @@ private:
    totem::UIButtonExclusiveGroup m_RadioButtonGroup;
 };
 
-totem::App* totem::App::CreateApp()
+totem::App* totem::App::CreateApp(int argc, char** argv)
 {
-   return new Sandbox();
+   return new Sandbox(argc, argv);
 }
