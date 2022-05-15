@@ -16,6 +16,7 @@ add_custom_command(
    OUTPUT resource_copy_noexist_file
    COMMAND ${CMAKE_COMMAND} -E copy_directory
    "${PROJECT_SOURCE_DIR}/resources"
+   "${totem_SOURCE_DIR}/resources"
    "$<TARGET_FILE_DIR:sandbox>/resources"
    COMMENT "Copying resources from src to build..."
 )
