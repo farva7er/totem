@@ -12,6 +12,14 @@
    }\
 }
 
+#define TEST_CASE(NAME)\
+   struct TEST_STRUCT_##NAME\
+   {\
+      static void NAME()
+       
+#define TEST_END(NAME)\
+   };\
+   TEST_STRUCT_##NAME::NAME();
 
 class TestApp : public totem::App
 {

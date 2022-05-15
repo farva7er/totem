@@ -2,7 +2,12 @@
 #include "Tests.h"
 #include "Internationalization/Text.h"
 
-void TestTextIterCopy()
+void TextTestsRun()
+{
+
+// Write all test here
+
+TEST_CASE(TestTextIterCopy)
 {
    // Privet, in cyrillic
    unsigned char data[] = { 0xd0, 0xbf, 0xd1, 0x80, 0xd0, 0xb8, 0xd0,
@@ -33,8 +38,9 @@ void TestTextIterCopy()
    TEST_ASSERT(u1 == 0x440) // Cyrillic r
    TEST_ASSERT(u2 == 0x438) // Cyrillic i
 }
+TEST_END(TestTextIterCopy)
 
-void TestTextIterOnInvalidContinuationByte()
+TEST_CASE(TestTextIterOnInvalidContinuationByte)
 {
    /* the second byte should be a continuation byte
     * but it is not
@@ -69,9 +75,9 @@ void TestTextIterOnInvalidContinuationByte()
    u = iter1.Get();
    TEST_ASSERT(u == 0x0);
 }
+TEST_END(TestTextIterOnInvalidContinuationByte)
 
-
-void TestTextIterOnInvalidFirstByte()
+TEST_CASE(TestTextIterOnInvalidFirstByte)
 {
    /* the first byte cannot start with 1010xxxx in UTF-8
     */
@@ -83,8 +89,9 @@ void TestTextIterOnInvalidFirstByte()
    // So iterator should instantly be in ended state
    TEST_ASSERT(iter.HasEnded());
 }
+TEST_END(TestTextIterOnInvalidFirstByte)
 
-void TestTextIterOnTrivialData()
+TEST_CASE(TestTextIterOnTrivialData)
 {
    totem::Text text(nullptr, 0);
    totem::Text::Iterator iter(&text);
@@ -95,8 +102,9 @@ void TestTextIterOnTrivialData()
    TEST_ASSERT(iter.HasEnded());
    TEST_ASSERT(u == 0x0);
 }
+TEST_END(TestTextIterOnTrivialData)
 
-void TestTextIterOnNonTrivialData()
+TEST_CASE(TestTextIterOnNonTrivialData)
 {
    // Privet, in cyrillic
    unsigned char data[] = { 0xd0, 0xbf, 0xd1, 0x80, 0xd0, 0xb8, 0xd0,
@@ -121,13 +129,7 @@ void TestTextIterOnNonTrivialData()
    iter.Next();
    TEST_ASSERT(iter.HasEnded());
 }
+TEST_END(TestTextIterOnNonTrivialData)
 
-
-void TextTestsRun()
-{
-   TestTextIterOnNonTrivialData();
-   TestTextIterOnTrivialData();
-   TestTextIterOnInvalidContinuationByte();
-   TestTextIterOnInvalidFirstByte();
-   TestTextIterCopy();
+// End of tests
 }
