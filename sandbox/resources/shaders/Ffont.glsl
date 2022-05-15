@@ -8,14 +8,16 @@ uniform vec4 fColor;
 void main()
 {
    vec2 flippedTexCoords = vec2(TexCoords.x, 1 - TexCoords.y);
-   float sd = texture(textSampler, flippedTexCoords).r;
-   vec4 sampled = vec4(1.0, 1.0, 1.0, sd);
+   float alphaSample = texture(textSampler, flippedTexCoords).r;
+   vec4 sampled = vec4(1.0, 1.0, 1.0, alphaSample);
    FragColor = fColor * sampled;
-   /*
+
+
+   /* sdf - shader
    vec2 flippedTexCoords = vec2(TexCoords.x, 1 - TexCoords.y);
-   float sd = texture(textSampler, flippedTexCoords).r - 128.0f;
-   sd = (sd / 128.0f) * 2;
-   vec4 sampled = vec4(1.0, 1.0, 1.0, sd);
-   FragColor = fColor * sampled;
+   float sd = texture(textSampler, flippedTexCoords).r;
+   if(sd < 0.5f)
+      discard;
+   FragColor = fColor;
    */
 }

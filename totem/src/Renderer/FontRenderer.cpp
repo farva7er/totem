@@ -56,8 +56,8 @@ namespace totem
          return;
       }
 
-
-      error = FT_Set_Pixel_Sizes(face, 0, 64);
+      int pixelSize = 64;
+      error = FT_Set_Pixel_Sizes(face, 0, pixelSize);
       if(error)
       {
          LOG_ERROR("Couldn't set char size for font %s", m_ResourceId);
@@ -75,37 +75,35 @@ namespace totem
 
          /* load glyph image into the slot (erase previous one) */
          error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
-         if (error)
+         if(error)
          {
             LOG_ERROR("Couldn't load glyph for font %s", m_ResourceId);
-            FT_Done_Face(face);
-            FT_Done_FreeType(ft);
-            return;
          } 
 
-         error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
-         if (error)
+         if(!error)
          {
-            LOG_ERROR("Couldn't render for font %s Error code: %d",
-                        m_ResourceId, error);
-            FT_Done_Face(face);
-            FT_Done_FreeType(ft);
-            return;
+            error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+            if(error)
+            {
+               LOG_ERROR("Couldn't render for font %s Error code: %d,\
+                           charcode: %d", m_ResourceId, error, charcode);
+            }
          }
  
          m_Characters[charcode] = 
             new Character
             (
-                  math::vec2f(face->glyph->bitmap.width / (float)64,
-                              face->glyph->bitmap.rows / (float)64),
-                  math::vec2f(face->glyph->bitmap_left / (float)64,
-                              face->glyph->bitmap_top / (float)64),
-                  (face->glyph->advance.x >> 6) / (float)64,
+                  math::vec2f(face->glyph->bitmap.width / (float)pixelSize,
+                              face->glyph->bitmap.rows / (float)pixelSize),
+                  math::vec2f(face->glyph->bitmap_left / (float)pixelSize,
+                              face->glyph->bitmap_top / (float)pixelSize),
+                  (face->glyph->advance.x >> 6) / (float)pixelSize,
                   new Texture(face->glyph->bitmap.buffer, 
                               face->glyph->bitmap.width,
                               face->glyph->bitmap.rows,
                               1)
             );
+
          charcode = FT_Get_Next_Char(face, charcode, &glyph_index);
       }
 
@@ -149,7 +147,8 @@ namespace totem
       Font::Character* ch = m_CurrentFont->m_Characters[codepoint];
       if(!ch)
       {
-         LOG_ERROR("Unhandled codepoint in font %s", m_CurrentFont->GetId());
+         LOG_ERROR("Unhandled codepoint %d in font %s", codepoint,
+                     m_CurrentFont->GetId());
          return;
       }
 
@@ -191,7 +190,8 @@ namespace totem
       Font::Character* ch = m_CurrentFont->m_Characters[codepoint];
       if(!ch)
       {
-         LOG_ERROR("Unhandled codepoint in font %s", m_CurrentFont->GetId());
+         LOG_ERROR("Unhandled codepoint %d in font %s", codepoint,
+                     m_CurrentFont->GetId());
          return 0;
       }
 
@@ -215,7 +215,8 @@ namespace totem
       Font::Character* ch = m_CurrentFont->m_Characters[codepoint];
       if(!ch)
       {
-         LOG_ERROR("Unhandled codepoint in font %s", m_CurrentFont->GetId());
+         LOG_ERROR("Unhandled codepoint %d in font %s", codepoint,
+                     m_CurrentFont->GetId());
          return 0;
       }
 
