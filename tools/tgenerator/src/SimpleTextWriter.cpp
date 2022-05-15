@@ -18,10 +18,11 @@ namespace tgenerator
       if(m_File)
          fclose(m_File);
       
-      char destFilePath[strlen(filePath) + 5];
+      char* destFilePath = new char[strlen(filePath) + 5];
       strcpy(destFilePath, filePath);
       strcat(destFilePath, ".ttr");
       m_File = fopen(destFilePath, "a");
+      delete [] destFilePath;
       m_SrcFilePath = filePath;
       return m_File != NULL;
    }

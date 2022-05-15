@@ -12,7 +12,6 @@ void main()
    vec4 sampled = vec4(1.0, 1.0, 1.0, alphaSample);
    FragColor = fColor * sampled;
 
-
    /* sdf - shader
    vec2 flippedTexCoords = vec2(TexCoords.x, 1 - TexCoords.y);
    float sd = texture(textSampler, flippedTexCoords).r;
