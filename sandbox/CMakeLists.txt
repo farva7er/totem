@@ -13,6 +13,13 @@ target_compile_definitions(
 
 target_link_libraries(sandbox PRIVATE totem)
 
+set_target_properties(sandbox PROPERTIES
+   RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
+)
+set_target_properties(sandbox PROPERTIES
+   RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
 add_custom_target(
    copy_resources_to_build ALL
    COMMAND
