@@ -136,30 +136,55 @@ namespace totem
       return m_OccupiedBytes;
    }
 
+   int Text::GetLength() const
+   {
+      int res = 0;
+      Iterator iter(*this);
+      while(!iter.HasEnded())
+      {
+         res++;
+         iter.Next();
+      }
+      return res;
+   }
+
    utf8_t Text::operator[](unsigned i) const
    {
       return m_Data[i];
    }
 
-   Text::Iterator Text::GetIterator() const
-   {
-      return Iterator(this);
-   }
-
-   Text::Iterator::Iterator(const Text* master)
-      : m_Master(master),
-      m_CurrByte(0),
-      m_CurrCodepoint(0),
-      m_HasEnded(false)
+   Text::Iterator::Iterator(const Text& text)
+      : m_Text(&text),
+      m_StartOffset(0), m_Length(-1),
+      m_CurrIndex(0), m_CurrByte(0),
+      m_CurrCodepoint(0), m_HasEnded(false)
    {
       ExtractCodepoint(GetNumBytes());
+      m_CurrIndex = 0;
+   }
+
+   Text::Iterator::Iterator(ConstSubText subText)
+      : m_Text(&subText.GetMaster()),
+      m_StartOffset(subText.GetStartPos()),
+      m_Length(-1),
+      m_CurrIndex(0), m_CurrByte(0),
+      m_CurrCodepoint(0), m_HasEnded(false)
+   {
+      ExtractCodepoint(GetNumBytes());
+      for(int i = 0; i < subText.GetStartPos(); i++)
+      {
+         Next();
+      }
+      m_Length = subText.GetLength();
+      m_CurrIndex = 0;
    }
 
    void Text::Iterator::ExtractCodepoint(unsigned int numBytes) 
    {
-      if(numBytes && ValidateConBytes(numBytes))
+      if(numBytes && ValidateConBytes(numBytes) && !IsEndReached())
       {
          m_CurrCodepoint = ExtractValue(numBytes);
+         m_CurrIndex++;
       }
       else
       {
@@ -168,18 +193,30 @@ namespace totem
       }
    }
 
+   bool Text::Iterator::IsEndReached() const
+   {
+      if(m_Length == -1)
+         return false;
+      return m_CurrIndex >= m_Length - 1;
+   }
+
    void Text::Iterator::Next()
    {
       if(HasEnded())
          return;
-      int n = GetNumBytes();
-      m_CurrByte += n;
-      ExtractCodepoint(n);
+
+      m_CurrByte += GetNumBytes();
+      ExtractCodepoint(GetNumBytes());
    }
 
    unicode_t Text::Iterator::Get() const
    {
       return m_CurrCodepoint;
+   }
+
+   int Text::Iterator::GetIndex() const
+   {
+      return m_CurrIndex;
    }
 
    bool Text::Iterator::HasEnded() const
@@ -189,10 +226,10 @@ namespace totem
 
    unsigned int Text::Iterator::GetNumBytes() const
    {
-      if(m_CurrByte >= m_Master->m_OccupiedBytes)
+      if(m_CurrByte >= m_Text->m_OccupiedBytes)
          return 0;
 
-      utf8_t b = (*m_Master)[m_CurrByte];
+      utf8_t b = (*m_Text)[m_CurrByte];
       int n;
       if((b & 0x80) == 0)
       {
@@ -220,7 +257,7 @@ namespace totem
 
    bool Text::Iterator::ValidateConBytes(unsigned int numBytes) const
    {
-      unsigned int remainingBytes = m_Master->m_OccupiedBytes - m_CurrByte;
+      unsigned int remainingBytes = m_Text->m_OccupiedBytes - m_CurrByte;
       if(remainingBytes < numBytes)
       {
          // Expected numBytes bytes, but there are no that many bytes
@@ -229,7 +266,7 @@ namespace totem
 
       for(unsigned int i = 1; i < numBytes; i++)
       {
-         utf8_t conByte = (*m_Master)[m_CurrByte + i];
+         utf8_t conByte = (*m_Text)[m_CurrByte + i];
          if((conByte & 0xC0) != 0x80)
          {
             // Expected continuation byte, but expectation failed
@@ -242,7 +279,7 @@ namespace totem
 
    unicode_t Text::Iterator::ExtractValue(unsigned int numBytes) const
    {
-      utf8_t b = (*m_Master)[m_CurrByte];
+      utf8_t b = (*m_Text)[m_CurrByte];
       unicode_t codepoint = 0;
       if(numBytes == 1)
       {
@@ -268,10 +305,75 @@ namespace totem
 
       for(unsigned int i = 1; i < numBytes; i++)
       {
-         utf8_t cb = (*m_Master)[m_CurrByte + i];
+         utf8_t cb = (*m_Text)[m_CurrByte + i];
          codepoint = codepoint << 6;
          codepoint |= (cb & 0x3F);
       }
       return codepoint;
+   }
+
+
+   bool Text::IsBlank(unicode_t c)
+   {
+      // SP, HTAB, CR, LF
+      return c == 0x20 || c == 0x09 || c == 0x0D || c == 0x0A;
+   }
+ 
+   Text::ConstSubTextVec Text::GetWords() const
+   {
+      ConstSubTextVec res;
+      Iterator iter(*this);
+      unsigned int wordStartPos = 0, wordLen = 0;
+
+      while(!iter.HasEnded())
+      {
+         // Skip all Blank Characters
+         while(!iter.HasEnded())
+         {
+            if(!IsBlank(iter.Get()))
+               break;
+            iter.Next();
+         }
+         // If nothing is left then return result (may be empty)
+         if(iter.HasEnded())
+            return res;
+
+         wordStartPos = iter.GetIndex();
+         wordLen = 0;
+         while(!iter.HasEnded())
+         {
+            unicode_t c = iter.Get();
+            if(!IsBlank(c))
+            {
+               wordLen++;
+            }
+            else
+            {
+               res.Add(ConstSubText(*this, wordStartPos, wordLen));
+               break;
+            }
+
+            iter.Next();
+            if(iter.HasEnded())
+            {
+               res.Add(ConstSubText(*this, wordStartPos, wordLen));
+               break;
+            }
+         }
+      }
+      return res;
+   }
+
+   Text::SubTextVec Text::GetWords()
+   {
+      ConstSubTextVec constRes = 
+         (static_cast<const Text*>(this))->GetWords();
+      SubTextVec res;
+      for(int i = 0; i < constRes.GetCount(); i++)
+      {
+         res[i] = SubText(*this, constRes[i].GetStartPos(),
+                                 constRes[i].GetLength());
+      }
+      return res;
    }
 }
