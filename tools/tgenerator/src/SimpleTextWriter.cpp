@@ -30,14 +30,14 @@ namespace tgenerator
    void SimpleTextWriter::Write(const TranslationUnit& unit)
    {
       const totem::utf8_t* str = unit.m_AdditionalInfo.GetRawData();
-      int size = (int)unit.m_AdditionalInfo.GetRawSize();
+      int size = (int)unit.m_AdditionalInfo.GetByteCount();
 
       fprintf(m_File, "%s: ", m_SrcFilePath);
       fwrite(str, sizeof(totem::utf8_t), size, m_File);
       fputc('\n', m_File);
 
       str = unit.m_Text.GetRawData();
-      size = (int)unit.m_Text.GetRawSize();
+      size = (int)unit.m_Text.GetByteCount();
 
       fwrite(str, sizeof(totem::utf8_t), size, m_File);
       fputc('\n', m_File);

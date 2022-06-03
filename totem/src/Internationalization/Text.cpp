@@ -7,7 +7,7 @@ namespace totem
       : Text(nullptr, 0)
    {}
 
-   Text::Text(const utf8_t* str, unsigned int sizeInBytes)
+   Text::Text(const utf8_t* str, int sizeInBytes)
    {
       if(!str || !sizeInBytes)
       {
@@ -20,9 +20,10 @@ namespace totem
       }
       m_AvailableBytes = sizeInBytes;
       m_OccupiedBytes = sizeInBytes;
+      CalculateLength();
    }
 
-   Text::Text(unsigned int reserveBytes)
+   Text::Text(int reserveBytes)
    {
       if(!reserveBytes)
       {
@@ -34,6 +35,7 @@ namespace totem
       }
       m_AvailableBytes = reserveBytes;
       m_OccupiedBytes = 0;
+      CalculateLength();
    }
 
    Text::~Text()
@@ -59,6 +61,7 @@ namespace totem
          m_AvailableBytes = other.m_OccupiedBytes;
          m_OccupiedBytes = other.m_OccupiedBytes;
       }
+      CalculateLength();
    }
 
    Text& Text::operator=(const Text& other)
@@ -93,18 +96,20 @@ namespace totem
          m_AvailableBytes = other.m_OccupiedBytes;
          m_OccupiedBytes = other.m_OccupiedBytes;
       }
+      CalculateLength();
 
       return *this;
    }
 
    Text& Text::operator+=(char c)
    {
-      if(m_OccupiedBytes == 0)
+      // if there are no availbale bytes
+      if(!m_AvailableBytes)
       {
          m_AvailableBytes = 1;
          m_Data = new utf8_t[1];
       }
-      // if there are no empty bytes
+      // if all available bytes are occupied
       else if(m_OccupiedBytes == m_AvailableBytes)
       {
          utf8_t* newData = new utf8_t[2 * m_AvailableBytes];
@@ -114,12 +119,47 @@ namespace totem
          m_Data = newData;
       }
 
+      // c is an ASCII character, so it's ok to just set
+      // this one byte like this
       m_Data[m_OccupiedBytes] = c;
       m_OccupiedBytes++;
+      CalculateLength();
 
       return *this;
    }
 
+   Text& Text::operator+=(ConstSubText other)
+   {
+      int otherByteCount = other.GetByteCount();
+      if(otherByteCount == 0)
+         return *this;
+
+      int resultByteCount = m_OccupiedBytes + otherByteCount;
+
+      // Is there already enough space to store the result text ?
+      if(resultByteCount > m_AvailableBytes)
+      {
+         // No, so allocate it and then perform a memcpy
+         utf8_t* newData = new utf8_t[resultByteCount];
+         m_AvailableBytes = resultByteCount;
+         memcpy(newData, m_Data, m_OccupiedBytes);
+         memcpy(newData + m_OccupiedBytes, other.GetMaster().m_Data,
+               otherByteCount);
+         // Delete old buffer
+         delete [] m_Data;
+         // Assign new buffer
+         m_Data = newData;
+      }
+      else
+      {
+         // Yes, just perform a memcpy
+         memcpy(m_Data + m_OccupiedBytes, other.GetMaster().m_Data,
+               otherByteCount);
+      }
+      m_OccupiedBytes = resultByteCount;
+      CalculateLength();
+      return *this;
+   }
 
    utf8_t* Text::GetRawData()
    {
@@ -131,12 +171,12 @@ namespace totem
       return m_Data;
    }
 
-   unsigned int Text::GetRawSize() const
+   int Text::GetByteCount() const
    {
       return m_OccupiedBytes;
    }
 
-   int Text::GetLength() const
+   void Text::CalculateLength()
    {
       int res = 0;
       Iterator iter(*this);
@@ -145,59 +185,101 @@ namespace totem
          res++;
          iter.Next();
       }
+      m_Length = res;
+   }
+
+   int Text::GetLength() const
+   {
+      return m_Length;
+   }
+
+   utf8_t Text::operator[](int i) const
+   {
+      return m_Data[i];
+   }
+
+   Text operator+(Text::ConstSubText a, Text::ConstSubText b)
+   {
+      Text res;
+      res += a;
+      res += b;
       return res;
    }
 
-   utf8_t Text::operator[](unsigned i) const
+   bool operator==(Text::ConstSubText a, Text::ConstSubText b)
    {
-      return m_Data[i];
+      Text::Iterator iter1(a);
+      Text::Iterator iter2(b);
+      while(!iter1.HasEnded() && !iter2.HasEnded())
+      {
+         if(iter1.Get() != iter2.Get())
+            return false;
+         iter1.Next();
+         iter2.Next();
+      }
+      if(iter1.HasEnded() && iter2.HasEnded())
+         return true;
+      else
+         return false;
    }
 
    Text::Iterator::Iterator(const Text& text)
       : m_Text(&text),
       m_StartOffset(0), m_Length(-1),
-      m_CurrIndex(0), m_CurrByte(0),
+      m_LastExtractedIndex(-1), m_CurrByte(0),
       m_CurrCodepoint(0), m_HasEnded(false)
    {
       ExtractCodepoint(GetNumBytes());
-      m_CurrIndex = 0;
+      m_LastExtractedIndex = 0;
    }
 
    Text::Iterator::Iterator(ConstSubText subText)
       : m_Text(&subText.GetMaster()),
       m_StartOffset(subText.GetStartPos()),
       m_Length(-1),
-      m_CurrIndex(0), m_CurrByte(0),
+      m_LastExtractedIndex(-1), m_CurrByte(0),
       m_CurrCodepoint(0), m_HasEnded(false)
    {
-      ExtractCodepoint(GetNumBytes());
-      for(int i = 0; i < subText.GetStartPos(); i++)
+      if(0 == subText.GetLength())
       {
-         Next();
+         SetEnded();
       }
-      m_Length = subText.GetLength();
-      m_CurrIndex = 0;
+      else
+      {
+         ExtractCodepoint(GetNumBytes());
+         for(int i = 0; i < subText.GetStartPos(); i++)
+         {
+            Next();
+         }
+         m_LastExtractedIndex = 0;
+         m_Length = subText.GetLength();
+      }
    }
 
-   void Text::Iterator::ExtractCodepoint(unsigned int numBytes) 
+   void Text::Iterator::ExtractCodepoint(int numBytes) 
    {
       if(numBytes && ValidateConBytes(numBytes) && !IsEndReached())
       {
          m_CurrCodepoint = ExtractValue(numBytes);
-         m_CurrIndex++;
+         m_LastExtractedIndex++;
       }
       else
       {
-         m_HasEnded = true;
-         m_CurrCodepoint = 0;
+         SetEnded();
       }
+   }
+
+   void Text::Iterator::SetEnded()
+   {
+      m_HasEnded = true;
+      m_CurrCodepoint = 0;
    }
 
    bool Text::Iterator::IsEndReached() const
    {
       if(m_Length == -1)
          return false;
-      return m_CurrIndex >= m_Length - 1;
+      return m_LastExtractedIndex >= m_Length - 1;
    }
 
    void Text::Iterator::Next()
@@ -216,7 +298,12 @@ namespace totem
 
    int Text::Iterator::GetIndex() const
    {
-      return m_CurrIndex;
+      return m_LastExtractedIndex;
+   }
+
+   int Text::Iterator::GetCurrByteIndex() const
+   {
+      return m_CurrByte;
    }
 
    bool Text::Iterator::HasEnded() const
@@ -224,7 +311,7 @@ namespace totem
       return m_HasEnded;
    }
 
-   unsigned int Text::Iterator::GetNumBytes() const
+   int Text::Iterator::GetNumBytes() const
    {
       if(m_CurrByte >= m_Text->m_OccupiedBytes)
          return 0;
@@ -255,16 +342,16 @@ namespace totem
       return n;
    }
 
-   bool Text::Iterator::ValidateConBytes(unsigned int numBytes) const
+   bool Text::Iterator::ValidateConBytes(int numBytes) const
    {
-      unsigned int remainingBytes = m_Text->m_OccupiedBytes - m_CurrByte;
+      int remainingBytes = m_Text->m_OccupiedBytes - m_CurrByte;
       if(remainingBytes < numBytes)
       {
          // Expected numBytes bytes, but there are no that many bytes
          return false;
       }
 
-      for(unsigned int i = 1; i < numBytes; i++)
+      for(int i = 1; i < numBytes; i++)
       {
          utf8_t conByte = (*m_Text)[m_CurrByte + i];
          if((conByte & 0xC0) != 0x80)
@@ -277,7 +364,7 @@ namespace totem
    }
 
 
-   unicode_t Text::Iterator::ExtractValue(unsigned int numBytes) const
+   unicode_t Text::Iterator::ExtractValue(int numBytes) const
    {
       utf8_t b = (*m_Text)[m_CurrByte];
       unicode_t codepoint = 0;
@@ -303,7 +390,7 @@ namespace totem
          return 0;
       }
 
-      for(unsigned int i = 1; i < numBytes; i++)
+      for(int i = 1; i < numBytes; i++)
       {
          utf8_t cb = (*m_Text)[m_CurrByte + i];
          codepoint = codepoint << 6;
@@ -323,7 +410,7 @@ namespace totem
    {
       ConstSubTextVec res;
       Iterator iter(*this);
-      unsigned int wordStartPos = 0, wordLen = 0;
+      int wordStartPos = 0, wordLen = 0;
 
       while(!iter.HasEnded())
       {
