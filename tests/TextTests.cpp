@@ -9,7 +9,7 @@ void TextTestsRun()
 
 TEST_CASE(TestTextIterCopy)
 {
-   // Privet, in cyrillic
+   // "privet", in cyrillic
    unsigned char data[] = { 0xd0, 0xbf, 0xd1, 0x80, 0xd0, 0xb8, 0xd0,
                   0xb2, 0xd0, 0xb5, 0xd1, 0x82 };
    totem::Text text(data, sizeof(data));
@@ -150,7 +150,7 @@ TEST_END(TestTextIterOnNonTrivialData)
 
 TEST_CASE(TestSubTextConstructionAndIteration)
 {
-   // Privet, in cyrillic
+   // "privet", in cyrillic
    unsigned char data[] = { 0xd0, 0xbf, 0xd1, 0x80, 0xd0, 0xb8, 0xd0,
                   0xb2, 0xd0, 0xb5, 0xd1, 0x82 };
    totem::Text text(data, sizeof(data));
@@ -191,7 +191,7 @@ TEST_END(TestSubTextConstructionAndIteration)
 
 TEST_CASE(TestConstSubTextConstructionAndIteration)
 {
-   // Privet, in cyrillic
+   // "privet", in cyrillic
    const unsigned char data[] = { 0xd0, 0xbf, 0xd1, 0x80, 0xd0, 0xb8, 0xd0,
                   0xb2, 0xd0, 0xb5, 0xd1, 0x82 };
    const totem::Text text(data, sizeof(data));
@@ -224,7 +224,7 @@ TEST_CASE(TestConstSubTextConstructionAndIteration)
    iter1.Next();
    TEST_ASSERT(!iter1.HasEnded());
    u = iter1.Get();
-   TEST_ASSERT(u == 0x442) // Should be cyrillic v
+   TEST_ASSERT(u == 0x442) // Should be cyrillic t
    iter1.Next();
    TEST_ASSERT(iter1.HasEnded());
 }

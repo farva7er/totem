@@ -13,8 +13,8 @@ namespace totem
     * SubText also has a const form - ConstSubText, which can be
     * stored in ConstSubTextVec.
     *
-    * SubText represents a ligthweigth object which references a Text
-    * object and stores a staring position and length of a subText.
+    * SubText represents a lightweight object which references a Text
+    * object and stores a starting position and length of a SubText.
     * SubText can be implicitly constructed from a Text - it's just
     * a subText with starting position 0 and length equal to length of
     * the Text
@@ -40,12 +40,12 @@ namespace totem
        * SubTextRW (Read And Write) inherits from SubTextR and
        * additionally provides methods that modify the Text.
        *
-       * If we need to make a substring of a const Text, than
+       * If we need to make a substring of a const Text, then
        * we should use SubTextR with template type const Text.
-       * If we need to make a substring of a Text, than
+       * If we need to make a substring of a Text, then
        * we should use SubTextRW with template type Text.
        * Two typedef's are provided for convenience and to avoid
-       * misusing these template with wrong types.
+       * misusing these templates with wrong types.
        *
        * DO NOT USE THESE TEMPLATES DIRECTLY, USE
        * ConstSubText AND SubText TYPES ONLY!
