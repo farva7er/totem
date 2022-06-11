@@ -7,6 +7,10 @@ namespace totem
       : Text(nullptr, 0)
    {}
 
+   Text::Text(const char* c_str)
+      : Text((const utf8_t*)c_str, c_str ? strlen(c_str) : 0)
+   {}
+
    Text::Text(const utf8_t* str, int sizeInBytes)
    {
       if(!str || !sizeInBytes)
@@ -191,6 +195,11 @@ namespace totem
    int Text::GetLength() const
    {
       return m_Length;
+   }
+
+   bool Text::IsEmpty() const
+   {
+      return m_Length == 0;
    }
 
    utf8_t Text::operator[](int i) const

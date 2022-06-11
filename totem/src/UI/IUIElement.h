@@ -17,7 +17,7 @@ namespace totem
       virtual IUIElement* GetParent() const = 0;
       virtual void SetParent(IUIElement* el) = 0;
 
-      // Stop being parent for the element with specified ID
+      // A way to get notified by a child that it is going to be deleted
       virtual void Forget(unsigned int elID) = 0;
 
       virtual void OnUpdate(float /*deltaTime*/) {};

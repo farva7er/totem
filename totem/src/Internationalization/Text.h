@@ -59,11 +59,12 @@ namespace totem
       class SubTextRW;
       typedef SubTextRW<Text> SubText;
 
-      template <typename SubTextType>
-      class SubTextTypeVec;
+      template <typename TextType>
+      class TextTypeVec;
 
-      typedef SubTextTypeVec<ConstSubText> ConstSubTextVec;
-      typedef SubTextTypeVec<SubText> SubTextVec;
+      typedef TextTypeVec<ConstSubText> ConstSubTextVec;
+      typedef TextTypeVec<SubText> SubTextVec;
+      typedef TextTypeVec<Text> TextVec;
 
       class Iterator;
 
@@ -73,6 +74,9 @@ namespace totem
 
       // Default constuctor creates empty Text
       Text();
+
+      // Construct Text from a null-terminated ASCII string
+      Text(const char* c_str);
 
       // Construct Text from a given utf-8 buffer
       Text(const utf8_t* str, int sizeInBytes);
@@ -91,6 +95,7 @@ namespace totem
       const utf8_t* GetRawData() const;
       int GetByteCount() const;
       int GetLength() const;
+      bool IsEmpty() const;
  
       ConstSubTextVec GetWords() const;
       SubTextVec GetWords();
@@ -192,25 +197,26 @@ namespace totem
          bool m_HasEnded;
       };
 
-      template <typename SubTextType>
-      class SubTextTypeVec
+      template <typename TextType>
+      class TextTypeVec
       {
       public:
          // preallocate some slots
-         SubTextTypeVec(int availableSlots = 0);
-         SubTextTypeVec(const SubTextTypeVec& other);
-         ~SubTextTypeVec();
+         TextTypeVec(int availableSlots = 0);
+         TextTypeVec(const TextTypeVec& other);
+         ~TextTypeVec();
 
-         SubTextTypeVec& operator=(const SubTextTypeVec& other);
-         const SubTextType& operator[](int i) const;
-         SubTextType& operator[](int i);
+         TextTypeVec& operator=(const TextTypeVec& other);
+         const TextType& operator[](int i) const;
+         TextType& operator[](int i);
 
-         void Add(SubTextType subText);
+         void Add(TextType subText);
          int GetCount() const { return m_Count; }
+         void Clear();
       private:
          void EnsureSlotAvailable(int index);
       private:
-         SubTextType* m_Vec;
+         TextType* m_Vec;
          int m_AvailableSlots;
          int m_Count;
       };
@@ -312,27 +318,27 @@ namespace totem
       // TODO
    }
 
-   // Template implementation SubTextTypeVec
+   // Template implementation TextTypeVec
   
-   template <typename SubTextType>
-   Text::SubTextTypeVec<SubTextType>::SubTextTypeVec(int availableSlots)
+   template <typename TextType>
+   Text::TextTypeVec<TextType>::TextTypeVec(int availableSlots)
       : m_Vec(nullptr), m_Count(0)
    {
       const int minSlots = 4;
       m_AvailableSlots =
          availableSlots < minSlots ? minSlots : availableSlots;
-      m_Vec = new SubTextType[m_AvailableSlots];
+      m_Vec = new TextType[m_AvailableSlots];
    }
 
-   template <typename SubTextType>
-   Text::SubTextTypeVec<SubTextType>::
-   SubTextTypeVec(const SubTextTypeVec<SubTextType>& other)
+   template <typename TextType>
+   Text::TextTypeVec<TextType>::
+   TextTypeVec(const TextTypeVec<TextType>& other)
    {
       m_AvailableSlots = other.m_AvailableSlots;
       m_Count = other.m_Count;
       if(m_AvailableSlots > 0)
       {
-         m_Vec = new SubTextType[m_AvailableSlots];
+         m_Vec = new TextType[m_AvailableSlots];
       }
       for(int i = 0; i < other.m_Count; i++)
       {
@@ -340,22 +346,22 @@ namespace totem
       }
    }
 
-   template <typename SubTextType>
-   Text::SubTextTypeVec<SubTextType>::~SubTextTypeVec()
+   template <typename TextType>
+   Text::TextTypeVec<TextType>::~TextTypeVec()
    {
       if(m_Vec)
          delete [] m_Vec;
    }
  
-   template <typename SubTextType>
-   Text::SubTextTypeVec<SubTextType>& Text::SubTextTypeVec<SubTextType>::
-   operator=(const SubTextTypeVec<SubTextType>& other)
+   template <typename TextType>
+   Text::TextTypeVec<TextType>& Text::TextTypeVec<TextType>::
+   operator=(const TextTypeVec<TextType>& other)
    {
       if(m_AvailableSlots < other.m_Count)
       {
          if(m_Vec)
             delete [] m_Vec;
-         m_Vec = new SubTextType[other.m_Count];
+         m_Vec = new TextType[other.m_Count];
          m_AvailableSlots = other.m_Count;
       }
       for(int i = 0; i < other.m_Count; i++)
@@ -365,39 +371,46 @@ namespace totem
       m_Count = other.m_Count;
    }
 
-   template <typename SubTextType>
-   const SubTextType& Text::SubTextTypeVec<SubTextType>::
+   template <typename TextType>
+   const TextType& Text::TextTypeVec<TextType>::
    operator[](int i) const
    {
       return m_Vec[i];
    }
 
-   template <typename SubTextType>
-   SubTextType& Text::SubTextTypeVec<SubTextType>::
+   template <typename TextType>
+   TextType& Text::TextTypeVec<TextType>::
    operator[](int i)
    {
       EnsureSlotAvailable(i);
       return m_Vec[i];
    }
 
-   template <typename SubTextType>
-   void Text::SubTextTypeVec<SubTextType>::
-   Add(SubTextType subText)
+   template <typename TextType>
+   void Text::TextTypeVec<TextType>::
+   Add(TextType subText)
    {
       EnsureSlotAvailable(m_Count);
       m_Vec[m_Count] = subText;
       m_Count++;
    }
 
-   template <typename SubTextType>
-   void Text::SubTextTypeVec<SubTextType>::
+   template <typename TextType>
+   void Text::TextTypeVec<TextType>::
+   Clear()
+   {
+      m_Count = 0;
+   }
+
+   template <typename TextType>
+   void Text::TextTypeVec<TextType>::
    EnsureSlotAvailable(int index)
    {
       while(index >= m_AvailableSlots)
       {
          m_AvailableSlots *= 2;
       }
-      SubTextType* newVec = new SubTextType[m_AvailableSlots];
+      TextType* newVec = new TextType[m_AvailableSlots];
       for(int i = 0; i < m_Count; i++)
       {
          newVec[i] = m_Vec[i];

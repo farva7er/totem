@@ -4,6 +4,7 @@
 #include "Math/Vec.h"
 #include "ResourceManager.h"
 #include "Texture.h"
+#include "Internationalization/Text.h"
 
 namespace totem
 {
@@ -47,10 +48,11 @@ namespace totem
       FontRenderer(Renderer* master);
       void SetFont(const char* fontPath);
 
-      void DrawChar(unsigned int codepoint, const math::vec2f& pos,
+      void DrawCharacter(unicode_t codepoint, const math::vec2f& pos,
                   float scale, const math::vec4f& color);
-      float GetAdvance(unsigned int codepoint, float scale) const;
-      float GetHeight(unsigned int codepoint, float scale) const;
+      float GetAdvance(unicode_t codepoint, float scale) const;
+      float GetHeight(unicode_t codepoint, float scale) const;
+      math::vec2f GetBaseScale() const;
       void SetCanvasScale(const math::vec2f& scale);
    private:
       Font* m_CurrentFont;

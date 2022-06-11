@@ -3,8 +3,9 @@
 
 #include "IMovableElement.h"
 #include "InteractiveElementImpl.h"
+#include "Internationalization/Text.h"
 #include "Animations/Animator.h"
-#include "Animations/BasicAnimations.h"
+#include "Animations/BasicAnimations/InterpAnimations.h"
 
 namespace totem
 {
@@ -23,8 +24,8 @@ namespace totem
       virtual bool IsActive() const = 0;
       virtual void SetActive(bool isActive) = 0;
  
-      virtual const char* GetText() const = 0;
-      virtual void SetText(const char* text) = 0;
+      virtual Text GetText() const = 0;
+      virtual void SetText(const Text& text) = 0;
 
       virtual math::vec4f GetColor() const = 0;
       virtual void SetColor(const math::vec4f& color) = 0;
@@ -69,13 +70,13 @@ namespace totem
       virtual void RemoveListener(IIEListener* listener) override
       { InteractiveElementImpl::RemoveListener(listener); }
 
-      virtual const char* GetText() const override
+      virtual Text GetText() const override
       { return m_Text; }
 
       virtual math::vec4f GetColor() const override
       { return m_Color; }
 
-      virtual void SetText(const char* text) override;
+      virtual void SetText(const Text& text) override;
       virtual void SetColor(const math::vec4f& color) override
       { m_Color = color; }
 
@@ -92,7 +93,7 @@ namespace totem
       { return InteractiveElementImpl::GetID(); }
 
    private:
-      char* m_Text;
+      Text m_Text;
       math::vec4f m_Color;
    };
 
@@ -125,7 +126,7 @@ namespace totem
       virtual math::vec4f GetColor() const override
       { return m_Wrapee->GetColor(); }
 
-      virtual const char* GetText() const override
+      virtual Text GetText() const override
       { return m_Wrapee->GetText(); }
 
 
@@ -138,8 +139,8 @@ namespace totem
       virtual void SetColor(const math::vec4f& color) override
       { m_Wrapee->SetColor(color); }
 
-      virtual void SetText(const char* str) override
-      { m_Wrapee->SetText(str); }
+      virtual void SetText(const Text& text) override
+      { m_Wrapee->SetText(text); }
 
       virtual IUIElement* GetParent() const override
       { return m_Wrapee->GetParent(); }

@@ -15,11 +15,13 @@ add_library(totem STATIC   src/App.h
                            src/Totem.cpp
                            src/Window.h
                            src/Window.cpp
+                           src/Animations/BasicAnimations/InterpAnimations.h
+                           src/Animations/BasicAnimations/StepAnimation.h
+                           src/Animations/BasicAnimations/StepAnimation.cpp
                            src/Animations/Animator.h
                            src/Animations/Animator.cpp
                            src/Animations/Animation.h
                            src/Animations/Animation.cpp
-                           src/Animations/BasicAnimations.h
                            src/Math/Mat.h
                            src/Math/Mat.cpp
                            src/Math/Vec.h
@@ -61,12 +63,15 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/UI/IUIElement.h
                            src/UI/IUIElement.cpp
                            src/UI/TextBox.h
+                           src/UI/TextBox.cpp
                            src/UI/UILinearLayout.h
                            src/UI/UILinearLayout.cpp
                            src/Filesystem/Utils.h
                            src/Filesystem/Utils.cpp
                            src/Internationalization/Text.h
                            src/Internationalization/Text.cpp
+                           src/Novel/DialogBox.h
+                           src/Novel/DialogBox.cpp
                            src/Novel/NovelApp.h
                            src/Novel/NovelApp.cpp
                            )

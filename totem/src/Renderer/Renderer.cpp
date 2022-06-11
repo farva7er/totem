@@ -217,26 +217,34 @@ namespace totem
       DrawRect(rect);
    }
 
-   void Renderer::DrawText(const char* str, const math::vec2f& pos,
+   void Renderer::DrawCharacter(unicode_t codepoint, const math::vec2f& pos,
+                              float scale, const math::vec4f& color)
+   {
+      m_FontRenderer.DrawCharacter(codepoint, pos, scale, color);
+   }
+
+   void Renderer::DrawText(const Text& text, const math::vec2f& pos,
                            float scale, const math::vec4f& color)
    {
       math::vec2f currPos = pos;
-      for(; *str; str++)
+      Text::Iterator iter(text);
+      while(!iter.HasEnded()) 
       {
-         m_FontRenderer.DrawChar(*str, currPos, scale, color);
-         currPos.x += m_FontRenderer.GetAdvance(*str, scale);
+         m_FontRenderer.DrawCharacter(iter.Get(), currPos, scale, color);
+         currPos.x += m_FontRenderer.GetAdvance(iter.Get(), scale);
+         iter.Next();
       }
    }
 
-   void Renderer::DrawControlledText(const char* str, 
-                                    const math::vec2f& boxPos,
-                                    const math::vec2f& boxScale,
-                                    float scale,
-                                    const math::vec4f& color,
-                                    int alignFlags)
+   void Renderer::DrawAlignedText(const Text& text, 
+                                  const math::vec2f& boxPos,
+                                  const math::vec2f& boxScale,
+                                  float scale,
+                                  const math::vec4f& color,
+                                  int alignFlags)
    {
       math::vec2f pos;
-      math::vec2f textSize = CalcTextSize(str, scale);
+      math::vec2f textSize = CalcBBox(text, scale);
 
       math::vec2f leftTop(
          boxPos.x - boxScale.x,
@@ -260,21 +268,37 @@ namespace totem
          pos.y -= textSize.y / 2;
       }
 
-      DrawText(str, pos, scale, color);
+      DrawText(text, pos, scale, color);
    }
 
-   math::vec2f Renderer::CalcTextSize(const char* str, float scale) const
+   float Renderer::GetCharHeight(unicode_t codepoint, float scale) const
    {
-      math::vec2f size;
+      return m_FontRenderer.GetHeight(codepoint, scale);
+   }
 
-      for(; *str; str++)
+   float Renderer::GetCharAdvance(unicode_t codepoint, float scale) const
+   {
+      return m_FontRenderer.GetAdvance(codepoint, scale);
+   }
+
+   math::vec2f Renderer::CalcBBox(const Text& text, float scale) const
+   {
+      math::vec2f res{0, 0};
+      Text::Iterator iter(text);
+      while(!iter.HasEnded())
       {
-         size.x += m_FontRenderer.GetAdvance(*str, scale);
-         float height = m_FontRenderer.GetHeight(*str, scale);
-         if(height > size.y)
-            size.y = height;
+         res.x += GetCharAdvance(iter.Get(), scale);
+         float h = GetCharHeight(iter.Get(), scale);
+         res.y = res.y < h ? h : res.y;
+         iter.Next();
       }
-      return size;
+      return res;
+   }
+
+
+   math::vec2f Renderer::GetCharBaseScale() const
+   {
+      return m_FontRenderer.GetBaseScale();
    }
 
    void Renderer::SetCanvasScale(const math::vec2f& scale)

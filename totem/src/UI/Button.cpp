@@ -8,44 +8,22 @@ namespace totem
    /////         BoxButton       //////////////////////////////////////
    ////////////////////////////////////////////////////////////////////
    BoxButton::BoxButton()
-      : m_Text(nullptr), m_Color(math::vec4f(0, 0, 0, 1))
+      : m_Color(math::vec4f(0, 0, 0, 1))
    {}
 
    BoxButton::~BoxButton()
-   {
-      if(m_Text)
-         delete [] m_Text;
-   }
+   {}
 
    BoxButton::BoxButton(const BoxButton& other)
       : InteractiveElementImpl(other)
    {
-      if(other.GetText())
-      {
-         m_Text = new char[strlen(other.GetText()) + 1];
-         strcpy(m_Text, other.GetText());
-      }
-      else
-      {
-         m_Text = nullptr;
-      } 
+      m_Text = other.m_Text;
    }
 
    BoxButton& BoxButton::operator=(const BoxButton& other)
    {
       InteractiveElementImpl::operator=(other);
-      if(m_Text)
-         delete [] m_Text;
-
-      if(other.GetText())
-      {
-         m_Text = new char[strlen(other.GetText()) + 1];
-         strcpy(m_Text, other.GetText());
-      }
-      else
-      {
-         m_Text = nullptr;
-      }
+      m_Text = other.m_Text;
       return *this;
    }
 
@@ -61,9 +39,10 @@ namespace totem
                         .Construct();
 
       renderer->DrawRect(rect);
-      if(m_Text)
-      { 
-         renderer->DrawControlledText(
+      if(!m_Text.IsEmpty())
+      {
+         
+         renderer->DrawAlignedText(
                      m_Text, m_Pos, m_Scale, m_Scale.y * 0.7f,
                      math::vec4f(1, 1, 1, 1),
                      TextAlign::VCenter | TextAlign::HCenter
@@ -71,19 +50,9 @@ namespace totem
       }
    }
 
-   void BoxButton::SetText(const char* text)
+   void BoxButton::SetText(const Text& text)
    {
-      if(m_Text)
-         delete [] m_Text;
-
-      if(!text)
-      {
-         m_Text = nullptr;
-         return;
-      }
-
-      m_Text = new char[strlen(text) + 1];
-      strcpy(m_Text, text);
+      m_Text = text;
    }
 
 //////////////////////////////////////////////////////////////

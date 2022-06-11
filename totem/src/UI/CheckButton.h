@@ -58,10 +58,10 @@ namespace totem
       virtual unsigned int GetID() const override
       { return InteractiveElementImpl::GetID(); }
 
-      virtual const char* GetText() const override
-      { return nullptr; }
+      virtual Text GetText() const override
+      { return Text(); }
 
-      virtual void SetText(const char* /*str*/) override {}
+      virtual void SetText(const Text& /*text*/) override {}
 
       bool IsChecked() const;
       void SetChecked(bool checked);

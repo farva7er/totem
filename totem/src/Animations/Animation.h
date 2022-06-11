@@ -31,6 +31,8 @@ namespace totem
       float GetCurrTime() const { return m_CurrTime; }
       float GetDuration() const { return m_Duration; }
 
+      void SetDuration(float dur) { m_Duration = dur; }
+
    private:
       void Update(float deltaTime);
    private:

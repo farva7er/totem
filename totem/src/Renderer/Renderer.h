@@ -34,20 +34,32 @@ namespace totem
 
       void DrawBackground(const char* imagePath);
 
-      void DrawText(const char* str, const math::vec2f& pos,
+      void DrawCharacter(unicode_t codepoint, const math::vec2f& pos,
+                        float scale, const math::vec4f& color);
+
+      float GetCharHeight(unicode_t codepoint, float scale) const;
+      float GetCharAdvance(unicode_t codepoint, float scale) const;
+      math::vec2f GetCharBaseScale() const;
+     
+      // returns  { textWidth, textHeight } ( NOT SCALE )
+      math::vec2f CalcBBox(const Text& text, float scale) const;
+
+      
+      void DrawText(const Text& text, const math::vec2f& pos,
                      float scale = 1.0f, const math::vec4f& color =
                      math::vec4f(1, 1, 1, 1)
                      );
-
-      void DrawControlledText(const char* str,
-                              const math::vec2f& boxPos,
-                              const math::vec2f& boxScale,
-                              float scale = 1.0f,
-                              const math::vec4f& color = 
+      
+      void DrawAlignedText(const Text& text,
+                           const math::vec2f& boxPos,
+                           const math::vec2f& boxScale,
+                           float scale = 1.0f,
+                           const math::vec4f& color = 
                               math::vec4f(1, 1, 1, 1),
-                              int alignFlags =
+                           int alignFlags =
                               TextAlign::VCenter | TextAlign::HCenter
-                              );
+                           );
+      
   
       Shader* GetShader(const char* shaderId) const;
       void SetViewport(unsigned int width, unsigned int height);
@@ -57,7 +69,7 @@ namespace totem
       static bool s_OpenGLInitialized; 
       static const char* s_TextureShaderId;
 
-      math::vec2f CalcTextSize(const char* str, float scale) const;
+      //math::vec2f CalcTextSize(const char* str, float scale) const;
    private:
       Window* m_Window;
       unsigned int m_VBO, m_VAO, m_EBO;

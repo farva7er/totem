@@ -1,8 +1,7 @@
-#ifndef _TOTEM_BASIC_ANIMATIONS_H_
-#define _TOTEM_BASIC_ANIMATIONS_H_
+#ifndef _TOTEM_INTERP_ANIMATIONS_H_
+#define _TOTEM_INTERP_ANIMATIONS_H_
 
-#include "Animator.h"
-#include "Log.h"
+#include "Animations/Animation.h"
 
 namespace totem
 {
@@ -34,7 +33,6 @@ namespace totem
       }
 
    protected:
-
       virtual void OnUpdate() = 0;
       virtual Animation* Clone() = 0;
 

@@ -134,9 +134,9 @@ namespace totem
       m_CurrentFont = font;
    }
 
-   void FontRenderer::DrawChar(  unsigned int codepoint, 
-                                 const math::vec2f& pos,
-                                 float scale, const math::vec4f& color)
+   void FontRenderer::DrawCharacter(unsigned int codepoint, 
+                                    const math::vec2f& pos,
+                                    float scale, const math::vec4f& color)
    {
       if(!m_CurrentFont)
       {
@@ -152,8 +152,7 @@ namespace totem
          return;
       }
 
-      math::vec2f baseScale(m_Master->GetCanvasScale().y / 20,
-                           m_Master->GetCanvasScale().y / 20);
+      math::vec2f baseScale = GetBaseScale();
       baseScale = baseScale * scale;
 
       math::vec2f chScale;
@@ -178,7 +177,7 @@ namespace totem
       m_Master->DrawRect(rect);  
    }
 
-   float FontRenderer::GetAdvance(unsigned int codepoint,
+   float FontRenderer::GetAdvance(unicode_t codepoint,
                                        float scale) const
    {
       if(!m_CurrentFont)
@@ -195,15 +194,14 @@ namespace totem
          return 0;
       }
 
-      math::vec2f baseScale(m_Master->GetCanvasScale().y / 20,
-                           m_Master->GetCanvasScale().y / 20);
+      math::vec2f baseScale = GetBaseScale();
       baseScale = baseScale * scale;
 
       float advance = 2 * baseScale.x * ch->advance;
       return advance;
    }
 
-   float FontRenderer::GetHeight(unsigned int codepoint,
+   float FontRenderer::GetHeight(unicode_t codepoint,
                                        float scale) const
    {
       if(!m_CurrentFont)
@@ -220,12 +218,9 @@ namespace totem
          return 0;
       }
 
-      math::vec2f baseScale(m_Master->GetCanvasScale().y / 20,
-                           m_Master->GetCanvasScale().y / 20);
-      baseScale = baseScale * scale;
+      math::vec2f baseScale = GetBaseScale() * scale;
 
-      float height = 2 * baseScale.y * ch->size.y;
-      return height;
+      return 2 * baseScale.y * ch->size.y;
    }
 
    void FontRenderer::SetCanvasScale(const math::vec2f& scale)
@@ -234,5 +229,14 @@ namespace totem
       shader->Use();
       math::mat4f mat = math::getOrthoProj(scale.x, scale.y, -1.0f, 1.0f);
       shader->SetUniformMatrix4fv("vProjMat", mat);
+   }
+
+   math::vec2f FontRenderer::GetBaseScale() const
+   {
+      return
+      {
+         m_Master->GetCanvasScale().y / 20,
+         m_Master->GetCanvasScale().y / 20
+      };
    }
 }
