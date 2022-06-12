@@ -74,6 +74,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Novel/DialogBox.cpp
                            src/Novel/NovelApp.h
                            src/Novel/NovelApp.cpp
+                           src/Novel/Script.h
+                           src/Novel/Script.cpp
                            )
 
 

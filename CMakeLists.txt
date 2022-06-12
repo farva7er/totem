@@ -4,7 +4,7 @@ set (CMAKE_CXX_STANDARD 11)
 project(totem-development)
 
 add_subdirectory(totem)
-add_subdirectory(sandbox)
+add_subdirectory(examplegame)
 add_subdirectory(tools/tgenerator)
 add_subdirectory(tests)
 

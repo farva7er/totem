@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(sandbox)
+project(examplegame)
 
-add_executable(sandbox src/Sandbox.cpp)
-add_dependencies(sandbox copy_resources_to_build)
+add_executable(examplegame src/ExampleGame.cpp)
+add_dependencies(examplegame copy_resources_to_build)
 
 target_compile_definitions(
-   sandbox
+   examplegame
    PRIVATE
-   PROJECT_NAME=sandbox
+   PROJECT_NAME=examplegame
 )
 
-target_link_libraries(sandbox PRIVATE totem)
+target_link_libraries(examplegame PRIVATE totem)
 
-set_target_properties(sandbox PROPERTIES
+set_target_properties(examplegame PROPERTIES
    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
 )
-set_target_properties(sandbox PROPERTIES
+set_target_properties(examplegame PROPERTIES
    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}"
 )
 

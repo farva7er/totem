@@ -4,40 +4,79 @@
 #include "Timer.h"
 #include "ResourceManager.h"
 
+#include <stdlib.h>
+
 
 namespace totem
 {
-   NovelApp::NovelApp(int argc, char** argv)
-      : App(argc, argv)
+   NovelApp* NovelApp::s_Instance = nullptr;
+
+   NovelApp* NovelApp::GetInstance()
+   {
+      TOTEM_ASSERT(s_Instance, "Novel App is not created!!!")
+      return s_Instance;
+   }
+
+   NovelApp::NovelApp()
+      : App(0, nullptr)
    {
       m_Window = Window::Create(1280, 720, "Totem");
       m_Window->AddEventListener(this);
       m_Renderer = new Renderer(m_Window);
+   
+      SetCanvasScale({ 16, 9 });
+
       m_Background = nullptr;
-      m_RootElement = nullptr;
+
+      m_DialogBox = new totem::DialogBox();
+      m_DialogBox->SetScale({10, 2});
+      m_DialogBox->SetPos({0, -7});
+      m_DialogBox->SetTextColor({ 0.9f, 0.9f, 0.2f, 1.0f });
+      m_DialogBox->SetFontSize(0.6f);
+      m_DialogBox->SetLineSpacing(1.5f);
+
+      m_RootElement = m_DialogBox;
+
+      m_Window->SendInitEvents();
+
+      s_Instance = this;
    }
 
    NovelApp::~NovelApp()
    {
-      ResourceManager::DeleteInstance();
-      delete m_RootElement;
-      delete m_Renderer;
-      delete m_Window;
+      OnExit();
    }
 
-   void NovelApp::Run()
+   void NovelApp::SetSpeech(const Text& speech /*, TODO Character*/)
+   {
+      m_DialogBox->SetText(speech);
+      Loop();
+   }
+
+   void NovelApp::SetBackground(const char* imagePath)
+   {
+      // BAAAAAD!!!!!!!!!!!!!!!!!!
+      m_Background = imagePath;
+   }
+
+   void NovelApp::Loop()
    {
       float frameTime = Timer::GetTimeSec(), 
             prevFrameTime = Timer::GetTimeSec();
 
-      m_Window->SendInitEvents();
-      while(!m_Window->IsClosed())
+      m_LoopShouldExit = false;
+      while(!m_Window->IsClosed() && !m_LoopShouldExit)
       {
          OnUpdate(frameTime - prevFrameTime);
          m_Window->OnUpdate();
 
          prevFrameTime = frameTime;
          frameTime = Timer::GetTimeSec();
+      }
+
+      if(m_Window->IsClosed())
+      {
+         OnExit();
       }
    }
 
@@ -58,13 +97,13 @@ namespace totem
 
       d.Dispatch<WindowResizeEvent>(&NovelApp::OnWindowResize, e);
       d.Dispatch<MouseMoveEvent>(&NovelApp::OnMouseMove, e);
+      d.Dispatch<MousePressedEvent>(&NovelApp::OnMousePressed, e);
 
       if(m_RootElement)
       {
          m_RootElement->OnEvent(e);
       }
 
-      OnTotemEvent(e);
    }
 
    void NovelApp::OnWindowResize(WindowResizeEvent& e)
@@ -78,6 +117,19 @@ namespace totem
                               ScreenToCanvas({ e.GetX(), e.GetY() });
       e.SetX(canvasCoords.x);
       e.SetY(canvasCoords.y);
+   }
+
+   void NovelApp::OnMousePressed(MousePressedEvent& e)
+   {
+      if(e.GetButton() == 0)
+      {
+         NextCall();
+      }
+   }
+
+   void NovelApp::NextCall()
+   {
+      m_LoopShouldExit = true;
    }
 
    math::vec2f
@@ -101,8 +153,13 @@ namespace totem
          m_RootElement->OnUpdate(deltaTime);
          m_RootElement->Draw(m_Renderer);
       }
+   }
 
-      OnTotemUpdate(deltaTime);
+   void NovelApp::OnExit()
+   {
+      // Maybe do saving before exit in future
+      LOG_INFO("Exiting...");
+      exit(0); 
    }
 }
 
