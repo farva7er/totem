@@ -32,11 +32,10 @@ namespace totem
       const math::vec4f grayColor{0.5f, 0.5f, 0.5f, 0.5f};
       const math::vec4f& color = IsActive() ? m_Color : grayColor;
 
-      Rect rect = Rect::Builder()
-                        .SetPos(m_Pos)
-                        .SetScale(m_Scale)
-                        .SetColor(color)
-                        .Construct();
+      Rect rect;
+      rect.SetPos(m_Pos)
+         .SetScale(m_Scale)
+         .SetColor(color);
 
       renderer->DrawRect(rect);
       if(!m_Text.IsEmpty())

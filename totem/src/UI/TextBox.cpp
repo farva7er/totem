@@ -43,11 +43,10 @@ namespace totem
    {
       const math::vec4f grayColor{0, 0, 0, 0.7f};
 
-      Rect rect = Rect::Builder()
-                        .SetPos(m_Pos)
-                        .SetScale(m_Scale)
-                        .SetColor(grayColor)
-                        .Construct();
+      Rect rect;
+      rect.SetPos(m_Pos)
+         .SetScale(m_Scale)
+         .SetColor(grayColor);
 
       renderer->DrawRect(rect);
 

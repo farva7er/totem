@@ -167,13 +167,12 @@ namespace totem
       float ypos = pos.y + chScale.y - (2 * chScale.y - chBearing.y);
 
 
-      Rect rect = Rect::Builder()
-                        .SetPos(math::vec2f(xpos, ypos))
-                        .SetScale(chScale)
-                        .SetTexture(ch->texture)
-                        .SetColor(color)
-                        .SetShaderId(m_FontShaderId)
-                        .Construct();
+      Rect rect;
+      rect.SetPos(math::vec2f(xpos, ypos))
+         .SetScale(chScale)
+         .SetTexture(ch->texture)
+         .SetColor(color)
+         .SetShaderId(m_FontShaderId);
       m_Master->DrawRect(rect);  
    }
 

@@ -2,88 +2,67 @@
 
 namespace totem
 {
-   Rect::Builder::Builder()
+   
+   Rect& Rect::SetPos(const math::vec2f& pos)
    {
-      m_Result = new Rect();
-   }
-
-   Rect::Builder::~Builder()
-   {
-      delete m_Result;
-   }
-
-   Rect::Builder& Rect::Builder::SetPos(const math::vec2f& pos)
-   {
-      m_Result->m_Pos = pos;
+      m_Pos = pos;
       return *this;
    }
 
-   Rect::Builder& Rect::Builder::SetScale(const math::vec2f& scale)
+   Rect& Rect::SetScale(const math::vec2f& scale)
    {
-      m_Result->m_Scale = scale;
+      m_Scale = scale;
       return *this;
    }
 
-   Rect::Builder& Rect::Builder::SetColor(const math::vec4f& color)
+   Rect& Rect::SetColor(const math::vec4f& color)
    {
-      m_Result->m_Color = color;
+      m_Color = color;
       return *this;
    }
 
-   Rect::Builder& Rect::Builder::SetImagePath(const char* imagePath)
+   Rect& Rect::SetImagePath(const char* imagePath)
    {
-      if(m_Result->m_Texture)
+      if(m_Texture)
       {
          LOG_ERROR("Cannot set texture and image at once: %s", imagePath);
          return *this;
       }
 
-      m_Result->m_ImagePath = new char[strlen(imagePath) + 1];
-      strcpy(m_Result->m_ImagePath, imagePath);
+      m_ImagePath = new char[strlen(imagePath) + 1];
+      strcpy(m_ImagePath, imagePath);
       return *this;
    }
 
-   Rect::Builder& Rect::Builder::SetTexture(const Texture* texture)
+   Rect& Rect::SetTexture(const Texture* texture)
    {
-      if(m_Result->m_ImagePath)
+      if(m_ImagePath)
       {
          LOG_ERROR("Cannot set image and texture at once: %s",
-                                       m_Result->m_ImagePath);
+                                       m_ImagePath);
          return *this;
       }
-      m_Result->m_Texture = texture;
+      m_Texture = texture;
       return *this;
    }
 
-   Rect::Builder& Rect::Builder::SetShaderId(const char* shaderId)
+   Rect& Rect::SetShaderId(const char* shaderId)
    {
-      m_Result->m_ShaderId = new char[strlen(shaderId) + 1];
-      strcpy(m_Result->m_ShaderId, shaderId);
+      m_ShaderId = new char[strlen(shaderId) + 1];
+      strcpy(m_ShaderId, shaderId);
       return *this;
    }
 
-   Rect::Builder& Rect::Builder::SetRotationAngle(float degAngle)
+   Rect& Rect::SetRotationAngle(float degAngle)
    {
-      m_Result->m_RotationAngleDeg = degAngle;
+      m_RotationAngleDeg = degAngle;
       return *this;
    }
 
-   Rect::Builder& Rect::Builder::SetRotationAxis(const math::vec2f& axis)
+   Rect& Rect::SetRotationAxis(const math::vec2f& axis)
    {
-      m_Result->m_RotationAxis = axis;
+      m_RotationAxis = axis;
       return *this;
-   }
-
-   Rect Rect::Builder::Construct()
-   {
-      return *m_Result;
-   }
-
-   void Rect::Builder::Reset()
-   {
-      if(m_Result)
-         delete m_Result;
-      m_Result = new Rect();
    }
 
    math::vec2f Rect::GetPos() const

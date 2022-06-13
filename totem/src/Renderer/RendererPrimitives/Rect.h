@@ -9,26 +9,7 @@ namespace totem
    class Rect
    {
    public:
-      class Builder
-      {
-      public:
-         Builder();
-         ~Builder();
-         Builder& SetPos(const math::vec2f& pos);
-         Builder& SetScale(const math::vec2f& scale);
-         Builder& SetColor(const math::vec4f& color);
-         Builder& SetImagePath(const char* imagePath);
-         Builder& SetTexture(const Texture* texture);
-         Builder& SetShaderId(const char* shaderId);
-         Builder& SetRotationAngle(float degAngle);
-         Builder& SetRotationAxis(const math::vec2f& axis);
-
-         void Reset();
-         Rect Construct();
-      private:
-         Rect* m_Result;
-      };
-
+      
       math::vec2f GetPos() const;
       math::vec2f GetScale() const;
       math::vec4f GetColor() const;
@@ -38,11 +19,20 @@ namespace totem
       float GetRotationAngle() const;
       math::vec2f GetRotationAxis() const;
 
+      Rect& SetPos(const math::vec2f& pos);
+      Rect& SetScale(const math::vec2f& scale);
+      Rect& SetColor(const math::vec4f& color);
+      Rect& SetImagePath(const char* imagePath);
+      Rect& SetTexture(const Texture* texture);
+      Rect& SetShaderId(const char* shaderId);
+      Rect& SetRotationAngle(float degAngle);
+      Rect& SetRotationAxis(const math::vec2f& axis);
+
+
+      Rect();
       Rect(const Rect& other);
       Rect& operator= (const Rect& other);
       ~Rect();
-   private:
-      Rect();
    
    private:
       math::vec2f m_Pos;

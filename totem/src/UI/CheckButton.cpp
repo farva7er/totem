@@ -27,21 +27,19 @@ namespace totem
       const math::vec4f grayColor{0.5f, 0.5f, 0.5f, 0.5f};
       const math::vec4f& color = IsActive() ? m_Color : grayColor;
 
-      Rect outerRect = Rect::Builder()
-                        .SetPos(m_Pos)
-                        .SetScale(m_Scale)
-                        .SetColor(color)
-                        .Construct();
+      Rect outerRect;
+      outerRect.SetPos(m_Pos)
+               .SetScale(m_Scale)
+               .SetColor(color);
 
       renderer->DrawRect(outerRect);
 
       if(m_IsChecked)
       {
-         Rect innerRect = Rect::Builder()
-                           .SetPos(m_Pos)
-                           .SetScale(m_Scale * 0.5f)
-                           .SetColor({0, 0, 0, 0.7f})
-                           .Construct();
+         Rect innerRect;
+         innerRect.SetPos(m_Pos)
+                  .SetScale(m_Scale * 0.5f)
+                  .SetColor({0, 0, 0, 0.7f});
 
          renderer->DrawRect(innerRect); 
       } 

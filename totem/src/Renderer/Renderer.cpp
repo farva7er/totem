@@ -198,22 +198,20 @@ namespace totem
          texture = rm.LoadResource(new Texture(imagePath));
       float aspectRatio = texture->GetWidth()/(float)texture->GetHeight();
 
-      Rect rect = Rect::Builder()
-                        .SetPos(pos)
-                        .SetScale(math::vec2f(scale * aspectRatio, scale))
-                        .SetImagePath(imagePath)
-                        .SetColor(tintColor)
-                        .Construct();
+      Rect rect;
+      rect.SetPos(pos)
+         .SetScale(math::vec2f(scale * aspectRatio, scale))
+         .SetImagePath(imagePath)
+         .SetColor(tintColor);
       DrawRect(rect);
    }
 
 
    void Renderer::DrawBackground(const char* imagePath)
    {
-      Rect rect = Rect::Builder()
-                  .SetScale(m_CanvasScale)
-                  .SetImagePath(imagePath)
-                  .Construct();
+      Rect rect;
+      rect.SetScale(m_CanvasScale)
+         .SetImagePath(imagePath);
       DrawRect(rect);
    }
 
