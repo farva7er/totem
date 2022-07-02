@@ -2,7 +2,6 @@
 
 #include "ResourceManager.h"
 #include "Assert.h"
-#include "Filesystem/Utils.h"
 
 namespace totem
 {
@@ -32,7 +31,6 @@ namespace totem
       {
          m_HashTable[i] = nullptr;
       }
-      FileSystemHelper::Get().SetWorkingDirToExePath();
    }
 
    ResourceManager::~ResourceManager()

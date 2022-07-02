@@ -3,9 +3,9 @@
 #include "Rendering/Renderer.h"
 #include "Timer.h"
 #include "Core/ResourceManager.h"
+#include "Filesystem/FileSystem.h"
 
 #include <stdlib.h>
-
 
 namespace totem
 {
@@ -20,6 +20,14 @@ namespace totem
    NovelApp::NovelApp()
       : App(0, nullptr)
    {
+      FileSystem::Init();
+
+      char* exePath = FileSystem::GetExePath();
+      char* exeDir = FileSystem::GetDir(exePath);
+      FileSystem::SetWorkingDir(exeDir);
+      delete [] exePath;
+      delete [] exeDir;
+
       m_ResourceManager = new ResourceManager();
       m_Window = Window::Create(1280, 720, "Totem");
       m_Window->AddEventListener(this);
