@@ -32,7 +32,7 @@ namespace totem
          T* operator[] (unsigned int i) { return values[i]; }
          const T* operator[] (unsigned int i) const { return values[i]; }
 
-         // get one-dimensional array of 16 floats
+         // get one-dimensional array of 16 elements
          T* ToArray() { return values[0]; }
          const T* ToArray() const { return values[0]; }
 

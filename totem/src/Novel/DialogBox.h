@@ -10,7 +10,7 @@ namespace totem
    class DialogBox : public TextBox
    {
    public:
-      DialogBox();
+      DialogBox(Ref<Font> font);
       virtual void SetText(const Text& text) override;
       virtual void OnUpdate(float deltaTime) override;
    private:

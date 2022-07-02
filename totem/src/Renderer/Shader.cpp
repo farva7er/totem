@@ -2,44 +2,115 @@
 #include <fstream>
 
 #include "Shader.h"
+
 namespace totem
 {
-   Shader::Shader(const char* resId,
-                  const char* vShaderPath, const char* fShaderPath)
-      : Resource(resId)
-   {
-      m_VShaderPath = new char[strlen(vShaderPath) + 1];
-      strcpy(m_VShaderPath, vShaderPath);
-      m_FShaderPath = new char[strlen(fShaderPath) + 1];
-      strcpy(m_FShaderPath, fShaderPath);
-   }
+   Shader::Shader(const char* name, ResourceManager* manager)
+      : Resource(name, manager), m_RenderAPIID(0)
+   {}
 
-   Shader::~Shader() {
-      delete [] m_VShaderPath;
-      delete [] m_FShaderPath;
+   Shader::~Shader()
+   {
+      glDeleteProgram(m_RenderAPIID);
    }
 
    void Shader::Load()
    {
-      char* vShaderSrc;
-      char* fShaderSrc;
+      char *shaderFullSrc, *vShaderSrc, *fShaderSrc;
+      bool res;
 
-      vShaderSrc = GetShaderSrc(m_VShaderPath);
-      fShaderSrc = GetShaderSrc(m_FShaderPath);
-      Compile(vShaderSrc, fShaderSrc);
-      delete [] vShaderSrc;
-      delete [] fShaderSrc;
-      m_IsLoaded = true;
+      shaderFullSrc = GetShaderFullSrc(GetName());
+      if(!shaderFullSrc)
+         goto cleanup;
+
+      vShaderSrc = ExtractSection(shaderFullSrc, "vertex shader\n");
+      if(!vShaderSrc)
+      {
+         LOG_ERROR("Vertex shader not found: %s", GetName());
+         goto cleanup;
+      }
+      fShaderSrc = ExtractSection(shaderFullSrc, "fragment shader\n");
+      if(!fShaderSrc)
+      {
+         LOG_ERROR("Fragment shader not found: %s", GetName());
+         goto cleanup;
+      }
+
+      res = Compile(vShaderSrc, fShaderSrc);
+      if(!res)
+         goto cleanup;
+
+      SetLoaded();
+
+   cleanup:
+      if(vShaderSrc) delete [] vShaderSrc;
+      if(fShaderSrc) delete [] fShaderSrc;
+      if(shaderFullSrc) delete [] shaderFullSrc;
    }
 
    void Shader::Use()
    {
-      glUseProgram(m_RenderAPIId);
+      glUseProgram(m_RenderAPIID);
    }
 
-   char* Shader::GetShaderSrc(const char* filePath) const
+   char* Shader::ExtractSection(const char* buff, const char* sectionName)
    {
-      std::ifstream is(filePath, std::ifstream::binary);
+      // Every section should start with this marker
+      const char sectionMarker[] = "##";
+      int markerLen = strlen(sectionMarker);
+      const char* sectionStart = nullptr;
+      int sectionLen = 0;
+      while(*buff)
+      {
+         // Marker found, so this is the beginning of a new section.
+         if(0 == strncmp(buff, sectionMarker, markerLen))
+         {
+            // Found beginning of the searched section.
+            if(0 == strncmp(buff + markerLen,
+                              sectionName, strlen(sectionName)))
+            {
+               sectionStart = buff;
+            }
+            // Found end of the searched section by
+            // finding a start of another section.
+            else if(sectionStart)
+            {
+               sectionLen = buff - sectionStart; 
+               break;
+            }
+         }
+
+         // Go to next line.
+         buff += GetLineLength(buff);
+      }
+
+      // Section not found.
+      if(!sectionStart) return nullptr;
+      // The searched section is the last one in buff.
+      if(!sectionLen) sectionLen = buff - sectionStart;
+
+      char* res = new char[sectionLen + 1];
+      strncpy(res, sectionStart, sectionLen);
+      res[sectionLen] = 0;
+      return res;
+   }
+
+   int Shader::GetLineLength(const char* line)
+   {
+      int len = 0;
+      while(*line)
+      {
+         len++;
+         if(*line == '\n')
+            break;
+         line++;
+      }
+      return len;
+   }
+
+   char* Shader::GetShaderFullSrc(const char* name) const
+   {
+      std::ifstream is(name, std::ifstream::binary);
       if(is)
       {
          is.seekg(0, is.end);
@@ -56,12 +127,14 @@ namespace totem
       }
       else
       {
-         LOG_FATAL("Shader Src file cannot be opened %s", filePath);
+         LOG_FATAL("Shader Src file cannot be opened %s", name);
          return nullptr;
       }
    }
 
-   void Shader::Compile(const char* vShaderSrc, const char* fShaderSrc)
+   
+
+   bool Shader::Compile(const char* vShaderSrc, const char* fShaderSrc)
    {
       unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
       unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -75,7 +148,7 @@ namespace totem
       {
          glGetShaderInfoLog(vShader, 512, nullptr, infoLog);
          LOG_FATAL("Vertex Shader compilation failed: %s", infoLog);
-         return;
+         return false;
       }
       glCompileShader(fShader);
       glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
@@ -83,35 +156,39 @@ namespace totem
       {
          glGetShaderInfoLog(fShader, 512, nullptr, infoLog);
          LOG_FATAL("Fragment Shader compilation failed: %s", infoLog);
-         return;
+         return false;
       }
 
-      m_RenderAPIId = glCreateProgram();
-      glAttachShader(m_RenderAPIId, vShader);
-      glAttachShader(m_RenderAPIId, fShader);
-      glLinkProgram(m_RenderAPIId);
+      m_RenderAPIID = glCreateProgram();
+      glAttachShader(m_RenderAPIID, vShader);
+      glAttachShader(m_RenderAPIID, fShader);
+      glLinkProgram(m_RenderAPIID);
 
-      glGetProgramiv(m_RenderAPIId, GL_LINK_STATUS, &success);
+      glGetProgramiv(m_RenderAPIID, GL_LINK_STATUS, &success);
       if(!success)
       {
-         glGetProgramInfoLog(m_RenderAPIId, 512, NULL, infoLog);
+         glGetProgramInfoLog(m_RenderAPIID, 512, NULL, infoLog);
          LOG_FATAL("Shader Program linking failed: %s", infoLog);
-         return;
+         return false;
       }
+
+      glDetachShader(m_RenderAPIID, vShader);
+      glDetachShader(m_RenderAPIID, fShader);
 
       glDeleteShader(vShader);
       glDeleteShader(fShader);
+      return true;
    }
 
    void Shader::SetUniformMatrix4fv(const char* name, const math::mat4f& val)
    {
-      int loc = glGetUniformLocation(m_RenderAPIId, name);
+      int loc = glGetUniformLocation(m_RenderAPIID, name);
       glUniformMatrix4fv(loc, 1, GL_TRUE, val.ToArray());
    }
 
    void Shader::SetUniform4f(const char* name, const math::vec4f& val)
    {
-      int loc = glGetUniformLocation(m_RenderAPIId, name);
+      int loc = glGetUniformLocation(m_RenderAPIID, name);
       glUniform4f(loc, val.x, val.y, val.z, val.w);
    }
 }

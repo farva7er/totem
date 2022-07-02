@@ -2,12 +2,14 @@
 #define _TOTEM_RENDERER_H_
 
 #include "Window.h"
+#include "Core/ResourceManager.h"
 #include "Math/Mat.h"
 #include "Math/Vec.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "FontRenderer.h"
+#include "Font.h"
 #include "Renderer/RendererPrimitives/Rect.h"
+#include "Internationalization/Text.h"
 
 namespace totem
 {
@@ -19,65 +21,55 @@ namespace totem
    
    class Renderer
    {
-   public:
-      Renderer(Window *window);
-      virtual ~Renderer();
+      public:
+         Renderer(Window *window, ResourceManager* resManager);
+         virtual ~Renderer();
 
-      void Clear(float r, float g, float b, float a = 1.0f);
+         void Clear(const math::vec4f& color);
 
-      void DrawRect(const Rect& rect);
-      
-      void DrawImage(const char* imagePath, const math::vec2f& pos,
-                     float scale = 1.0f,
-                     const math::vec4f& tintColor =
-                     math::vec4f(1.0f, 1.0f, 1.0f, 1.0f));
+         void DrawRect(const Rect& rect);
+         void DrawRect(const Rect& rect, const Texture& texture);
+         void DrawRect(const Rect& rect, const Texture& texture,
+                        Shader& shader);
 
-      void DrawBackground(const char* imagePath);
+         void DrawCharacter(unicode_t codepoint, const math::vec2f& pos,
+                           float size, const math::vec4f& color,
+                           const Font& font);
+ 
+         void DrawText(const Text& text, const math::vec2f& pos,
+                        const Font& font, float size = 1.0f,
+                        const math::vec4f& color = {1, 1, 1, 1});
 
-      void DrawCharacter(unicode_t codepoint, const math::vec2f& pos,
-                        float scale, const math::vec4f& color);
+         void DrawAlignedText(const Text& text,
+                              const math::vec2f& boxPos,
+                              const math::vec2f& boxScale,
+                              const Font& font,
+                              float size = 1.0f,
+                              const math::vec4f& color = {1, 1, 1, 1},
+                              int alignFlags =
+                                 TextAlign::VCenter | TextAlign::HCenter);
 
-      float GetCharHeight(unicode_t codepoint, float scale) const;
-      float GetCharAdvance(unicode_t codepoint, float scale) const;
-      math::vec2f GetCharBaseScale() const;
-     
-      // returns  { textWidth, textHeight } ( NOT SCALE )
-      math::vec2f CalcBBox(const Text& text, float scale) const;
+         void SetViewport(unsigned int width, unsigned int height);
 
-      
-      void DrawText(const Text& text, const math::vec2f& pos,
-                     float scale = 1.0f, const math::vec4f& color =
-                     math::vec4f(1, 1, 1, 1)
-                     );
-      
-      void DrawAlignedText(const Text& text,
-                           const math::vec2f& boxPos,
-                           const math::vec2f& boxScale,
-                           float scale = 1.0f,
-                           const math::vec4f& color = 
-                              math::vec4f(1, 1, 1, 1),
-                           int alignFlags =
-                              TextAlign::VCenter | TextAlign::HCenter
-                           );
-      
-  
-      Shader* GetShader(const char* shaderId) const;
-      void SetViewport(unsigned int width, unsigned int height);
-      void SetCanvasScale(const math::vec2f& scale);
-      const math::vec2f& GetCanvasScale() const;
-   private:
-      static bool s_OpenGLInitialized; 
-      static const char* s_TextureShaderId;
+         const math::vec2f& GetCanvasScale() const;
+         void SetCanvasScale(const math::vec2f& scale);
 
-      //math::vec2f CalcTextSize(const char* str, float scale) const;
-   private:
-      Window* m_Window;
-      unsigned int m_VBO, m_VAO, m_EBO;
-      Texture* m_WhiteTexture;
-      math::mat4f m_ProjMat;
-      math::vec2f m_CanvasScale;
-      FontRenderer m_FontRenderer;
+         float GetEM() const;
+
+         // returns Text Bounding Box Scale
+         math::vec2f CalcBBox(const Text& text, float size,
+                              const Font& font) const;
+      private:
+         static bool s_OpenGLInitialized; 
+
+         Window* m_Window;
+         ResourceManager* m_ShaderManager;
+         unsigned int m_VBO, m_VAO, m_EBO;
+         Texture* m_WhiteTexture;
+         math::vec2f m_CanvasScale;
+
+         Ref<Shader> m_DefaultTextureShader;
+         Ref<Shader> m_DefaultFontShader;
    };
 }
-
 #endif

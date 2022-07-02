@@ -40,12 +40,14 @@ namespace totem
       renderer->DrawRect(rect);
       if(!m_Text.IsEmpty())
       {
-         
+         // TODO
+        /* 
          renderer->DrawAlignedText(
                      m_Text, m_Pos, m_Scale, m_Scale.y * 0.7f,
                      math::vec4f(1, 1, 1, 1),
                      TextAlign::VCenter | TextAlign::HCenter
                      );
+         */
       }
    }
 

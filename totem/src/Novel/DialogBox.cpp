@@ -2,7 +2,8 @@
 
 namespace totem
 {
-   DialogBox::DialogBox()
+   DialogBox::DialogBox(Ref<Font> font)
+      : TextBox(font)
    {
       m_TextAnim = new StepAnimation(0, 0, 0.03f, false);
       m_Animator.Add(m_TextAnim);

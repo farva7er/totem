@@ -10,7 +10,7 @@ namespace totem
    class TextBox : public IMovableElement, public BasicElementImpl
    {
    public:
-      TextBox();
+      TextBox(Ref<Font> font);
       TextBox(const TextBox& other) = default;
       ~TextBox() = default;
 
@@ -19,6 +19,7 @@ namespace totem
       virtual void SetText(const Text& text);
 
       void SetLineSpacing(float spacing);
+      void SetFont(const Font* font);
       void SetFontSize(float size);
       void SetTextColor(const math::vec4f& color);
       void SetCharDisplayLimit(int charLimit);
@@ -54,6 +55,7 @@ namespace totem
    private:
       Text::TextVec m_TextWords;
       float m_LineSpacing;
+      Ref<Font> m_Font;
       float m_FontSize;
       math::vec4f m_TextColor;
       int m_CharDisplayLimit;

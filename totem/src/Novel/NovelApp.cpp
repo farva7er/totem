@@ -2,7 +2,7 @@
 #include "Window.h"
 #include "Renderer/Renderer.h"
 #include "Timer.h"
-#include "ResourceManager.h"
+#include "Core/ResourceManager.h"
 
 #include <stdlib.h>
 
@@ -20,15 +20,19 @@ namespace totem
    NovelApp::NovelApp()
       : App(0, nullptr)
    {
+      m_ResourceManager = new ResourceManager();
       m_Window = Window::Create(1280, 720, "Totem");
       m_Window->AddEventListener(this);
-      m_Renderer = new Renderer(m_Window);
+      m_Renderer = new Renderer(m_Window, m_ResourceManager);
    
       SetCanvasScale({ 16, 9 });
 
       m_Background = nullptr;
 
-      m_DialogBox = new totem::DialogBox();
+      Ref<Font> defaultFont = 
+         m_ResourceManager->Get<Font>("resources/fonts/OpenSans-Regular.ttf");
+
+      m_DialogBox = new totem::DialogBox(defaultFont);
       m_DialogBox->SetScale({10, 2});
       m_DialogBox->SetPos({0, -7});
       m_DialogBox->SetTextColor({ 0.9f, 0.9f, 0.2f, 1.0f });
@@ -55,8 +59,7 @@ namespace totem
 
    void NovelApp::SetBackground(const char* imagePath)
    {
-      // BAAAAAD!!!!!!!!!!!!!!!!!!
-      m_Background = imagePath;
+      m_Background = m_ResourceManager->Get<Texture>(imagePath);
    }
 
    void NovelApp::Loop()
@@ -146,7 +149,12 @@ namespace totem
    void NovelApp::OnUpdate(float deltaTime)
    {
       if(m_Background)
-         m_Renderer->DrawBackground(m_Background);
+      {
+         Rect rect;
+         rect.SetPos({0, 0})
+            .SetScale(GetCanvasScale());
+         m_Renderer->DrawRect(rect, *m_Background);
+      }
 
       if(m_RootElement)
       {
@@ -159,7 +167,12 @@ namespace totem
    {
       // Maybe do saving before exit in future
       LOG_INFO("Exiting...");
+      if(m_Background)
+         m_Background->Release();
+      delete m_RootElement;
+      delete m_Renderer;
+      delete m_ResourceManager;
+      delete m_Window;
       exit(0); 
    }
 }
-

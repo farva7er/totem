@@ -48,12 +48,13 @@ namespace totem
    private:
       static NovelApp* s_Instance;
       Window* m_Window;
+      ResourceManager* m_ResourceManager;
       bool m_LoopShouldExit;
    protected:
       Renderer* m_Renderer;
       IUIElement* m_RootElement;
       DialogBox* m_DialogBox;
-      const char* m_Background;
+      Ref<Texture> m_Background;
    };
 }
 

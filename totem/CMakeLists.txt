@@ -7,9 +7,6 @@ add_library(totem STATIC   src/App.h
                            src/Events.h
                            src/Log.h
                            src/Log.cpp
-                           src/Log.cpp
-                           src/ResourceManager.h
-                           src/ResourceManager.cpp
                            src/Timer.h
                            src/Timer.cpp
                            src/Totem.cpp
@@ -22,6 +19,10 @@ add_library(totem STATIC   src/App.h
                            src/Animations/Animator.cpp
                            src/Animations/Animation.h
                            src/Animations/Animation.cpp
+                           src/Core/Resource.h
+                           src/Core/Resource.cpp
+                           src/Core/ResourceManager.h
+                           src/Core/ResourceManager.cpp
                            src/Math/Mat.h
                            src/Math/Mat.cpp
                            src/Math/Vec.h
@@ -38,8 +39,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Platform/Windows/Filesystem/WindowsUtils.h
                            src/Platform/Windows/Filesystem/WindowsUtils.cpp
 >
-                           src/Renderer/FontRenderer.h
-                           src/Renderer/FontRenderer.cpp
+                           src/Renderer/Font.h
+                           src/Renderer/Font.cpp
                            src/Renderer/Renderer.h
                            src/Renderer/Renderer.cpp
                            src/Renderer/RendererPrimitives/Rect.h
@@ -117,7 +118,6 @@ set(FT_DISABLE_BZIP2 TRUE CACHE BOOL "" FORCE)
 set(FT_DISABLE_PNG TRUE CACHE BOOL "" FORCE)
 set(FT_DISABLE_HARFBUZZ TRUE CACHE BOOL "" FORCE)
 set(FT_DISABLE_BROTLI TRUE CACHE BOOL "" FORCE)
-
 add_subdirectory(Dependencies/freetype-2.11.1)
 
 target_link_libraries(totem PRIVATE glad)
