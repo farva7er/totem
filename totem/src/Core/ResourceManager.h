@@ -10,6 +10,8 @@ namespace totem
 {   
    // ResourceManager stores resources.
    // It is implemented as a basic hash table with chaining.
+   // You can create as many ResourceManager objects as you
+   // want (it is not a singleton).
    class ResourceManager
    {
       public:
@@ -17,16 +19,17 @@ namespace totem
          ~ResourceManager();
 
          // Use this function to get any resource.
-         // Resource acquired using this method
-         // should be released with Resource::Release().
-         // Do not delete it directly with delete operator!
+         // It returns a Ref to requested resource.
+         // A Ref can be treated like a simple pointer.
+         // You can pass it by value, dereference it, etc.
          template <typename T>
          Ref<T> Get(const char* resName);
 
-         // This function can be used directly to
-         // release a Resource instead of Resource::Release().
-         // But be careful to call it on the same instance of
-         // ResourceManager that created the resource!
+         // This function is used internally by
+         // resource managment subsystem.
+         // DO NOT TRY TO USE IT TO FREE A RESOURCE!
+         // The Resource will be freed automatically when
+         // all Ref's pointing to it get destoyed.
          void Release(Resource* res);
 
       private:
