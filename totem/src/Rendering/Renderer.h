@@ -8,7 +8,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include "Font.h"
-#include "Renderer/RendererPrimitives/Rect.h"
+#include "Rendering/Primitives/Rect.h"
 #include "Internationalization/Text.h"
 
 namespace totem

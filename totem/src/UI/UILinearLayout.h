@@ -2,7 +2,7 @@
 #define _TOTEM_UIMANAGER_H_
 
 #include "Events.h"
-#include "Renderer/Renderer.h"
+#include "Rendering/Renderer.h"
 #include "IMovableElement.h"
 #include "BasicElementImpl.h"
 

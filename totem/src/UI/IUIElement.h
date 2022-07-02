@@ -2,7 +2,7 @@
 #define _TOTEM_UI_ELEMENT_H_
 
 #include "Events.h"
-#include "Renderer/Renderer.h"
+#include "Rendering/Renderer.h"
 
 
 namespace totem

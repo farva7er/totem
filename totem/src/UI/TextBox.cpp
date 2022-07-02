@@ -1,6 +1,6 @@
 #include "TextBox.h"
 #include "Log.h"
-#include "Renderer/RendererPrimitives/Rect.h"
+#include "Rendering/Primitives/Rect.h"
 
 namespace totem
 {

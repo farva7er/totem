@@ -3,7 +3,7 @@
 
 #include "Math/Vec.h"
 #include "Core/ResourceManager.h"
-#include "Renderer/Texture.h"
+#include "Rendering/Texture.h"
 #include "Internationalization/Text.h"
 
 namespace totem

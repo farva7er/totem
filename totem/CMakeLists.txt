@@ -39,16 +39,16 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Platform/Windows/Filesystem/WindowsUtils.h
                            src/Platform/Windows/Filesystem/WindowsUtils.cpp
 >
-                           src/Renderer/Font.h
-                           src/Renderer/Font.cpp
-                           src/Renderer/Renderer.h
-                           src/Renderer/Renderer.cpp
-                           src/Renderer/RendererPrimitives/Rect.h
-                           src/Renderer/RendererPrimitives/Rect.cpp
-                           src/Renderer/Shader.h
-                           src/Renderer/Shader.cpp
-                           src/Renderer/Texture.h
-                           src/Renderer/Texture.cpp
+                           src/Rendering/Font.h
+                           src/Rendering/Font.cpp
+                           src/Rendering/Renderer.h
+                           src/Rendering/Renderer.cpp
+                           src/Rendering/Primitives/Rect.h
+                           src/Rendering/Primitives/Rect.cpp
+                           src/Rendering/Shader.h
+                           src/Rendering/Shader.cpp
+                           src/Rendering/Texture.h
+                           src/Rendering/Texture.cpp
                            src/UI/CommonMediators/UIButtonExclusiveGroup.h
                            src/UI/CommonMediators/UIButtonExclusiveGroup.cpp
                            src/UI/BasicElementImpl.h

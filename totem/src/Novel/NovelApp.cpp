@@ -1,6 +1,6 @@
 #include "NovelApp.h"
 #include "Window.h"
-#include "Renderer/Renderer.h"
+#include "Rendering/Renderer.h"
 #include "Timer.h"
 #include "Core/ResourceManager.h"
 

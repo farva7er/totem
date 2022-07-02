@@ -1,4 +1,4 @@
-#include "Renderer/RendererPrimitives/Rect.h"
+#include "Rendering/Primitives/Rect.h"
 
 namespace totem
 { 
