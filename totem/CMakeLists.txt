@@ -2,31 +2,32 @@ cmake_minimum_required(VERSION 3.10)
 
 project(totem)
 
-add_library(totem STATIC   src/App.h
-                           src/Assert.h
-                           src/Events.h
-                           src/Log.h
-                           src/Log.cpp
-                           src/Timer.h
-                           src/Timer.cpp
-                           src/Totem.cpp
-                           src/Window.h
-                           src/Window.cpp
-                           src/Animations/BasicAnimations/InterpAnimations.h
-                           src/Animations/BasicAnimations/SeqAnimation.h
-                           src/Animations/BasicAnimations/SeqAnimation.cpp
-                           src/Animations/Animator.h
-                           src/Animations/Animator.cpp
-                           src/Animations/Animation.h
-                           src/Animations/Animation.cpp
-                           src/Core/Resource.h
-                           src/Core/Resource.cpp
-                           src/Core/ResourceManager.h
-                           src/Core/ResourceManager.cpp
-                           src/Math/Mat.h
-                           src/Math/Mat.cpp
-                           src/Math/Vec.h
-                           src/Math/
+add_library(totem STATIC
+                        src/App.h
+                        src/Assert.h
+                        src/Events.h
+                        src/Log.h
+                        src/Log.cpp
+                        src/Timer.h
+                        src/Timer.cpp
+                        src/Totem.cpp
+                        src/Window.h
+                        src/Window.cpp
+                        src/Animations/BasicAnimations/InterpAnimations.h
+                        src/Animations/BasicAnimations/SeqAnimation.h
+                        src/Animations/BasicAnimations/SeqAnimation.cpp
+                        src/Animations/Animator.h
+                        src/Animations/Animator.cpp
+                        src/Animations/Animation.h
+                        src/Animations/Animation.cpp
+                        src/Core/Resource.h
+                        src/Core/Resource.cpp
+                        src/Core/ResourceManager.h
+                        src/Core/ResourceManager.cpp
+                        src/Math/Mat.h
+                        src/Math/Mat.cpp
+                        src/Math/Vec.h
+                        src/Math/
 $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Linux>:
                         src/Platform/Linux/LinuxWindow.h
                         src/Platform/Linux/LinuxWindow.cpp
@@ -39,32 +40,32 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                         src/Platform/Windows/Filesystem/WindowsFileSystem.h
                         src/Platform/Windows/Filesystem/WindowsFileSystem.cpp
 >
-                           src/Rendering/Font.h
-                           src/Rendering/Font.cpp
-                           src/Rendering/Renderer.h
-                           src/Rendering/Renderer.cpp
-                           src/Rendering/Primitives/Rect.h
-                           src/Rendering/Primitives/Rect.cpp
-                           src/Rendering/Shader.h
-                           src/Rendering/Shader.cpp
-                           src/Rendering/Texture.h
-                           src/Rendering/Texture.cpp
-                           src/UI/Clickable.h
-                           src/UI/Clickable.cpp
-                           src/UI/Element.h
-                           src/UI/TextBox.h
-                           src/UI/TextBox.cpp
-                           src/Filesystem/FileSystem.h
-                           src/Filesystem/FileSystem.cpp
-                           src/Internationalization/Text.h
-                           src/Internationalization/Text.cpp
-                           src/Novel/DialogBox.h
-                           src/Novel/DialogBox.cpp
-                           src/Novel/NovelApp.h
-                           src/Novel/NovelApp.cpp
-                           src/Novel/Script.h
-                           src/Novel/Script.cpp
-                           )
+                        src/Rendering/Font.h
+                        src/Rendering/Font.cpp
+                        src/Rendering/Renderer.h
+                        src/Rendering/Renderer.cpp
+                        src/Rendering/Primitives/Rect.h
+                        src/Rendering/Primitives/Rect.cpp
+                        src/Rendering/Shader.h
+                        src/Rendering/Shader.cpp
+                        src/Rendering/Texture.h
+                        src/Rendering/Texture.cpp
+                        src/UI/Clickable.h
+                        src/UI/Clickable.cpp
+                        src/UI/Element.h
+                        src/UI/TextBox.h
+                        src/UI/TextBox.cpp
+                        src/Filesystem/FileSystem.h
+                        src/Filesystem/FileSystem.cpp
+                        src/Internationalization/Text.h
+                        src/Internationalization/Text.cpp
+                        src/Novel/DialogBox.h
+                        src/Novel/DialogBox.cpp
+                        src/Novel/NovelApp.h
+                        src/Novel/NovelApp.cpp
+                        src/Novel/Script.h
+                        src/Novel/Script.cpp
+                        )
 
 
 target_include_directories(totem PUBLIC src)

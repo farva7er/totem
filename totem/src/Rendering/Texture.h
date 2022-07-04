@@ -8,7 +8,6 @@ namespace totem
    class Texture : public Resource
    {
       public:
-
          // Constructor for ResourceManager.
          Texture(const char* name, ResourceManager* manager)
             : Resource(name, manager) {}

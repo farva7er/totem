@@ -7,8 +7,7 @@ namespace totem
 {
    class Rect
    {
-      public:
-         
+      public:         
          math::vec2f GetPos() const;
          math::vec2f GetScale() const;
          math::vec4f GetColor() const;

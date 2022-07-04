@@ -12,32 +12,33 @@ namespace totem
       template <typename T>
       struct mat4
       {
-         // identity by default
-         mat4()
-            : mat4(1)
-         {}
+         public:
+            // Identity by default.
+            mat4()
+               : mat4(1)
+            {}
 
-         // scalar matrix
-         mat4(T val)
-            : values {
-                        {val, 0, 0, 0},
-                        {0, val, 0, 0},
-                        {0, 0, val, 0},
-                        {0, 0, 0, val}
-                     }
-         {}
+            // Scalar matrix.
+            mat4(T val)
+               : values {
+                           {val, 0, 0, 0},
+                           {0, val, 0, 0},
+                           {0, 0, val, 0},
+                           {0, 0, 0, val}
+                        }
+            {}
 
 
-         // get i-th row
-         T* operator[] (unsigned int i) { return values[i]; }
-         const T* operator[] (unsigned int i) const { return values[i]; }
+            // Get i-th row.
+            T* operator[] (unsigned int i) { return values[i]; }
+            const T* operator[] (unsigned int i) const { return values[i]; }
 
-         // get one-dimensional array of 16 elements
-         T* ToArray() { return values[0]; }
-         const T* ToArray() const { return values[0]; }
+            // Get one-dimensional array of 16 elements.
+            T* ToArray() { return values[0]; }
+            const T* ToArray() const { return values[0]; }
 
-      public:
-         T values[4][4];
+         public:
+            T values[4][4];
       };
 
       typedef mat4<float> mat4f;

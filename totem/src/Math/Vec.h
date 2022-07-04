@@ -11,24 +11,25 @@ namespace totem
    {
       template <size_t dim, typename T>
       struct vec {
-         vec()
-         {
-            memset(coord, 0, sizeof(coord));
-         }
-         T& operator[] (size_t i)
-         {
-            TOTEM_ASSERT(i < dim, "vec out of bounds");
-            return coord[dim];
-         }
-         const T& operator[] (size_t i) const
-         {
-            TOTEM_ASSERT(i < dim, "vec out of bounds");
-            return coord[dim];
-         }
+         public:
+            vec()
+            {
+               memset(coord, 0, sizeof(coord));
+            }
+            T& operator[] (size_t i)
+            {
+               TOTEM_ASSERT(i < dim, "vec out of bounds");
+               return coord[dim];
+            }
+            const T& operator[] (size_t i) const
+            {
+               TOTEM_ASSERT(i < dim, "vec out of bounds");
+               return coord[dim];
+            }
 
-      private:
+         private:
 
-         T coord[dim];
+            T coord[dim];
       };
 
       template <typename T>

@@ -9,19 +9,19 @@ namespace totem
 {
    class DialogBox : public TextBox
    {
-   public:
-      DialogBox(Ref<Font> font);
-      DialogBox(const DialogBox& other);
+      public:
+         DialogBox(Ref<Font> font);
+         DialogBox(const DialogBox& other);
 
-      ~DialogBox();
+         ~DialogBox();
 
-      DialogBox& operator=(const DialogBox& other);
+         DialogBox& operator=(const DialogBox& other);
 
-      virtual void SetText(const Text& text) override;
-      virtual void OnUpdate(float deltaTime) override;
-   private:
-      SeqAnimation* m_TextAnim;
-      Animator m_Animator;
+         virtual void SetText(const Text& text) override;
+         virtual void OnUpdate(float deltaTime) override;
+      private:
+         SeqAnimation* m_TextAnim;
+         Animator m_Animator;
    };
 }
 
