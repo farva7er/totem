@@ -17,6 +17,17 @@ namespace totem
       m_IsAtFirstTick = true;
    }
 
+   Animation& Animation::operator=(const Animation& other)
+   {
+      m_IsPaused = true;
+      m_IsLooping = other.m_IsLooping;
+      m_Duration = other.m_Duration;
+      m_CurrTime = 0.0f;
+      m_FinishCount = 0;
+      m_IsAtFirstTick = true;
+      return *this;
+   }
+
    void Animation::Reset()
    {
       m_CurrTime = 0.0f;
@@ -44,64 +55,5 @@ namespace totem
          return;
       }
       m_CurrTime += deltaTime;
-   }
-
-   AnimationGroup::AnimationGroup()
-      :  m_Animations(nullptr)
-   {}
-
-   AnimationGroup::~AnimationGroup()
-   {
-      while(m_Animations)
-      {
-         AnimationNode* savedNode = m_Animations;
-         m_Animations = m_Animations->next;
-         delete savedNode;
-      }
-   }
-
-   void AnimationGroup::Add(Animation* anim)
-   {
-      m_Animations = new AnimationNode(anim, m_Animations); 
-   }
-
-   void AnimationGroup::Add(const AnimationGroup& animGroup)
-   {
-      AnimationNode* curr = animGroup.m_Animations;
-      while(curr)
-      {
-         Add(curr->anim);
-         curr = curr->next;
-      }
-   }
-
-   void AnimationGroup::Play()
-   {
-      AnimationNode* curr = m_Animations;
-      while(curr)
-      {
-         curr->anim->Play();
-         curr = curr->next;
-      }
-   }
-
-   void AnimationGroup::Pause()
-   {
-      AnimationNode* curr = m_Animations;
-      while(curr)
-      {
-         curr->anim->Pause();
-         curr = curr->next;
-      }
-   }
-
-   void AnimationGroup::Reset()
-   {
-      AnimationNode* curr = m_Animations;
-      while(curr)
-      {
-         curr->anim->Reset();
-         curr = curr->next;
-      }
    }
 }

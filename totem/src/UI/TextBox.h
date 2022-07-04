@@ -11,7 +11,10 @@ namespace totem
    public:
       TextBox(Ref<Font> font);
       TextBox(const TextBox& other) = default;
+
       ~TextBox() = default;
+
+      TextBox& operator=(const TextBox& other) = default;
 
       //TODO
       //Text GetText() const { return m_TextWords.AssembleText(); }

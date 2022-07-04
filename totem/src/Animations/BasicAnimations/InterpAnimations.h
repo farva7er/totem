@@ -5,100 +5,66 @@
 
 namespace totem
 {
-   template <typename T>
    class InterpAnim : public Animation
    {
-   public:
-      InterpAnim(T init, T fin, float dur)
-         : Animation(false, dur), 
-         m_AnimVar(init), m_InitVal(init), m_FinVal(fin)
-      {}
+      public:
+         InterpAnim(float start, float fin, float dur)
+            : Animation(false, dur), m_Start(start), m_Fin(fin)
+         {}
 
-      void ApplyVal(T& var)
-      {
-         if(!this->IsPaused())
+         InterpAnim(const InterpAnim& other) = default;
+
+         virtual ~InterpAnim() = default;
+
+         InterpAnim& operator=(const InterpAnim& other) = default;
+
+         virtual float GetVal() const = 0;
+         void SetStart(float start) { m_Start = start; }
+         void SetFin(float fin) { m_Fin = fin; }
+         void SetDuration(float dur) { Animation::SetDuration(dur); }
+
+      protected:
+         float m_Start;
+         float m_Fin;
+   };
+
+   class LinearInterpAnim : public InterpAnim
+   {
+      public:
+         LinearInterpAnim(float start, float fin, float dur)
+            : InterpAnim(start, fin, dur) {}
+
+         virtual float GetVal() override
          {
-            var = this->m_AnimVar;
+            return m_Init + (GetCurrTime()/GetDuration())*
+                              (m_Fin - m_Start);
          }
-      }
-
-      void SetInitVal(T init)
-      {
-         this->m_InitVal = init;
-      }
-
-      void SetFinVal(T fin)
-      {
-         this->m_FinVal = fin;
-      }
-
-   protected:
-      virtual void OnUpdate() = 0;
-      virtual Animation* Clone() = 0;
-
-      T m_AnimVar;
-      T m_InitVal;
-      T m_FinVal;
    };
 
-   template <typename T>
-   class LinearInterpAnim : public InterpAnim<T>
+   class CubicInterpAnim : public InterpAnim
    {
-   public:
-      LinearInterpAnim(T init, T fin, float dur)
-         : InterpAnim<T>(init, fin, dur) {} 
-   private:
-      virtual void OnUpdate() override
-      {
-         this->m_AnimVar = this->m_InitVal + 
-         (this->GetCurrTime()/this->GetDuration())*
-         (this->m_FinVal - this->m_InitVal);
-      }
+      public:
+         CubicInterpAnim(float start, float fin, float dur)
+            : InterpAnim(start, fin, dur) {}
 
-      virtual Animation* Clone() override
-      {
-         return new LinearInterpAnim(*this);
-      }
+         virtual float GetVal() override
+         {
+            float t = GetCurrTime()/GetDuration();
+            return m_Init + ((t-1)*(t-1)*(t-1) + 1)*(m_Fin - m_Start);
+         }
    };
 
-   template <typename T>
-   class CubicInterpAnim : public InterpAnim<T>
+   class HermiteInterpAnim : public InterpAnim
    {
-   public:
-      CubicInterpAnim(T init, T fin, float dur)
-         : InterpAnim<T>(init, fin, dur) {} 
-   private:
-      virtual void OnUpdate() override
-      {
-         float t = this->GetCurrTime()/this->GetDuration();
-         this->m_AnimVar = this->m_InitVal + 
-                  ((t-1)*(t-1)*(t-1) + 1)*(this->m_FinVal - this->m_InitVal);
-      }
+      public:
+         HermiteInterpAnim(float start, float fin, float dur)
+            : InterpAnim(start, fin, dur) {}
 
-      virtual Animation* Clone() override
-      {
-         return new CubicInterpAnim(*this);
-      }
-   };
-
-   template <typename T>
-   class HermiteInterpAnim : public InterpAnim<T>
-   {
-   public:
-      HermiteInterpAnim(T init, T fin, float dur)
-         : InterpAnim<T>(init, fin, dur) {}
-   private:
-      virtual void OnUpdate() override
-      {
-         float t = this->GetCurrTime()/this->GetDuration();
-         this->m_AnimVar = this->m_InitVal + 
-                  (-2*t*t*t+3*t*t)*(this->m_FinVal - this->m_InitVal);
-      }
-
-      virtual Animation* Clone() override
-      {
-         return new HermiteInterpAnim(*this);
-      }
+         virtual float GetVal() override
+         {
+            float t = GetCurrTime()/GetDuration();
+            return m_Init + (-2*t*t*t+3*t*t)*(m_Fin - m_Start);
+         }
    };
 }
 #endif

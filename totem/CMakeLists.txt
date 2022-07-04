@@ -13,8 +13,8 @@ add_library(totem STATIC   src/App.h
                            src/Window.h
                            src/Window.cpp
                            src/Animations/BasicAnimations/InterpAnimations.h
-                           src/Animations/BasicAnimations/StepAnimation.h
-                           src/Animations/BasicAnimations/StepAnimation.cpp
+                           src/Animations/BasicAnimations/SeqAnimation.h
+                           src/Animations/BasicAnimations/SeqAnimation.cpp
                            src/Animations/Animator.h
                            src/Animations/Animator.cpp
                            src/Animations/Animation.h

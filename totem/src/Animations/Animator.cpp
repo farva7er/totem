@@ -1,12 +1,8 @@
 #include "Animator.h"
 #include "Log.h"
+
 namespace totem
 {
-
-/////////////////////////////////////////////////
-// Animator /////////////////////////////////////
-/////////////////////////////////////////////////
-
    Animator::~Animator()
    {
       AnimationNode* currNode = m_Animations;
@@ -47,33 +43,13 @@ namespace totem
          currNode = currNode->next;
       }
    }
-
-   void Animator::Add(Animation* anim)
-   {
-      AnimationNode* animNode = SearchNode(anim);
-      if(!animNode)
-      {
-         Insert(anim, 0.0f, nullptr);
-      }
-   }
-
-   void Animator::Add(const AnimationGroup& animGroup)
-   {
-      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
-      while(curr)
-      {
-         Add(curr->anim);
-         curr = curr->next;
-      }
-   }
-
+ 
    void Animator::Sync(Animation* anim, float delay, Animation* refAnim)
    {
       AnimationNode* animNode = SearchNode(anim);
       if(!animNode)
       {
-         Insert(anim, delay, refAnim);
-         animNode = SearchNode(anim);
+         animNode = Insert(anim);
       }
 
       animNode->delay = delay;
@@ -82,9 +58,10 @@ namespace totem
       anim->Play();
    }
 
-   void Animator::Insert(Animation* anim, float delay, Animation* refAnim)
+   Animator::AnimationNode* Animator::Insert(Animation* anim)
    {
-      m_Animations = new AnimationNode(anim, refAnim, delay, m_Animations);
+      m_Animations = new AnimationNode(anim, nullptr, 0.0f, m_Animations);
+      return m_Animations;
    }
 
    Animator::AnimationNode* Animator::SearchNode(Animation* anim) const
@@ -98,15 +75,4 @@ namespace totem
       }
       return nullptr;
    }
-
-   void Animator::Sync(const AnimationGroup& animGroup, float delay,
-                       Animation* refAnim)
-   {
-      AnimationGroup::AnimationNode* curr = animGroup.m_Animations;
-      while(curr)
-      {
-         Sync(curr->anim, delay, refAnim);
-         curr = curr->next;
-      }
-   }
-};
+}

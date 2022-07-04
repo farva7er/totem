@@ -7,67 +7,43 @@ namespace totem
    {
       friend class Animator;
 
-   public:
-      Animation(bool isLooping, float animDuration);
-      Animation(const Animation& other);
+      public:
+         Animation(bool isLooping, float animDuration);
+         Animation(const Animation& other);
 
-      virtual ~Animation() {}
-      virtual Animation* Clone() = 0;
+         virtual ~Animation() = default;
 
-      void Play() { m_IsPaused = false; };
-      void Pause() { m_IsPaused = true; };
-      void Reset();
+         Animation& operator=(const Animation& other);
 
-      bool IsPaused() { return m_IsPaused; }
+         void Play() { m_IsPaused = false; }
+         void Pause() { m_IsPaused = true; }
+         void Reset();
 
-   protected:
-      int GetFinishCount() const { return m_FinishCount; };
-      bool HasFinishedOnce() const { return m_FinishCount > 0; };
-      bool IsLooping() const { return m_IsLooping; };
+         float GetCurrTime() const { return m_CurrTime; }
+         float GetDuration() const { return m_Duration; }
 
-   protected:
-      virtual void OnUpdate() = 0;
-      virtual void OnStart() {}
-      float GetCurrTime() const { return m_CurrTime; }
-      float GetDuration() const { return m_Duration; }
+         bool IsPaused() { return m_IsPaused; }
 
-      void SetDuration(float dur) { m_Duration = dur; }
+         int GetFinishCount() const { return m_FinishCount; }
+         bool HasFinishedOnce() const { return m_FinishCount > 0; }
+         bool IsLooping() const { return m_IsLooping; }
 
-   private:
-      void Update(float deltaTime);
-   private:
-      bool m_IsPaused;
-      bool m_IsLooping;
-      bool m_IsAtFirstTick;
-      float m_Duration;
-      float m_CurrTime;
-      int m_FinishCount;
-   };
+      protected:
+         virtual void OnUpdate() {};
+         virtual void OnStart() {}
 
-   class AnimationGroup
-   {
-      friend class Animator;
+         void SetDuration(float dur) { m_Duration = dur; }
 
-   public:
-      AnimationGroup();
-      ~AnimationGroup();
-      void Add(Animation* anim);
-      void Add(const AnimationGroup& animGroup);
+      private:
+         void Update(float deltaTime);
 
-      void Play();
-      void Pause();
-      void Reset();
-
-   private:
-      struct AnimationNode
-      {
-         Animation* anim;
-         AnimationNode* next;
-         AnimationNode(Animation* anim, AnimationNode *next = nullptr)
-            : anim(anim), next(next) {}
-      };
-
-      AnimationNode* m_Animations;
+      private:
+         bool m_IsPaused;
+         bool m_IsLooping;
+         bool m_IsAtFirstTick;
+         float m_Duration;
+         float m_CurrTime;
+         int m_FinishCount;
    };
 }
 
