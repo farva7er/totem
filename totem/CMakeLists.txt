@@ -49,24 +49,11 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                            src/Rendering/Shader.cpp
                            src/Rendering/Texture.h
                            src/Rendering/Texture.cpp
-                           src/UI/CommonMediators/UIButtonExclusiveGroup.h
-                           src/UI/CommonMediators/UIButtonExclusiveGroup.cpp
-                           src/UI/BasicElementImpl.h
-                           src/UI/BasicElementImpl.cpp
-                           src/UI/Button.h
-                           src/UI/Button.cpp
-                           src/UI/CheckButton.h
-                           src/UI/CheckButton.cpp
-                           src/UI/IIEListener.h
-                           src/UI/IMovableElement.h
-                           src/UI/InteractiveElementImpl.h
-                           src/UI/InteractiveElementImpl.cpp
-                           src/UI/IUIElement.h
-                           src/UI/IUIElement.cpp
+                           src/UI/Clickable.h
+                           src/UI/Clickable.cpp
+                           src/UI/Element.h
                            src/UI/TextBox.h
                            src/UI/TextBox.cpp
-                           src/UI/UILinearLayout.h
-                           src/UI/UILinearLayout.cpp
                            src/Filesystem/FileSystem.h
                            src/Filesystem/FileSystem.cpp
                            src/Internationalization/Text.h

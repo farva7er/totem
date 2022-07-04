@@ -4,7 +4,6 @@
 #include "Events.h"
 #include "Math/Vec.h"
 #include "Window.h"
-#include "UI/IUIElement.h"
 #include "Internationalization/Text.h"
 #include "DialogBox.h"
 #include "App.h"
@@ -52,7 +51,6 @@ namespace totem
       bool m_LoopShouldExit;
    protected:
       Renderer* m_Renderer;
-      IUIElement* m_RootElement;
       DialogBox* m_DialogBox;
       Ref<Texture> m_Background;
    };

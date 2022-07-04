@@ -24,6 +24,11 @@ namespace totem
       m_LineSpacing = spacing;
    }
 
+   void TextBox::SetFont(Ref<Font> font)
+   {
+      m_Font = font;
+   }
+
    void TextBox::SetFontSize(float size)
    {
       m_FontSize = size;
@@ -42,11 +47,13 @@ namespace totem
    void TextBox::Draw(Renderer* renderer) const
    {
       const math::vec4f grayColor{0, 0, 0, 0.7f};
+      const math::vec2f& pos = GetPos();
+      const math::vec2f& scale = GetScale();
 
       // Draw TextBox background rect.
       Rect rect;
-      rect.SetPos(m_Pos)
-         .SetScale(m_Scale)
+      rect.SetPos(pos)
+         .SetScale(scale)
          .SetColor(grayColor);
 
       renderer->DrawRect(rect);
@@ -55,8 +62,8 @@ namespace totem
       float lineSpacing = 2 * renderer->GetEM() * m_FontSize * m_LineSpacing;
 
       // Initial positions.
-      float xPos = m_Pos.x - m_Scale.x;
-      float yPos = m_Pos.y + m_Scale.y - lineSpacing;
+      float xPos = pos.x - scale.x;
+      float yPos = pos.y + scale.y - lineSpacing;
 
       // Get space advance in canvas coords.
       unicode_t space = 32;
@@ -73,15 +80,15 @@ namespace totem
                                                    m_FontSize, *m_Font);
 
          // If current word does not fit on current line.
-         if(xPos + wordBBox.x + spaceAdvance > m_Pos.x + m_Scale.x)
+         if(xPos + wordBBox.x + spaceAdvance > pos.x + scale.x)
          {
             // Go to next line.
             yPos -= lineSpacing;
-            xPos = m_Pos.x - m_Scale.x;
+            xPos = pos.x - scale.x;
          }
 
          // If this line is out of the text box.
-         if(yPos < m_Pos.y - m_Scale.y)
+         if(yPos < pos.y - scale.y)
          {
             // No more text can be displayed.
             return;

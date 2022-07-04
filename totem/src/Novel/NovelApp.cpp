@@ -47,8 +47,6 @@ namespace totem
       m_DialogBox->SetFontSize(0.6f);
       m_DialogBox->SetLineSpacing(1.5f);
 
-      m_RootElement = m_DialogBox;
-
       m_Window->SendInitEvents();
 
       s_Instance = this;
@@ -110,11 +108,7 @@ namespace totem
       d.Dispatch<MouseMoveEvent>(&NovelApp::OnMouseMove, e);
       d.Dispatch<MousePressedEvent>(&NovelApp::OnMousePressed, e);
 
-      if(m_RootElement)
-      {
-         m_RootElement->OnEvent(e);
-      }
-
+      m_DialogBox->OnEvent(e);
    }
 
    void NovelApp::OnWindowResize(WindowResizeEvent& e)
@@ -124,8 +118,7 @@ namespace totem
 
    void NovelApp::OnMouseMove(MouseMoveEvent& e)
    {
-      math::vec2f canvasCoords =
-                              ScreenToCanvas({ e.GetX(), e.GetY() });
+      math::vec2f canvasCoords = ScreenToCanvas({ e.GetX(), e.GetY() });
       e.SetX(canvasCoords.x);
       e.SetY(canvasCoords.y);
    }
@@ -164,11 +157,8 @@ namespace totem
          m_Renderer->DrawRect(rect, *m_Background);
       }
 
-      if(m_RootElement)
-      {
-         m_RootElement->OnUpdate(deltaTime);
-         m_RootElement->Draw(m_Renderer);
-      }
+      m_DialogBox->OnUpdate(deltaTime);
+      m_DialogBox->Draw(m_Renderer);
    }
 
    void NovelApp::OnExit()
@@ -177,7 +167,6 @@ namespace totem
       LOG_INFO("Exiting...");
       if(m_Background)
          m_Background->Release();
-      delete m_RootElement;
       delete m_Renderer;
       delete m_ResourceManager;
       delete m_Window;
