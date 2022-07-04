@@ -10,6 +10,16 @@
 
 namespace totem
 {
+   class NovelHandler
+   {
+      public:
+         virtual ~NovelHandler() {}
+
+         virtual bool IsDone() const = 0;
+         virtual void OnUpdate(float deltaTime) = 0;
+         virtual void OnEvent(Event& e) = 0;
+   };
+
    class NovelApp : public App, public IEventListener
    {
       public:
@@ -17,17 +27,10 @@ namespace totem
          static NovelApp* GetInstance();
          virtual void Run() = 0;
 
-         /* Utility functions for user calls */
          void SetSpeech(const Text& speech /*, TODO Character& ch */); 
          void SetBackground(const char* imagePath);
          
-         /////////////////
-
-         // Enter the loop and maybe wait for user interaction
          void Loop();
-
-         // Get Next user call and execute it
-         void NextCall();
 
       protected:
          NovelApp();
@@ -40,6 +43,8 @@ namespace totem
          void OnUpdate(float deltaTime);
          void OnExit();
 
+         void SetHandler(NovelHandler* handler);
+
          void SetCanvasScale(const math::vec2f& scale);
          const math::vec2f& GetCanvasScale() const;
          math::vec2f ScreenToCanvas(const math::vec2f& screenCoords) const;
@@ -48,12 +53,13 @@ namespace totem
          static NovelApp* s_Instance;
          Window* m_Window;
          ResourceManager* m_ResourceManager;
-         bool m_LoopShouldExit;
+         NovelHandler* m_CurrentHandler;
       protected:
          Renderer* m_Renderer;
          DialogBox* m_DialogBox;
          Ref<Texture> m_Background;
    };
+
 }
 
 #endif

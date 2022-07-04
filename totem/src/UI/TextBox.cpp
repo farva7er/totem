@@ -96,7 +96,7 @@ namespace totem
 
 
          // DETERMINE IF FULL WORD CAN BE DISPLAYED.
-
+         //
          // Check if limit is set
          if(m_CharDisplayLimit < 0)
          {

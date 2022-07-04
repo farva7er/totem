@@ -17,8 +17,12 @@ namespace totem
 
          DialogBox& operator=(const DialogBox& other);
 
-         virtual void SetText(const Text& text) override;
          virtual void OnUpdate(float deltaTime) override;
+
+         virtual void SetText(const Text& text) override;
+         bool IsAnimationPlaying() const;
+         void SkipAnimation();
+         
       private:
          SeqAnimation* m_TextAnim;
          Animator m_Animator;

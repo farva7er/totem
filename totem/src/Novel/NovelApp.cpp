@@ -4,6 +4,7 @@
 #include "Timer.h"
 #include "Core/ResourceManager.h"
 #include "Filesystem/FileSystem.h"
+#include "Handlers/SpeechHandler.h"
 
 #include <stdlib.h>
 
@@ -40,6 +41,8 @@ namespace totem
       Ref<Font> defaultFont = 
          m_ResourceManager->Get<Font>("resources/fonts/OpenSans-Regular.ttf");
 
+      m_CurrentHandler = nullptr;
+
       m_DialogBox = new totem::DialogBox(defaultFont);
       m_DialogBox->SetScale({10, 2});
       m_DialogBox->SetPos({0, -7});
@@ -57,9 +60,17 @@ namespace totem
       OnExit();
    }
 
+   void NovelApp::SetHandler(NovelHandler* handler)
+   {
+      if(m_CurrentHandler)
+         delete m_CurrentHandler;
+      m_CurrentHandler = handler;
+   }
+
    void NovelApp::SetSpeech(const Text& speech /*, TODO Character*/)
    {
       m_DialogBox->SetText(speech);
+      SetHandler(new SpeechHandler(m_DialogBox));
       Loop();
    }
 
@@ -73,9 +84,11 @@ namespace totem
       float frameTime = Timer::GetTimeSec(), 
             prevFrameTime = Timer::GetTimeSec();
 
-      m_LoopShouldExit = false;
-      while(!m_Window->IsClosed() && !m_LoopShouldExit)
+      while(!m_Window->IsClosed())
       {
+         if(m_CurrentHandler && m_CurrentHandler->IsDone())
+            break;
+
          OnUpdate(frameTime - prevFrameTime);
          m_Window->OnUpdate();
 
@@ -108,6 +121,9 @@ namespace totem
       d.Dispatch<MouseMoveEvent>(&NovelApp::OnMouseMove, e);
       d.Dispatch<MousePressedEvent>(&NovelApp::OnMousePressed, e);
 
+      if(m_CurrentHandler)
+         m_CurrentHandler->OnEvent(e);
+
       m_DialogBox->OnEvent(e);
    }
 
@@ -123,18 +139,8 @@ namespace totem
       e.SetY(canvasCoords.y);
    }
 
-   void NovelApp::OnMousePressed(MousePressedEvent& e)
-   {
-      if(e.GetButton() == 0)
-      {
-         NextCall();
-      }
-   }
-
-   void NovelApp::NextCall()
-   {
-      m_LoopShouldExit = true;
-   }
+   void NovelApp::OnMousePressed(MousePressedEvent& /*e*/)
+   {}
 
    math::vec2f
    NovelApp::ScreenToCanvas(const math::vec2f& screenCoords) const
@@ -157,6 +163,9 @@ namespace totem
          m_Renderer->DrawRect(rect, *m_Background);
       }
 
+      if(m_CurrentHandler)
+         m_CurrentHandler->OnUpdate(deltaTime);
+
       m_DialogBox->OnUpdate(deltaTime);
       m_DialogBox->Draw(m_Renderer);
    }
@@ -167,6 +176,10 @@ namespace totem
       LOG_INFO("Exiting...");
       if(m_Background)
          m_Background->Release();
+
+      if(m_CurrentHandler)
+         delete m_CurrentHandler;
+
       delete m_Renderer;
       delete m_ResourceManager;
       delete m_Window;

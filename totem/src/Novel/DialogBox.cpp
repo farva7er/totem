@@ -31,13 +31,25 @@ namespace totem
       m_TextAnim->SetStart(0);
       m_TextAnim->SetEnd(text.GetLength());
       m_TextAnim->Reset();
-      SetCharDisplayLimit(0);
       m_Animator.Sync(m_TextAnim);
+      SetCharDisplayLimit(0);
    }
 
    void DialogBox::OnUpdate(float deltaTime)
    {
       m_Animator.OnUpdate(deltaTime);
-      SetCharDisplayLimit(m_TextAnim->GetCurrIndex());
+      if(!m_TextAnim->IsPaused())
+         SetCharDisplayLimit(m_TextAnim->GetCurrIndex());
+   }
+
+   bool DialogBox::IsAnimationPlaying() const
+   {
+      return !m_TextAnim->IsPaused();
+   }
+
+   void DialogBox::SkipAnimation()
+   {
+      SetCharDisplayLimit(-1);
+      m_TextAnim->Pause();
    }
 }
