@@ -6,6 +6,8 @@
 #include "Window.h"
 #include "Internationalization/Text.h"
 #include "DialogBox.h"
+#include "Character.h"
+#include "CharacterScene.h"
 #include "App.h"
 
 namespace totem
@@ -24,9 +26,14 @@ namespace totem
    {
       public:
          virtual ~NovelApp();
+
          static NovelApp* GetInstance();
+         static ResourceManager* GetResourceManager();
+
          virtual void Run() = 0;
 
+         void ShowCharacter(const Character& character, int slot);
+         void HideCharacter(const Character& character);
          void SetSpeech(const Text& speech /*, TODO Character& ch */); 
          void SetBackground(const char* imagePath);
          
@@ -52,10 +59,11 @@ namespace totem
       private:
          static NovelApp* s_Instance;
          Window* m_Window;
-         ResourceManager* m_ResourceManager;
-         NovelHandler* m_CurrentHandler;
-      protected:
          Renderer* m_Renderer;
+         ResourceManager* m_ResourceManager;
+         
+         CharacterScene m_CharacterScene;
+         NovelHandler* m_CurrentHandler;
          DialogBox* m_DialogBox;
          Ref<Texture> m_Background;
    };

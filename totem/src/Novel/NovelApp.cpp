@@ -18,6 +18,11 @@ namespace totem
       return s_Instance;
    }
 
+   ResourceManager* NovelApp::GetResourceManager()
+   {
+      return s_Instance->m_ResourceManager;
+   }
+
    NovelApp::NovelApp()
       : App(0, nullptr)
    {
@@ -65,6 +70,16 @@ namespace totem
       if(m_CurrentHandler)
          delete m_CurrentHandler;
       m_CurrentHandler = handler;
+   }
+
+   void NovelApp::ShowCharacter(const Character& character, int slot)
+   {
+      m_CharacterScene.Add(&character, slot);
+   }
+
+   void NovelApp::HideCharacter(const Character& character)
+   {
+      m_CharacterScene.Remove(&character);
    }
 
    void NovelApp::SetSpeech(const Text& speech /*, TODO Character*/)
@@ -162,6 +177,8 @@ namespace totem
             .SetScale(GetCanvasScale());
          m_Renderer->DrawRect(rect, *m_Background);
       }
+
+      m_CharacterScene.Draw(m_Renderer);
 
       if(m_CurrentHandler)
          m_CurrentHandler->OnUpdate(deltaTime);

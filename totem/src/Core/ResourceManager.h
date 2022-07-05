@@ -91,8 +91,8 @@ namespace totem
             Resource* res = currNode->data;
             if(!res->IsLoaded())
             {
-               res->Load();
                LOG_INFO("Loading resource: %s", res->GetName());
+               res->Load();
             }
 
             // Resource already exists, return it.

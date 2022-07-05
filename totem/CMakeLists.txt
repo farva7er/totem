@@ -61,6 +61,10 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                         src/Internationalization/Text.cpp
                         src/Novel/Handlers/SpeechHandler.h
                         src/Novel/Handlers/SpeechHandler.cpp
+                        src/Novel/Character.h
+                        src/Novel/Character.cpp
+                        src/Novel/CharacterScene.h
+                        src/Novel/CharacterScene.cpp
                         src/Novel/DialogBox.h
                         src/Novel/DialogBox.cpp
                         src/Novel/NovelApp.h

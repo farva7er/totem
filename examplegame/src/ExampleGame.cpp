@@ -6,6 +6,7 @@ class FirstLevel : public totem::Script
 public:
    void Play()
    {
+      totem::Character myChar("totem", "totem");
       Bg("resources/bg.jpg");
       Say(  "You're welcome to totem! It's a visual novel engine "
             "written in C++. Or at least it will be in future:) "
@@ -13,6 +14,7 @@ public:
             "but it will support much more in near future. "
             "Click left mouse button to go to next message."
          );
+      myChar.Show(1);
       Say(  "It's an example game which demonstrates basic "
             "functionality the engine supports.");
       Say(  "The engine supports different languages. "
@@ -21,6 +23,7 @@ public:
       // Shouldn't really use non-ASCII here,
       // but for now it'll work
       Say(  "Добро пожаловать в totem!");
+      myChar.Hide();
       Say(  "After this message the program should close. Have a nice day!");
    }
 };
