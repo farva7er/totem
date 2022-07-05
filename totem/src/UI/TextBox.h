@@ -20,6 +20,10 @@ namespace totem
          //Text GetText() const { return m_TextWords.AssembleText(); }
          virtual void SetText(const Text& text);
 
+         float GetFontSize() const;
+
+         // top, right, bottom, left
+         void SetPadding(const math::vec4f& padding);
          void SetLineSpacing(float spacing);
          void SetFont(Ref<Font> font);
          void SetFontSize(float size);
@@ -30,8 +34,12 @@ namespace totem
          virtual void OnEvent(Event& /*e*/) override {}
          virtual void Draw(Renderer* renderer) const override; 
 
+      protected:
+         Ref<Font> GetFont() const;
+
       private:
          Text::TextVec m_TextWords;
+         math::vec4f m_Padding;
          float m_LineSpacing;
          Ref<Font> m_Font;
          float m_FontSize;

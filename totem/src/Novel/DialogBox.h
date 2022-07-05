@@ -18,12 +18,17 @@ namespace totem
          DialogBox& operator=(const DialogBox& other);
 
          virtual void OnUpdate(float deltaTime) override;
+         virtual void Draw(Renderer* renderer) const override;
 
          virtual void SetText(const Text& text) override;
+         void SetCharacterName(const Text& name);
+         void SetCharacterNameColor(const math::vec4f& color);
          bool IsAnimationPlaying() const;
          void SkipAnimation();
          
       private:
+         math::vec4f m_CharacterNameColor;
+         Text m_CharacterName;
          SeqAnimation* m_TextAnim;
          Animator m_Animator;
    };

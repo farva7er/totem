@@ -14,7 +14,6 @@ namespace totem
 
          // User Calls, use them inside Play()
          
-         void Say(const Text& text);
          void Bg(const char* imagePath);
          
          // End of User Calls

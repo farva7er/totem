@@ -34,7 +34,7 @@ namespace totem
 
          void ShowCharacter(const Character& character, int slot);
          void HideCharacter(const Character& character);
-         void SetSpeech(const Text& speech /*, TODO Character& ch */); 
+         void SetSpeech(const Text& speech, const Character& character); 
          void SetBackground(const char* imagePath);
          
          void Loop();

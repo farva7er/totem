@@ -21,7 +21,7 @@ namespace totem
    }
 
    Character::Character(const Text& name, const char* charID)
-      : m_Name(name), m_Moods(nullptr)
+      : m_Name(name), m_NameColor(1, 1, 1, 1), m_Moods(nullptr)
    {
       if(!charID)
       {
@@ -69,6 +69,11 @@ namespace totem
       return *this;
    }
 
+   void Character::Say(const Text& text)
+   {
+      NovelApp::GetInstance()->SetSpeech(text, *this);
+   }
+
    void Character::Show(int slot)
    {
       NovelApp::GetInstance()->ShowCharacter(*this, slot);
@@ -99,6 +104,21 @@ namespace totem
          return;
       }
       m_CurrentMood = loadedMood;
+   }
+
+   const Text& Character::GetName() const
+   {
+      return m_Name;
+   }
+
+   const math::vec4f& Character::GetNameColor() const
+   {
+      return m_NameColor;
+   }
+
+   void Character::SetNameColor(const math::vec4f& color)
+   {
+      m_NameColor = color;
    }
 
    Ref<Texture> Character::GetTexture() const

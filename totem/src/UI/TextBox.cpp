@@ -5,7 +5,7 @@
 namespace totem
 {
    TextBox::TextBox(Ref<Font> font)
-      : m_LineSpacing(1), m_Font(font), m_FontSize(1),
+      : m_Padding(0, 0, 0, 0), m_LineSpacing(1), m_Font(font), m_FontSize(1),
       m_TextColor{0, 0, 0, 1}, m_CharDisplayLimit(-1)
    {}
 
@@ -19,14 +19,29 @@ namespace totem
       }
    }
 
+   void TextBox::SetPadding(const math::vec4f& padding)
+   {
+      m_Padding = padding;
+   }
+
    void TextBox::SetLineSpacing(float spacing)
    {
       m_LineSpacing = spacing;
    }
 
+   Ref<Font> TextBox::GetFont() const
+   {
+      return m_Font;
+   }
+
    void TextBox::SetFont(Ref<Font> font)
    {
       m_Font = font;
+   }
+
+   float TextBox::GetFontSize() const
+   {
+      return m_FontSize;
    }
 
    void TextBox::SetFontSize(float size)
@@ -62,8 +77,8 @@ namespace totem
       float lineSpacing = 2 * renderer->GetEM() * m_FontSize * m_LineSpacing;
 
       // Initial positions.
-      float xPos = pos.x - scale.x;
-      float yPos = pos.y + scale.y - lineSpacing;
+      float xPos = pos.x - scale.x + m_Padding.w;
+      float yPos = pos.y + scale.y - lineSpacing - m_Padding.x;
 
       // Get space advance in canvas coords.
       unicode_t space = 32;
@@ -80,15 +95,15 @@ namespace totem
                                                    m_FontSize, *m_Font);
 
          // If current word does not fit on current line.
-         if(xPos + wordBBox.x + spaceAdvance > pos.x + scale.x)
+         if(xPos + wordBBox.x + spaceAdvance > pos.x + scale.x - m_Padding.y)
          {
             // Go to next line.
             yPos -= lineSpacing;
-            xPos = pos.x - scale.x;
+            xPos = pos.x - scale.x + m_Padding.w;
          }
 
          // If this line is out of the text box.
-         if(yPos < pos.y - scale.y)
+         if(yPos < pos.y - scale.y + m_Padding.z)
          {
             // No more text can be displayed.
             return;

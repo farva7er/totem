@@ -82,9 +82,11 @@ namespace totem
       m_CharacterScene.Remove(&character);
    }
 
-   void NovelApp::SetSpeech(const Text& speech /*, TODO Character*/)
+   void NovelApp::SetSpeech(const Text& speech, const Character& character)
    {
       m_DialogBox->SetText(speech);
+      m_DialogBox->SetCharacterName(character.GetName());
+      m_DialogBox->SetCharacterNameColor(character.GetNameColor());
       SetHandler(new SpeechHandler(m_DialogBox));
       Loop();
    }
