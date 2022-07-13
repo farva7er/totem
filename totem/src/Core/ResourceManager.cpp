@@ -50,7 +50,10 @@ namespace totem
    }
 
    ResourceManager::ResourceNode::~ResourceNode()
-   { delete data; }
+   {
+      LOG_INFO("Freeing Resource: %s", data->GetName());
+      delete data;
+   }
  
    unsigned int ResourceManager::GetSize() const
    {
@@ -92,7 +95,6 @@ namespace totem
       {
          if(0 == strcmp((*currNode)->data->GetName(), resName))
          {
-            LOG_INFO("Freeing Resource: %s", resName);
             ResourceNode* savedNode = *currNode;
             *currNode = (*currNode)->next;
             delete savedNode;
