@@ -16,7 +16,7 @@ namespace totem
 
    char* WindowsFileSystem::GetExePathImpl() const
    {
-      enum { buffLen = 250; }
+      enum { buffLen = 250 };
       char* buff = new char[buffLen];
 
       // WinXP does not append null byte

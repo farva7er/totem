@@ -104,8 +104,6 @@ namespace totem
    Renderer::~Renderer()
    {
       delete m_WhiteTexture;
-      m_DefaultTextureShader->Release();
-      m_DefaultFontShader->Release();
    }
  
    void Renderer::Clear(const math::vec4f& color)

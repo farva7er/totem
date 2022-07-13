@@ -16,20 +16,21 @@ namespace totem
 
    void Shader::Load()
    {
-      char *shaderFullSrc, *vShaderSrc, *fShaderSrc;
+      char *shaderFullSrc = nullptr, *vShaderSrc = nullptr,
+            *fShaderSrc = nullptr;
       bool res;
 
       shaderFullSrc = GetShaderFullSrc(GetName());
       if(!shaderFullSrc)
          goto cleanup;
 
-      vShaderSrc = ExtractSection(shaderFullSrc, "vertex shader\n");
+      vShaderSrc = ExtractSection(shaderFullSrc, "vertex shader");
       if(!vShaderSrc)
       {
          LOG_ERROR("Vertex shader not found: %s", GetName());
          goto cleanup;
       }
-      fShaderSrc = ExtractSection(shaderFullSrc, "fragment shader\n");
+      fShaderSrc = ExtractSection(shaderFullSrc, "fragment shader");
       if(!fShaderSrc)
       {
          LOG_ERROR("Fragment shader not found: %s", GetName());
@@ -62,19 +63,19 @@ namespace totem
       int sectionLen = 0;
       while(*buff)
       {
-         // Marker found, so this is the beginning of a new section.
          if(0 == strncmp(buff, sectionMarker, markerLen))
          {
-            // Found beginning of the searched section.
+            // Marker found, so this is the beginning of a new section.
             if(0 == strncmp(buff + markerLen,
                               sectionName, strlen(sectionName)))
             {
+               // Found beginning of the searched section.
                sectionStart = buff;
             }
-            // Found end of the searched section by
-            // finding a start of another section.
             else if(sectionStart)
             {
+               // Found end of the searched section by
+               // finding a start of another section.
                sectionLen = buff - sectionStart; 
                break;
             }
@@ -86,6 +87,7 @@ namespace totem
 
       // Section not found.
       if(!sectionStart) return nullptr;
+
       // The searched section is the last one in buff.
       if(!sectionLen) sectionLen = buff - sectionStart;
 
