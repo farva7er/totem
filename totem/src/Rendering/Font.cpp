@@ -109,6 +109,8 @@ namespace totem
 
       FT_Done_Face(face);
       FT_Done_FreeType(ft);
+
+      SetLoaded();
    }
 
    bool Font::IsCharAvailable(unicode_t codepoint) const

@@ -50,6 +50,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                         src/Rendering/Shader.cpp
                         src/Rendering/Texture.h
                         src/Rendering/Texture.cpp
+                        src/UI/Button.h
+                        src/UI/Button.cpp
                         src/UI/Clickable.h
                         src/UI/Clickable.cpp
                         src/UI/Element.h
@@ -67,10 +69,14 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                         src/Novel/CharacterScene.cpp
                         src/Novel/DialogBox.h
                         src/Novel/DialogBox.cpp
+                        src/Novel/MainMenu.h
+                        src/Novel/MainMenu.cpp
                         src/Novel/NovelApp.h
                         src/Novel/NovelApp.cpp
                         src/Novel/Script.h
                         src/Novel/Script.cpp
+                        src/Novel/ScriptRegistry.h
+                        src/Novel/ScriptRegistry.cpp
                         )
 
 

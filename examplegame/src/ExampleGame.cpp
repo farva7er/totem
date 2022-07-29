@@ -37,7 +37,9 @@ public:
    void Run()
    {
       FirstLevel level1;
-      level1.Play();
+      AddScript(level1);
+      
+      StartMainMenu();
    }
 };
 

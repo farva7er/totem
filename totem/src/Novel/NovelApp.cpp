@@ -5,6 +5,7 @@
 #include "Core/ResourceManager.h"
 #include "Filesystem/FileSystem.h"
 #include "Handlers/SpeechHandler.h"
+#include "MainMenu.h"
 
 #include <stdlib.h>
 
@@ -55,9 +56,14 @@ namespace totem
       m_DialogBox->SetFontSize(0.6f);
       m_DialogBox->SetLineSpacing(1.5f);
 
-      m_Window->SendInitEvents();
 
       s_Instance = this;
+
+      m_MainMenu = new MainMenu(this, m_ResourceManager);
+
+      m_State = State::MainMenu;
+
+      m_Window->SendInitEvents();
    }
 
    NovelApp::~NovelApp()
@@ -70,6 +76,23 @@ namespace totem
       if(m_CurrentHandler)
          delete m_CurrentHandler;
       m_CurrentHandler = handler;
+   }
+
+   void NovelApp::AddScript(Script& script)
+   {
+      m_ScriptRegistry.AddScript(&script);
+   }
+
+   void NovelApp::PlayScript(int scriptIndex)
+   {
+      m_State = State::PlayingScript;
+      m_ScriptRegistry[scriptIndex].Play();
+   }
+
+   void NovelApp::StartMainMenu()
+   {
+      m_State = State::MainMenu;
+      Loop();
    }
 
    void NovelApp::ShowCharacter(const Character& character, int slot)
@@ -119,7 +142,6 @@ namespace totem
       }
    }
 
-
    void NovelApp::SetCanvasScale(const math::vec2f& scale)
    {
       m_Renderer->SetCanvasScale(scale);
@@ -138,10 +160,18 @@ namespace totem
       d.Dispatch<MouseMoveEvent>(&NovelApp::OnMouseMove, e);
       d.Dispatch<MousePressedEvent>(&NovelApp::OnMousePressed, e);
 
-      if(m_CurrentHandler)
-         m_CurrentHandler->OnEvent(e);
+      if(m_State == State::MainMenu)
+      {
+         m_MainMenu->OnEvent(e);
+      }
 
-      m_DialogBox->OnEvent(e);
+      if(m_State == State::PlayingScript)
+      {
+         if(m_CurrentHandler)
+            m_CurrentHandler->OnEvent(e);
+
+         m_DialogBox->OnEvent(e);
+      } 
    }
 
    void NovelApp::OnWindowResize(WindowResizeEvent& e)
@@ -172,27 +202,40 @@ namespace totem
 
    void NovelApp::OnUpdate(float deltaTime)
    {
-      if(m_Background)
+      if(m_State == State::MainMenu)
       {
-         Rect rect;
-         rect.SetPos({0, 0})
-            .SetScale(GetCanvasScale());
-         m_Renderer->DrawRect(rect, *m_Background);
+         m_MainMenu->OnUpdate(deltaTime);
+         m_MainMenu->Draw(m_Renderer);
+         return;
       }
 
-      m_CharacterScene.Draw(m_Renderer);
+      if(m_State == State::PlayingScript)
+      {
+         if(m_Background)
+         {
+            Rect rect;
+            rect.SetPos({0, 0})
+               .SetScale(GetCanvasScale());
+            m_Renderer->DrawRect(rect, *m_Background);
+         }
 
-      if(m_CurrentHandler)
-         m_CurrentHandler->OnUpdate(deltaTime);
+         m_CharacterScene.Draw(m_Renderer);
 
-      m_DialogBox->OnUpdate(deltaTime);
-      m_DialogBox->Draw(m_Renderer);
+         if(m_CurrentHandler)
+            m_CurrentHandler->OnUpdate(deltaTime);
+
+         m_DialogBox->OnUpdate(deltaTime);
+         m_DialogBox->Draw(m_Renderer);
+      } 
    }
 
    void NovelApp::OnExit()
    {
       // Maybe do saving before exit in future
       LOG_INFO("Exiting...");
+
+      delete m_MainMenu;
+
       if(m_Background)
          m_Background->Release();
 

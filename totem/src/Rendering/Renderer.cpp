@@ -245,13 +245,13 @@ namespace totem
       if(alignFlags & TextAlign::HCenter)
       {
          pos.x = (leftTop.x + rightBottom.x) / 2;
-         pos.x -= textSize.x / 2;
+         pos.x -= textSize.x;
       }
 
       if(alignFlags & TextAlign::VCenter)
       {
          pos.y = (leftTop.y + rightBottom.y) / 2;
-         pos.y -= textSize.y / 2;
+         pos.y -= textSize.y;
       }
 
       DrawText(text, pos, font, size, color);

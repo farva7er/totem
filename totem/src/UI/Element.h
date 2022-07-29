@@ -10,7 +10,8 @@ namespace totem
    class Element
    {
       public:
-         Element(Element* parent = nullptr) : m_Parent(parent) {}
+         Element(Element* parent = nullptr)
+            : m_Parent(parent), m_Scale{1, 1} {}
 
          Element(const Element& other) = default;
          Element& operator=(const Element& other) = default;

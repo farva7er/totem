@@ -1,10 +1,6 @@
 #ifndef _TOTEM_NOVEL_SCRIPT_H_
 #define _TOTEM_NOVEL_SCRIPT_H_
 
-#include "NovelApp.h"
-#include "Internationalization/Text.h"
-#include "Character.h"
-
 namespace totem
 {
    class Script

@@ -1,4 +1,5 @@
 #include "Script.h"
+#include "NovelApp.h"
 
 namespace totem
 {

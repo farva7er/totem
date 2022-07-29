@@ -11,8 +11,10 @@ namespace totem
          Clickable(Element* parent = nullptr);
 
          Clickable(const Clickable& other);
-         Clickable& operator=(const Clickable& other);
+
          virtual ~Clickable() = default;
+
+         Clickable& operator=(const Clickable& other);
 
          void SetActive(bool isActive);
 

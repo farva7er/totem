@@ -56,7 +56,7 @@ namespace totem
 
          float GetEM() const;
 
-         // returns Text Bounding Box Scale
+         // returns Text Bounding Box Scale.
          math::vec2f CalcBBox(const Text& text, float size,
                               const Font& font) const;
       private:

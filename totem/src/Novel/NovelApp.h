@@ -8,6 +8,7 @@
 #include "DialogBox.h"
 #include "Character.h"
 #include "CharacterScene.h"
+#include "ScriptRegistry.h"
 #include "App.h"
 
 namespace totem
@@ -22,6 +23,8 @@ namespace totem
          virtual void OnEvent(Event& e) = 0;
    };
 
+   class MainMenu;
+
    class NovelApp : public App, public IEventListener
    {
       public:
@@ -31,6 +34,10 @@ namespace totem
          static ResourceManager* GetResourceManager();
 
          virtual void Run() = 0;
+         void AddScript(Script& script);
+         void PlayScript(int scriptIndex);
+
+         void StartMainMenu();
 
          void ShowCharacter(const Character& character, int slot);
          void HideCharacter(const Character& character);
@@ -38,6 +45,7 @@ namespace totem
          void SetBackground(const char* imagePath);
          
          void Loop();
+         void OnExit();
 
       protected:
          NovelApp();
@@ -48,7 +56,6 @@ namespace totem
          void OnMouseMove(MouseMoveEvent& e);
          void OnMousePressed(MousePressedEvent& e);
          void OnUpdate(float deltaTime);
-         void OnExit();
 
          void SetHandler(NovelHandler* handler);
 
@@ -57,6 +64,9 @@ namespace totem
          math::vec2f ScreenToCanvas(const math::vec2f& screenCoords) const;
 
       private:
+         enum class State { MainMenu, PlayingScript };
+         State m_State;
+
          static NovelApp* s_Instance;
          Window* m_Window;
          Renderer* m_Renderer;
@@ -66,6 +76,9 @@ namespace totem
          NovelHandler* m_CurrentHandler;
          DialogBox* m_DialogBox;
          Ref<Texture> m_Background;
+
+         ScriptRegistry m_ScriptRegistry;
+         MainMenu* m_MainMenu;
    };
 
 }
