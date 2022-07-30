@@ -18,11 +18,12 @@ namespace totem
 
          Character& operator=(const Character& other);
 
-         void Say(const Text& text);
-         void Show(int slot);
-         void Hide();
+         void Say_L(const Text& text);
+         void Show_L(int slot);
+         void Hide_L();
 
          void SetMood(const char* mood);
+
          const Text& GetName() const;
          const math::vec4f& GetNameColor() const;
          void SetNameColor(const math::vec4f& color);

@@ -16,6 +16,7 @@ namespace totem
 
          Clickable& operator=(const Clickable& other);
 
+         bool IsActive() const;
          void SetActive(bool isActive);
 
          virtual void OnEvent(Event& e) override;

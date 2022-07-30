@@ -13,13 +13,7 @@ namespace totem
 
    CharacterScene::~CharacterScene()
    {
-      CharacterNode *curr = m_Characters, *tmp;
-      while(curr)
-      {
-         tmp = curr;
-         curr = curr->m_Next;
-         delete tmp;
-      }
+      Clear();
    }
 
    void CharacterScene::Add(const Character* character, int slot)
@@ -41,6 +35,18 @@ namespace totem
             return;
          }
       }
+   }
+
+   void CharacterScene::Clear()
+   {
+      CharacterNode *curr = m_Characters, *tmp;
+      while(curr)
+      {
+         tmp = curr;
+         curr = curr->m_Next;
+         delete tmp;
+      }
+      m_Characters = nullptr;
    }
 
    void CharacterScene::Draw(Renderer* renderer) const

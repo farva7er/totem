@@ -15,6 +15,7 @@ public:
             "but it will support much more in near future. "
             "Click left mouse button to go to next message."
          );
+      ClearDialog();
       myChar.Show(1);
       myChar.Say(  "It's an example game which demonstrates basic "
             "functionality the engine supports.");
@@ -25,6 +26,7 @@ public:
       // Shouldn't really use non-ASCII here,
       // but for now it'll work
       myChar.Say(  "Добро пожаловать в totem!");
+      ClearDialog();
       myChar.Hide();
       myChar.Say(  "After this message the program should"
                      " close. Have a nice day!");

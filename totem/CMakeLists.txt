@@ -61,18 +61,24 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                         src/Filesystem/FileSystem.cpp
                         src/Internationalization/Text.h
                         src/Internationalization/Text.cpp
+                        src/Novel/Handlers/ExitLoopHandler.h
                         src/Novel/Handlers/SpeechHandler.h
                         src/Novel/Handlers/SpeechHandler.cpp
+                        src/Novel/Handlers/WaitClickHandler.h
+                        src/Novel/Handlers/WaitClickHandler.cpp
                         src/Novel/Character.h
                         src/Novel/Character.cpp
                         src/Novel/CharacterScene.h
                         src/Novel/CharacterScene.cpp
+                        src/Novel/ClientAPI.h
                         src/Novel/DialogBox.h
                         src/Novel/DialogBox.cpp
                         src/Novel/MainMenu.h
                         src/Novel/MainMenu.cpp
                         src/Novel/NovelApp.h
                         src/Novel/NovelApp.cpp
+                        src/Novel/PauseMenu.h
+                        src/Novel/PauseMenu.cpp
                         src/Novel/Script.h
                         src/Novel/Script.cpp
                         src/Novel/ScriptRegistry.h

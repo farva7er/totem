@@ -21,6 +21,11 @@ namespace totem
       return *this;
    }
 
+   bool Clickable::IsActive() const
+   {
+      return m_IsActive;
+   }
+
    void Clickable::SetActive(bool isActive)
    {
       m_IsActive = isActive;
@@ -33,6 +38,9 @@ namespace totem
 
    void Clickable::OnEvent(Event& e)
    {
+      if(!m_IsActive)
+         return;
+
       EventDispatcher<Clickable> d(this);
 
       d.Dispatch<MouseMoveEvent>(&Clickable::OnMouseMove, e);
@@ -64,6 +72,7 @@ namespace totem
       {
          m_State = State::Pushed;
          OnPush();
+         e.SetHandled();
       }
    }
 
@@ -72,8 +81,12 @@ namespace totem
       if(m_State == State::Pushed && e.GetButton() == 0) // Left Mouse Button
       {
          OnClick();
-         m_State = State::Hovered;
-         OnHover();
+         if(m_IsActive)
+         {
+            m_State = State::Hovered;
+            OnHover();
+         }
+         e.SetHandled();
       }
    }
 

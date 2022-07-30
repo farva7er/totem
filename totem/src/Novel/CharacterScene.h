@@ -14,6 +14,7 @@ namespace totem
 
          void Add(const Character* character, int slot);
          void Remove(const Character* character);
+         void Clear();
 
          void Draw(Renderer* renderer) const;
 

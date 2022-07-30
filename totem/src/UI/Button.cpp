@@ -30,6 +30,9 @@ namespace totem
 
    void Button::Draw(Renderer* renderer) const
    {
+      if(!IsActive())
+         return;
+
       Rect rect;
       rect
          .SetPos(GetPos())
@@ -42,10 +45,9 @@ namespace totem
          return;
 
       renderer->DrawAlignedText(m_Text, GetPos(), GetScale(),
-                              *m_Font, GetScale().y / 2, m_TextColor,
+                              *m_Font, GetScale().y / 1.5f, m_TextColor,
                               TextAlign::VCenter | TextAlign::HCenter);
    }
-
 
    void Button::OnDefault()
    {

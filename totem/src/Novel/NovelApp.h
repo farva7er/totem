@@ -24,6 +24,7 @@ namespace totem
    };
 
    class MainMenu;
+   class PauseMenu;
 
    class NovelApp : public App, public IEventListener
    {
@@ -38,7 +39,14 @@ namespace totem
          void PlayScript(int scriptIndex);
 
          void StartMainMenu();
+         void ExitToMainMenu();
+         bool IsScriptPlaying() const;
 
+         void Pause();
+         void UnPause();
+
+         void WaitClick();
+         void ClearDialogBox();
          void ShowCharacter(const Character& character, int slot);
          void HideCharacter(const Character& character);
          void SetSpeech(const Text& speech, const Character& character); 
@@ -66,6 +74,7 @@ namespace totem
       private:
          enum class State { MainMenu, PlayingScript };
          State m_State;
+         bool m_IsPaused;
 
          static NovelApp* s_Instance;
          Window* m_Window;
@@ -79,6 +88,7 @@ namespace totem
 
          ScriptRegistry m_ScriptRegistry;
          MainMenu* m_MainMenu;
+         PauseMenu* m_PauseMenu;
    };
 
 }

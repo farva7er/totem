@@ -69,17 +69,17 @@ namespace totem
       return *this;
    }
 
-   void Character::Say(const Text& text)
+   void Character::Say_L(const Text& text)
    {
       NovelApp::GetInstance()->SetSpeech(text, *this);
    }
 
-   void Character::Show(int slot)
+   void Character::Show_L(int slot)
    {
       NovelApp::GetInstance()->ShowCharacter(*this, slot);
    }
 
-   void Character::Hide()
+   void Character::Hide_L()
    {
       NovelApp::GetInstance()->HideCharacter(*this);
    }

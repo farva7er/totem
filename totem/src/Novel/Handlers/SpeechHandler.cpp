@@ -13,6 +13,9 @@ namespace totem
 
    void SpeechHandler::OnEvent(Event& e)
    {
+      if(e.IsHandled())
+         return;
+
       if(e.GetType() == MousePressedEvent::GetStaticType())
       {
          MousePressedEvent& mpe = e.Cast<MousePressedEvent>();

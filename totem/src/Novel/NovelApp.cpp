@@ -5,7 +5,10 @@
 #include "Core/ResourceManager.h"
 #include "Filesystem/FileSystem.h"
 #include "Handlers/SpeechHandler.h"
+#include "Handlers/ExitLoopHandler.h"
+#include "Handlers/WaitClickHandler.h"
 #include "MainMenu.h"
+#include "PauseMenu.h"
 
 #include <stdlib.h>
 
@@ -60,8 +63,10 @@ namespace totem
       s_Instance = this;
 
       m_MainMenu = new MainMenu(this, m_ResourceManager);
+      m_PauseMenu = new PauseMenu(this, m_ResourceManager);
 
       m_State = State::MainMenu;
+      m_IsPaused = false;
 
       m_Window->SendInitEvents();
    }
@@ -86,7 +91,13 @@ namespace totem
    void NovelApp::PlayScript(int scriptIndex)
    {
       m_State = State::PlayingScript;
+      m_IsPaused = false;
+      m_PauseMenu->SetActive(false);
+      m_CharacterScene.Clear();
+
       m_ScriptRegistry[scriptIndex].Play();
+
+      m_State = State::MainMenu;
    }
 
    void NovelApp::StartMainMenu()
@@ -95,14 +106,51 @@ namespace totem
       Loop();
    }
 
+   void NovelApp::ExitToMainMenu()
+   {
+      m_State = State::MainMenu;
+      SetHandler(new ExitLoopHandler());
+   }
+
+   bool NovelApp::IsScriptPlaying() const
+   {
+      return m_State == State::PlayingScript;
+   }
+
+   void NovelApp::Pause()
+   {
+      m_IsPaused = true;
+      m_PauseMenu->SetActive(true);
+   }
+
+   void NovelApp::UnPause()
+   {
+      m_IsPaused = false;
+      m_PauseMenu->SetActive(false);
+   }
+
+   void NovelApp::ClearDialogBox()
+   {
+      m_DialogBox->SetText("");
+      m_DialogBox->SetCharacterName("");
+   }
+
+   void NovelApp::WaitClick()
+   {
+      SetHandler(new WaitClickHandler());
+      Loop();
+   }
+
    void NovelApp::ShowCharacter(const Character& character, int slot)
    {
       m_CharacterScene.Add(&character, slot);
+      WaitClick();
    }
 
    void NovelApp::HideCharacter(const Character& character)
    {
       m_CharacterScene.Remove(&character);
+      WaitClick();
    }
 
    void NovelApp::SetSpeech(const Text& speech, const Character& character)
@@ -127,7 +175,10 @@ namespace totem
       while(!m_Window->IsClosed())
       {
          if(m_CurrentHandler && m_CurrentHandler->IsDone())
+         {
+            SetHandler(nullptr);
             break;
+         }
 
          OnUpdate(frameTime - prevFrameTime);
          m_Window->OnUpdate();
@@ -164,14 +215,17 @@ namespace totem
       {
          m_MainMenu->OnEvent(e);
       }
-
-      if(m_State == State::PlayingScript)
+      else if(m_State == State::PlayingScript)
       {
-         if(m_CurrentHandler)
-            m_CurrentHandler->OnEvent(e);
+         m_PauseMenu->OnEvent(e);
+         if(!m_IsPaused)
+         {
+            if(m_CurrentHandler)
+               m_CurrentHandler->OnEvent(e);
 
-         m_DialogBox->OnEvent(e);
-      } 
+            m_DialogBox->OnEvent(e);
+         }
+      }
    }
 
    void NovelApp::OnWindowResize(WindowResizeEvent& e)
@@ -208,8 +262,7 @@ namespace totem
          m_MainMenu->Draw(m_Renderer);
          return;
       }
-
-      if(m_State == State::PlayingScript)
+      else if(m_State == State::PlayingScript)
       {
          if(m_Background)
          {
@@ -221,11 +274,18 @@ namespace totem
 
          m_CharacterScene.Draw(m_Renderer);
 
-         if(m_CurrentHandler)
-            m_CurrentHandler->OnUpdate(deltaTime);
+         if(!m_IsPaused)
+         {
+            if(m_CurrentHandler)
+               m_CurrentHandler->OnUpdate(deltaTime);
 
-         m_DialogBox->OnUpdate(deltaTime);
+            m_DialogBox->OnUpdate(deltaTime);
+         }
+
          m_DialogBox->Draw(m_Renderer);
+
+         m_PauseMenu->OnUpdate(deltaTime);
+         m_PauseMenu->Draw(m_Renderer);
       } 
    }
 
