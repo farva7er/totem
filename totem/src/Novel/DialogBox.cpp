@@ -1,9 +1,11 @@
 #include "DialogBox.h"
+#include "NovelApp.h"
 
 namespace totem
 {
-   DialogBox::DialogBox(Ref<Font> font)
-      : TextBox(font)
+   DialogBox::DialogBox()
+      : TextBox(NovelApp::GetResourceManager()
+            ->Get<Font>("resources/fonts/OpenSans-Regular.ttf"))
    {
       m_TextAnim = new SeqAnimation(0, 0, 0.03f, false);
       SetPadding({0.4f, 1, 0, 1});

@@ -23,7 +23,7 @@ namespace totem
          // A Ref can be treated like a simple pointer.
          // You can pass it by value, dereference it, etc.
          template <typename T>
-         Ref<T> Get(const char* resName);
+         Ref<T> Get(const char* resName, bool shouldLoad = true);
 
          // This function is used internally by
          // resource managment subsystem.
@@ -76,7 +76,7 @@ namespace totem
    };
 
    template <typename T>
-   Ref<T> ResourceManager::Get(const char* resName)
+   Ref<T> ResourceManager::Get(const char* resName, bool shouldLoad)
    {
       if(!resName)
          return nullptr;
@@ -89,7 +89,7 @@ namespace totem
             0 == strcmp(currNode->data->GetName(), resName))
          {
             Resource* res = currNode->data;
-            if(!res->IsLoaded())
+            if(shouldLoad && !res->IsLoaded())
             {
                LOG_INFO("Loading resource: %s", res->GetName());
                res->Load();
@@ -104,8 +104,11 @@ namespace totem
       // Resource with the given Name does not already
       // exist. Create a new one and return it.
       T* newRes = new T(resName, this);
-      newRes->Load();
-      LOG_INFO("Loading resource: %s", newRes->GetName());
+      if(shouldLoad)
+      {
+         newRes->Load();
+         LOG_INFO("Loading resource: %s", newRes->GetName());
+      }
       AddResource(newRes);
       return Ref<T>(newRes);
    } 

@@ -20,6 +20,9 @@ namespace totem
             *fShaderSrc = nullptr;
       bool res;
 
+      if(IsLoaded())
+         return;
+
       shaderFullSrc = GetShaderFullSrc(GetName());
       if(!shaderFullSrc)
          goto cleanup;

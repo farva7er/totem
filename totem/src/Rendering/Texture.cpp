@@ -55,6 +55,9 @@ namespace totem
 
    void Texture::Load()
    {
+      if(IsLoaded())
+         return;
+
       stbi_set_flip_vertically_on_load(true);
 
       // m_ResourceId contains path to the image

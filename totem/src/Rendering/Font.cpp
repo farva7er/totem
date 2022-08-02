@@ -38,6 +38,9 @@ namespace totem
       FT_Library ft;
       FT_Face face;
 
+      if(IsLoaded())
+         return;
+
       int error = FT_Init_FreeType(&ft);
       if(error)
       {

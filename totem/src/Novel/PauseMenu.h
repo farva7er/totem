@@ -10,40 +10,25 @@ namespace totem
    class PauseHandler : public ButtonHandler
    {
       public:
-         PauseHandler(NovelApp* app);
-
          virtual void OnClick() override;
-
-      private:
-         NovelApp* m_App;
    };
 
    class UnPauseHandler : public ButtonHandler
    {
       public:
-         UnPauseHandler(NovelApp* app);
-
          virtual void OnClick() override;
-
-      private:
-         NovelApp* m_App;
    }; 
 
    class MainMenuHandler : public ButtonHandler
    {
       public:
-         MainMenuHandler(NovelApp* app);
-
          virtual void OnClick() override;
-
-      private:
-         NovelApp* m_App;
    }; 
 
    class PauseMenu
    {
       public: 
-         PauseMenu(NovelApp* app, ResourceManager* resourceManager);
+         PauseMenu();
          ~PauseMenu();
 
          void SetActive(bool isActive);

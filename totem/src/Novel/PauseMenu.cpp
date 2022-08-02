@@ -3,37 +3,26 @@
 
 namespace totem
 {
-   PauseHandler::PauseHandler(NovelApp* app)
-      : m_App(app)
-   {}
-
    void PauseHandler::OnClick()
    {
-      m_App->Pause();
+      NovelApp::GetInstance()->Pause();
    }
-
-   UnPauseHandler::UnPauseHandler(NovelApp* app)
-      : m_App(app)
-   {}
 
    void UnPauseHandler::OnClick()
    {
-      m_App->UnPause();
+      NovelApp::GetInstance()->UnPause();
    }
-
-   MainMenuHandler::MainMenuHandler(NovelApp* app)
-      : m_App(app)
-   {}
 
    void MainMenuHandler::OnClick()
    {
-      m_App->ExitToMainMenu();
+      NovelApp::GetInstance()->ExitToMainMenu();
    }
 
-   PauseMenu::PauseMenu(NovelApp* app, ResourceManager* resourceManager)
+   PauseMenu::PauseMenu()
    {
       Ref<Font> defaultFont = 
-         resourceManager->Get<Font>("resources/fonts/OpenSans-Regular.ttf");
+         NovelApp::GetResourceManager()
+         ->Get<Font>("resources/fonts/OpenSans-Regular.ttf");
 
       m_PauseButton = new Button(defaultFont);
       m_PauseButton->SetPos({ 14, 7 });
@@ -41,7 +30,7 @@ namespace totem
       m_PauseButton->SetText("II");
       m_PauseButton->SetColor({ 0, 0, 0, 1 });
 
-      m_PauseHandler = new PauseHandler(app);
+      m_PauseHandler = new PauseHandler();
       m_PauseButton->SetHandler(m_PauseHandler);
 
       m_MainMenuButton = new Button(defaultFont);
@@ -49,7 +38,7 @@ namespace totem
       m_MainMenuButton->SetScale({ 2.5f, 0.7f });
       m_MainMenuButton->SetText("Exit to Main Menu");
 
-      m_MainMenuHandler = new MainMenuHandler(app);
+      m_MainMenuHandler = new MainMenuHandler();
       m_MainMenuButton->SetHandler(m_MainMenuHandler);
 
       m_UnPauseButton = new Button(defaultFont);
@@ -58,7 +47,7 @@ namespace totem
       m_UnPauseButton->SetText("X");
       m_UnPauseButton->SetColor({ 0.6f, 0.2f, 0.2f, 0.8f });
 
-      m_UnPauseHandler = new UnPauseHandler(app);
+      m_UnPauseHandler = new UnPauseHandler();
       m_UnPauseButton->SetHandler(m_UnPauseHandler);
    }
 

@@ -37,8 +37,11 @@ namespace totem
 
    #define glCheckError() glCheckError_(__FILE__, __LINE__) 
 
-   Renderer::Renderer(Window *window, ResourceManager* resManager) 
-      : m_Window(window), m_ShaderManager(resManager), m_CanvasScale(1, 1)
+   Renderer::Renderer(Window *window, Ref<Shader> defTextureShader,
+         Ref<Shader> defFontShader) 
+      : m_Window(window), m_CanvasScale(1, 1),
+      m_DefaultTextureShader(defTextureShader),
+      m_DefaultFontShader(defFontShader) 
    {
       // There should be a valid context for glad to initialize 
       m_Window->MakeCurrent();
@@ -53,6 +56,14 @@ namespace totem
       }
 
       s_OpenGLInitialized = true;
+
+      LOG_INFO("Loading Default Texture Shader: %s",
+            defTextureShader->GetName());
+      LOG_INFO("Loading Default Font Shader: %s",
+            defFontShader->GetName());
+      defTextureShader->Load();
+      defFontShader->Load();
+
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
       glGenVertexArrays(1, &m_VAO);
@@ -91,11 +102,6 @@ namespace totem
       uint32_t whiteTexData = 0xffffffff; 
       m_WhiteTexture = 
          new Texture((unsigned char*)&whiteTexData, 1, 1, 4);
-
-      m_DefaultTextureShader = 
-         m_ShaderManager->Get<Shader>("resources/shaders/DefTexture.glsl");
-      m_DefaultFontShader = 
-         m_ShaderManager->Get<Shader>("resources/shaders/DefFont.glsl");
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -242,6 +248,8 @@ namespace totem
          boxPos.y - boxScale.y
       );
 
+      pos = leftTop;
+
       if(alignFlags & TextAlign::HCenter)
       {
          pos.x = (leftTop.x + rightBottom.x) / 2;
@@ -251,8 +259,8 @@ namespace totem
       if(alignFlags & TextAlign::VCenter)
       {
          pos.y = (leftTop.y + rightBottom.y) / 2;
-         pos.y -= textSize.y;
       }
+      pos.y -= textSize.y;
 
       DrawText(text, pos, font, size, color);
    }

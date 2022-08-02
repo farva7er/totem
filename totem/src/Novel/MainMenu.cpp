@@ -5,31 +5,32 @@ namespace totem
 {
    void NewGameHandler::OnClick()
    {
-      m_App->PlayScript(0);
+      NovelApp::GetInstance()->PlayScript(0);
    }
 
    void ExitHandler::OnClick()
    {
-      m_App->OnExit();
+      NovelApp::GetInstance()->OnExit();
    }
 
-   MainMenu::MainMenu(NovelApp* app, ResourceManager* resourceManager)
+   MainMenu::MainMenu()
    {
       Ref<Font> defaultFont = 
-         resourceManager->Get<Font>("resources/fonts/OpenSans-Regular.ttf");
+         NovelApp::GetResourceManager()
+         ->Get<Font>("resources/fonts/OpenSans-Regular.ttf");
 
       m_NewGameButton = new Button(defaultFont);
       m_NewGameButton->SetPos({0, 2});
       m_NewGameButton->SetScale({4, 1.5f});
       m_NewGameButton->SetText("New Game");
-      m_NewGameHandler = new NewGameHandler(app);
+      m_NewGameHandler = new NewGameHandler();
       m_NewGameButton->SetHandler(m_NewGameHandler);
 
       m_ExitButton = new Button(defaultFont);
       m_ExitButton->SetPos({0, -2});
       m_ExitButton->SetScale({4, 1.5f});
       m_ExitButton->SetText("Exit");
-      m_ExitHandler = new ExitHandler(app);
+      m_ExitHandler = new ExitHandler();
       m_ExitButton->SetHandler(m_ExitHandler);
    }
 

@@ -22,7 +22,8 @@ namespace totem
    class Renderer
    {
       public:
-         Renderer(Window *window, ResourceManager* resManager);
+         Renderer(Window *window, Ref<Shader> defTextureShader,
+                  Ref<Shader> defFontShader);
          virtual ~Renderer();
 
          void Clear(const math::vec4f& color);
@@ -63,7 +64,6 @@ namespace totem
          static bool s_OpenGLInitialized; 
 
          Window* m_Window;
-         ResourceManager* m_ShaderManager;
          unsigned int m_VBO, m_VAO, m_EBO;
          Texture* m_WhiteTexture;
          math::vec2f m_CanvasScale;

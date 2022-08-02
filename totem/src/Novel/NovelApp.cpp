@@ -24,12 +24,18 @@ namespace totem
 
    ResourceManager* NovelApp::GetResourceManager()
    {
+      TOTEM_ASSERT(s_Instance, "Novel App is not created!!!");
       return s_Instance->m_ResourceManager;
    }
 
    NovelApp::NovelApp()
       : App(0, nullptr)
    {
+      m_State = State::MainMenu;
+      m_IsPaused = false;
+
+      s_Instance = this;
+
       FileSystem::Init();
 
       char* exePath = FileSystem::GetExePath();
@@ -38,35 +44,36 @@ namespace totem
       delete [] exePath;
       delete [] exeDir;
 
-      m_ResourceManager = new ResourceManager();
       m_Window = Window::Create(1280, 720, "Totem");
       m_Window->AddEventListener(this);
-      m_Renderer = new Renderer(m_Window, m_ResourceManager);
-   
-      SetCanvasScale({ 16, 9 });
 
-      m_Background = nullptr;
+      m_ResourceManager = new ResourceManager();
 
-      Ref<Font> defaultFont = 
-         m_ResourceManager->Get<Font>("resources/fonts/OpenSans-Regular.ttf");
+      m_Renderer = new Renderer(m_Window,
+         m_ResourceManager->
+            Get<Shader>("resources/shaders/DefTexture.glsl", false),
+         m_ResourceManager->
+            Get<Shader>("resources/shaders/DefFont.glsl", false));
+ 
+      m_CharacterScene = new CharacterScene();
 
       m_CurrentHandler = nullptr;
 
-      m_DialogBox = new totem::DialogBox(defaultFont);
+      m_DialogBox = new totem::DialogBox();
       m_DialogBox->SetScale({10, 2});
       m_DialogBox->SetPos({0, -7});
       m_DialogBox->SetTextColor({ 0.9f, 0.9f, 0.2f, 1.0f });
       m_DialogBox->SetFontSize(0.6f);
       m_DialogBox->SetLineSpacing(1.5f);
 
+      m_Background = nullptr;
 
-      s_Instance = this;
+      m_ScriptRegistry = new ScriptRegistry();
 
-      m_MainMenu = new MainMenu(this, m_ResourceManager);
-      m_PauseMenu = new PauseMenu(this, m_ResourceManager);
+      m_MainMenu = new MainMenu();
+      m_PauseMenu = new PauseMenu();
 
-      m_State = State::MainMenu;
-      m_IsPaused = false;
+      SetCanvasScale({ 16, 9 });
 
       m_Window->SendInitEvents();
    }
@@ -85,7 +92,7 @@ namespace totem
 
    void NovelApp::AddScript(Script& script)
    {
-      m_ScriptRegistry.AddScript(&script);
+      m_ScriptRegistry->AddScript(&script);
    }
 
    void NovelApp::PlayScript(int scriptIndex)
@@ -93,9 +100,9 @@ namespace totem
       m_State = State::PlayingScript;
       m_IsPaused = false;
       m_PauseMenu->SetActive(false);
-      m_CharacterScene.Clear();
+      m_CharacterScene->Clear();
 
-      m_ScriptRegistry[scriptIndex].Play();
+      (*m_ScriptRegistry)[scriptIndex].Play();
 
       m_State = State::MainMenu;
    }
@@ -143,13 +150,13 @@ namespace totem
 
    void NovelApp::ShowCharacter(const Character& character, int slot)
    {
-      m_CharacterScene.Add(&character, slot);
+      m_CharacterScene->Add(&character, slot);
       WaitClick();
    }
 
    void NovelApp::HideCharacter(const Character& character)
    {
-      m_CharacterScene.Remove(&character);
+      m_CharacterScene->Remove(&character);
       WaitClick();
    }
 
@@ -272,7 +279,7 @@ namespace totem
             m_Renderer->DrawRect(rect, *m_Background);
          }
 
-         m_CharacterScene.Draw(m_Renderer);
+         m_CharacterScene->Draw(m_Renderer);
 
          if(!m_IsPaused)
          {
@@ -294,13 +301,19 @@ namespace totem
       // Maybe do saving before exit in future
       LOG_INFO("Exiting...");
 
+      delete m_PauseMenu;
       delete m_MainMenu;
+      delete m_ScriptRegistry;
 
       if(m_Background)
          m_Background->Release();
 
+      delete m_DialogBox;
+
       if(m_CurrentHandler)
          delete m_CurrentHandler;
+
+      delete m_CharacterScene;
 
       delete m_Renderer;
       delete m_ResourceManager;

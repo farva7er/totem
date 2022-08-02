@@ -10,25 +10,19 @@ namespace totem
    class NewGameHandler : public ButtonHandler
    {
       public:
-         NewGameHandler(NovelApp* app) : m_App(app) {}
          virtual void OnClick() override;
-      private:
-         NovelApp* m_App;
    };
 
    class ExitHandler : public ButtonHandler
    {
       public:
-         ExitHandler(NovelApp* app) : m_App(app) {}
          virtual void OnClick() override;
-      private:
-         NovelApp* m_App;
    };
 
    class MainMenu
    {
       public:
-         MainMenu(NovelApp* app, ResourceManager* resourceManager);
+         MainMenu();
          ~MainMenu();
 
          void OnEvent(Event& e);

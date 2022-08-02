@@ -78,15 +78,15 @@ namespace totem
 
          static NovelApp* s_Instance;
          Window* m_Window;
-         Renderer* m_Renderer;
          ResourceManager* m_ResourceManager;
+         Renderer* m_Renderer;
          
-         CharacterScene m_CharacterScene;
+         CharacterScene* m_CharacterScene;
          NovelHandler* m_CurrentHandler;
          DialogBox* m_DialogBox;
          Ref<Texture> m_Background;
 
-         ScriptRegistry m_ScriptRegistry;
+         ScriptRegistry* m_ScriptRegistry;
          MainMenu* m_MainMenu;
          PauseMenu* m_PauseMenu;
    };

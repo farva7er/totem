@@ -7,10 +7,25 @@
 
 namespace totem
 {
+//   class DialogOption : public Clickable
+//   {
+//      public:
+//         const Text& GetText() const;
+//         void SetText(const Text& text);
+//
+//         virtual void OnClick() override;
+//
+//         virtual void OnUpdate(float deltaTime) override {}
+//         virtual void Draw(Renderer* renderer) const override;
+//
+//      private:
+//         TextVec m_TextWords;
+//   };
+//
    class DialogBox : public TextBox
    {
       public:
-         DialogBox(Ref<Font> font);
+         DialogBox();
          DialogBox(const DialogBox& other);
 
          ~DialogBox();
@@ -31,6 +46,8 @@ namespace totem
          Text m_CharacterName;
          SeqAnimation* m_TextAnim;
          Animator m_Animator;
+
+         //DialogOption m_DialogOptions[4];
    };
 }
 
