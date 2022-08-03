@@ -7,6 +7,7 @@
 #include "Handlers/SpeechHandler.h"
 #include "Handlers/ExitLoopHandler.h"
 #include "Handlers/WaitClickHandler.h"
+#include "Handlers/IdleHandler.h"
 #include "MainMenu.h"
 #include "PauseMenu.h"
 
@@ -60,11 +61,6 @@ namespace totem
       m_CurrentHandler = nullptr;
 
       m_DialogBox = new totem::DialogBox();
-      m_DialogBox->SetScale({10, 2});
-      m_DialogBox->SetPos({0, -7});
-      m_DialogBox->SetTextColor({ 0.9f, 0.9f, 0.2f, 1.0f });
-      m_DialogBox->SetFontSize(0.6f);
-      m_DialogBox->SetLineSpacing(1.5f);
 
       m_Background = nullptr;
 
@@ -101,6 +97,8 @@ namespace totem
       m_IsPaused = false;
       m_PauseMenu->SetActive(false);
       m_CharacterScene->Clear();
+      m_DialogBox->ClearDialogOptions();
+      m_DialogBox->SetText("");
 
       (*m_ScriptRegistry)[scriptIndex].Play();
 
@@ -172,6 +170,32 @@ namespace totem
    void NovelApp::SetBackground(const char* imagePath)
    {
       m_Background = m_ResourceManager->Get<Texture>(imagePath);
+   }
+
+   void NovelApp::ChooseDialogOption(int dialogOptionIndex)
+   {
+      m_DialogBox->SetSelectedDialogOption(dialogOptionIndex);
+      m_DialogBox->ClearDialogOptions();
+      SetHandler(new ExitLoopHandler());
+   }
+
+   int NovelApp::SetDialogOptions(DialogOptions& dialogOptions)
+   {
+      m_DialogBox->SetText("");
+      m_DialogBox->ClearDialogOptions();
+      const Text* optionText;
+      int i = 0;
+      while((optionText = dialogOptions.GetOptionText()))
+      {
+         m_DialogBox->SetDialogOptionText(i, *optionText);
+         i++;
+         dialogOptions.Next();
+      }
+      SetHandler(new IdleHandler());
+      Loop();
+      if(!IsScriptPlaying())
+         return -1;
+      return m_DialogBox->GetSelectedDialogOption();
    }
 
    void NovelApp::Loop()

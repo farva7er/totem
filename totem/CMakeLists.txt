@@ -62,6 +62,7 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                         src/Internationalization/Text.h
                         src/Internationalization/Text.cpp
                         src/Novel/Handlers/ExitLoopHandler.h
+                        src/Novel/Handlers/IdleHandler.h
                         src/Novel/Handlers/SpeechHandler.h
                         src/Novel/Handlers/SpeechHandler.cpp
                         src/Novel/Handlers/WaitClickHandler.h
@@ -73,6 +74,8 @@ $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:
                         src/Novel/ClientAPI.h
                         src/Novel/DialogBox.h
                         src/Novel/DialogBox.cpp
+                        src/Novel/DialogOptions.h
+                        src/Novel/DialogOptions.cpp
                         src/Novel/MainMenu.h
                         src/Novel/MainMenu.cpp
                         src/Novel/NovelApp.h

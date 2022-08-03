@@ -6,6 +6,7 @@
 // Script API
 
 #define Wait() Wait_L();TryYield()
+#define GetOption(options) GetOption_L(options);TryYield()
 
 // Character API
 

@@ -2,6 +2,7 @@
 #define _TOTEM_NOVEL_SCRIPT_H_
 
 #include "ClientAPI.h"
+#include "DialogOptions.h"
 
 namespace totem
 {
@@ -16,6 +17,10 @@ namespace totem
 
          // Wait for player to click.
          void Wait_L();
+
+         // Ask user to select a dialog option.
+         // Returns index of selected option.
+         int GetOption_L(DialogOptions& dialogOptions);
 
          // Clear Dialogue Box.
          void ClearDialog();

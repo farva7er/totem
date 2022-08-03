@@ -5,13 +5,7 @@ namespace totem
 {
    Animator::~Animator()
    {
-      AnimationNode* currNode = m_Animations;
-      while(currNode)
-      {
-         AnimationNode* savedNode = currNode;
-         currNode = currNode->next;
-         delete savedNode;
-      }
+      Clear();
    }
 
    void Animator::OnUpdate(float deltaTime)
@@ -56,6 +50,18 @@ namespace totem
       animNode->refAnim = refAnim;
 
       anim->Play();
+   }
+
+   void Animator::Clear()
+   {  
+      AnimationNode* currNode = m_Animations;
+      while(currNode)
+      {
+         AnimationNode* savedNode = currNode;
+         currNode = currNode->next;
+         delete savedNode;
+      }
+      m_Animations = nullptr;
    }
 
    Animator::AnimationNode* Animator::Insert(Animation* anim)

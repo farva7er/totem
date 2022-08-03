@@ -5,8 +5,6 @@
 
 namespace totem
 {
-   class NovelApp;
-
    class PauseHandler : public ButtonHandler
    {
       public:

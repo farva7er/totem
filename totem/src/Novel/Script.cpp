@@ -13,6 +13,11 @@ namespace totem
       NovelApp::GetInstance()->WaitClick();
    }
 
+   int Script::GetOption_L(DialogOptions& dialogOptions)
+   {
+      return NovelApp::GetInstance()->SetDialogOptions(dialogOptions);
+   }
+
    void Script::ClearDialog()
    {
       NovelApp::GetInstance()->ClearDialogBox();

@@ -5,8 +5,6 @@
 
 namespace totem
 {
-   class NovelApp;
-
    class NewGameHandler : public ButtonHandler
    {
       public:
@@ -30,7 +28,6 @@ namespace totem
          void Draw(Renderer* renderer);
 
       private:
-
          Button* m_NewGameButton;
          ButtonHandler* m_NewGameHandler;
 

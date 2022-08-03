@@ -6,9 +6,12 @@
 #include "Window.h"
 #include "Internationalization/Text.h"
 #include "DialogBox.h"
+#include "MainMenu.h"
+#include "PauseMenu.h"
 #include "Character.h"
 #include "CharacterScene.h"
 #include "ScriptRegistry.h"
+#include "DialogOptions.h"
 #include "App.h"
 
 namespace totem
@@ -22,9 +25,6 @@ namespace totem
          virtual void OnUpdate(float deltaTime) = 0;
          virtual void OnEvent(Event& e) = 0;
    };
-
-   class MainMenu;
-   class PauseMenu;
 
    class NovelApp : public App, public IEventListener
    {
@@ -51,7 +51,10 @@ namespace totem
          void HideCharacter(const Character& character);
          void SetSpeech(const Text& speech, const Character& character); 
          void SetBackground(const char* imagePath);
+         void ChooseDialogOption(int optionIndex);
          
+         int SetDialogOptions(DialogOptions& dialogOptions);
+
          void Loop();
          void OnExit();
 

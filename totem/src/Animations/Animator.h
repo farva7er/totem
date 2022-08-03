@@ -29,6 +29,9 @@ namespace totem
          // from the moment the refAnimation starts playing.
          void Sync(Animation* anim, float delay = 0.0f,
                    Animation* refAnim = nullptr); 
+
+         void Clear();
+
       private:
          struct AnimationNode
          {

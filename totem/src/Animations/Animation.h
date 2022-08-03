@@ -22,7 +22,7 @@ namespace totem
          float GetCurrTime() const { return m_CurrTime; }
          float GetDuration() const { return m_Duration; }
 
-         bool IsPaused() { return m_IsPaused; }
+         bool IsPaused() const { return m_IsPaused; }
 
          int GetFinishCount() const { return m_FinishCount; }
          bool HasFinishedOnce() const { return m_FinishCount > 0; }

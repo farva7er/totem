@@ -17,8 +17,16 @@ public:
          );
       ClearDialog();
       myChar.Show(1);
-      myChar.Say(  "It's an example game which demonstrates basic "
+      totem::DialogOptions myOptions;
+      myOptions.Add("Hello");
+      myOptions.Add("Sorry");
+      myOptions.Add("OMG");
+      int ans = GetOption(myOptions);
+      if(ans == 0)
+      {
+         myChar.Say(  "It's an example game which demonstrates basic "
             "functionality the engine supports.");
+      } 
       myChar.Say(  "The engine supports different languages. "
             "Internally it uses UTF-8.");
       myChar.SetMood("Laugh");
