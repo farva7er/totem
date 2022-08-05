@@ -38,14 +38,8 @@ namespace totem
       public:
          Event() : m_IsHandled(false) {}
 
-         static EventType GetStaticType()
-         { return EventType::Other; }
-
-         virtual EventCategory GetCategory() const
-         { return EventCategory::Other; }
-
-         virtual EventType GetType() const
-         { return EventType::Other; }
+         virtual EventCategory GetCategory() const = 0;
+         virtual EventType GetType() const = 0; 
 
          bool IsHandled() const { return m_IsHandled; }
 

@@ -234,6 +234,11 @@ namespace totem
       OnEvent(fe);
       WindowResizeEvent we(GetWidth(), GetHeight());
       OnEvent(we);
+      
+      double xpos, ypos;
+      glfwGetCursorPos(m_glfwWindow, &xpos, &ypos);
+      MouseMoveEvent mme((float)xpos, (float)ypos);
+      OnEvent(mme);
    }
 
    unsigned int LinuxWindow::GetFBWidth() const

@@ -80,12 +80,9 @@ namespace totem
    {
       if(m_State == State::Pushed && e.GetButton() == 0) // Left Mouse Button
       {
+         m_State = State::Hovered;
+         OnHover();
          OnClick();
-         if(m_IsActive)
-         {
-            m_State = State::Hovered;
-            OnHover();
-         }
          e.SetHandled();
       }
    }

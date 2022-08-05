@@ -103,17 +103,20 @@ namespace totem
       (*m_ScriptRegistry)[scriptIndex].Play();
 
       m_State = State::MainMenu;
+      m_Window->SendInitEvents();
    }
 
    void NovelApp::StartMainMenu()
    {
       m_State = State::MainMenu;
+      m_Window->SendInitEvents();
       Loop();
    }
 
    void NovelApp::ExitToMainMenu()
    {
       m_State = State::MainMenu;
+      m_Window->SendInitEvents();
       SetHandler(new ExitLoopHandler());
    }
 
